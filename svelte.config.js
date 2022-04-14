@@ -15,7 +15,9 @@ const config = {
 					'@predicate': path.resolve('src/lib/predicate'),
 					'@predicate/*': path.resolve('src/lib/predicate/*'),
 					'@stores': path.resolve('src/lib/stores'),
-					'@stores/*': path.resolve('src/lib/stores/*')
+					'@stores/*': path.resolve('src/lib/stores/*'),
+					'@utils': path.resolve('src/lib/utils'),
+					'@utils/*': path.resolve('src/lib/utils/*')
 				}
 			}
 		}

@@ -9,7 +9,9 @@
 			"@predicate": ["src/lib/predicate"],
 			"@predicate/*": ["src/lib/predicate/*"],
 			"@stores": ["src/lib/stores"],
-			"@stores/*": ["src/lib/stores/*"]
+			"@stores/*": ["src/lib/stores/*"],
+			"@utils": ["src/lib/utils"],
+			"@utils/*": ["src/lib/utils/*"]
 		}
 	}
 }
