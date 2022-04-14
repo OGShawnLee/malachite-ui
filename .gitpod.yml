@@ -1,0 +1,8 @@
+tasks:
+  - init: npm install
+
+vscode:
+  extensions:
+    - esbenp.prettier-vscode
+    - meganrogge.template-string-converter
+    - svelte.svelte-vscode
