@@ -9,7 +9,9 @@ export default defineConfig({
 			$lib: resolve('src/lib'),
 			'$lib/*': resolve('src/lib/*'),
 			'@predicate': resolve('src/lib/predicate'),
-			'@predicate/*': resolve('src/lib/predicate/*')
+			'@predicate/*': resolve('src/lib/predicate/*'),
+			'@stores': resolve('src/lib/stores'),
+			'@stores/*': resolve('src/lib/stores/*')
 		}
 	},
 	test: {

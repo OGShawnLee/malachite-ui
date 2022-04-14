@@ -13,7 +13,9 @@ const config = {
 			resolve: {
 				alias: {
 					'@predicate': path.resolve('src/lib/predicate'),
-					'@predicate/*': path.resolve('src/lib/predicate/*')
+					'@predicate/*': path.resolve('src/lib/predicate/*'),
+					'@stores': path.resolve('src/lib/stores'),
+					'@stores/*': path.resolve('src/lib/stores/*')
 				}
 			}
 		}

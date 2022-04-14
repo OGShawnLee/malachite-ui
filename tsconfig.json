@@ -7,7 +7,9 @@
 			"$lib": ["src/lib/"],
 			"$lib/*": ["src/lib/*"],
 			"@predicate": ["src/lib/predicate"],
-			"@predicate/*": ["src/lib/predicate/*"]
+			"@predicate/*": ["src/lib/predicate/*"],
+			"@stores": ["src/lib/stores"],
+			"@stores/*": ["src/lib/stores/*"]
 		}
 	}
 }
