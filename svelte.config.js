@@ -14,6 +14,8 @@ const config = {
 				alias: {
 					'@components': path.resolve('src/lib/components'),
 					'@components/*': path.resolve('src/lib/components/*'),
+					'@hooks': path.resolve('src/lib/hooks'),
+					'@hooks/*': path.resolve('src/lib/hooks/*'),
 					'@predicate': path.resolve('src/lib/predicate'),
 					'@predicate/*': path.resolve('src/lib/predicate/*'),
 					'@stores': path.resolve('src/lib/stores'),

@@ -8,6 +8,8 @@
 			"$lib/*": ["src/lib/*"],
 			"@components": ["src/lib/components"],
 			"@components/*": ["src/lib/components/*"],
+			"@hooks": ["src/lib/hooks"],
+			"@hooks/*": ["src/lib/hooks/*"],
 			"@predicate": ["src/lib/predicate"],
 			"@predicate/*": ["src/lib/predicate/*"],
 			"@stores": ["src/lib/stores"],
