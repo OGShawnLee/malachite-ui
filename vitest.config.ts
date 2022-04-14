@@ -12,6 +12,8 @@ export default defineConfig({
 			'@predicate/*': resolve('src/lib/predicate/*'),
 			'@stores': resolve('src/lib/stores'),
 			'@stores/*': resolve('src/lib/stores/*'),
+			'@test-utils': resolve('src/test-utils'),
+			'@test-utils/*': resolve('src/test-utils/*'),
 			'@utils': resolve('src/lib/utils'),
 			'@utils/*': resolve('src/lib/utils/*')
 		}
