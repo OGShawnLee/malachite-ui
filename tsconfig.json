@@ -6,6 +6,8 @@
 		"paths": {
 			"$lib": ["src/lib/"],
 			"$lib/*": ["src/lib/*"],
+			"@components": ["src/lib/components"],
+			"@components/*": ["src/lib/components/*"],
 			"@predicate": ["src/lib/predicate"],
 			"@predicate/*": ["src/lib/predicate/*"],
 			"@stores": ["src/lib/stores"],

@@ -8,6 +8,8 @@ export default defineConfig({
 		alias: {
 			$lib: resolve('src/lib'),
 			'$lib/*': resolve('src/lib/*'),
+			'@components': resolve('src/lib/components'),
+			'@components/*': resolve('src/lib/components/*'),
 			'@predicate': resolve('src/lib/predicate'),
 			'@predicate/*': resolve('src/lib/predicate/*'),
 			'@stores': resolve('src/lib/stores'),

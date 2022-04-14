@@ -12,6 +12,8 @@ const config = {
 		vite: {
 			resolve: {
 				alias: {
+					'@components': path.resolve('src/lib/components'),
+					'@components/*': path.resolve('src/lib/components/*'),
 					'@predicate': path.resolve('src/lib/predicate'),
 					'@predicate/*': path.resolve('src/lib/predicate/*'),
 					'@stores': path.resolve('src/lib/stores'),
