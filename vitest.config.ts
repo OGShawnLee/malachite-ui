@@ -10,6 +10,8 @@ export default defineConfig({
 			'$lib/*': resolve('src/lib/*'),
 			'@components': resolve('src/lib/components'),
 			'@components/*': resolve('src/lib/components/*'),
+			'@core': resolve('src/lib/core'),
+			'@core/*': resolve('src/lib/core/*'),
 			'@hooks': resolve('src/lib/hooks'),
 			'@hooks/*': resolve('src/lib/hooks/*'),
 			'@predicate': resolve('src/lib/predicate'),
