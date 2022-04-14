@@ -5,7 +5,9 @@
 		"strict": true,
 		"paths": {
 			"$lib": ["src/lib/"],
-			"$lib/*": ["src/lib/*"]
+			"$lib/*": ["src/lib/*"],
+			"@predicate": ["src/lib/predicate"],
+			"@predicate/*": ["src/lib/predicate/*"]
 		}
 	}
 }
