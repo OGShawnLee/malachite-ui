@@ -19,6 +19,6 @@
 	$: finalUse = [...use, [action]];
 </script>
 
-<Render {as} {Proxy} {className} bind:disabled bind:element {...$$restProps} use={finalUse}>
+<Render {as} {Proxy} class={className} bind:disabled bind:element {...$$restProps} use={finalUse}>
 	<slot isOpen={$Open} isDisabled={disabled} button={action} />
 </Render>

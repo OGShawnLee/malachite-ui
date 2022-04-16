@@ -7,9 +7,9 @@
 <a href="/">Home</a>
 
 <!-- WE CANNOT USE TRANSITIONS HERE BECAUSE SVELTE:ELEMENT DOES NOT SUPPORT TRANSITION|LOCAL -->
-<Disclosure>
-	<DisclosureButton>Toggle</DisclosureButton>
-	<DisclosurePanel as="nav" let:close>
+<Disclosure class="disclosure">
+	<DisclosureButton class="disclosure__button">Toggle</DisclosureButton>
+	<DisclosurePanel class="disclosure__panel" as="nav" let:close>
 		<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat, at!</p>
 		<button on:click={close}> Close </button>
 	</DisclosurePanel>
@@ -36,3 +36,19 @@
 		</section>
 	</DisclosurePanel>
 </Disclosure>
+
+<style>
+	:global(.disclosure) {
+		display: flex;
+		flex-direction: column;
+		gap: 1.75rem;
+	}
+
+	:global(.disclosure__button) {
+		border-radius: 1ex;
+	}
+
+	:global(.disclosure__panel) {
+		padding: 1.75rem;
+	}
+</style>

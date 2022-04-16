@@ -31,7 +31,7 @@
 	export let use: [action: Action, parameter?: any][] = [];
 </script>
 
-<Render {as} {className} disabled={$Disabled} bind:element {...$$restProps} {use}>
+<Render {as} class={className} disabled={$Disabled} bind:element {...$$restProps} {use}>
 	{#if $Open}
 		<slot name="up-panel" isDisabled={$Disabled} panel={panel.action} {close} />
 	{/if}
