@@ -1,2 +1,2 @@
 export * from './disclosure';
-export * from './render';
+export { default as Render } from './render';

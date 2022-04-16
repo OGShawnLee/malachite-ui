@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Disclosure from './state';
-	import Render from '@components/render';
+	import { Render } from '@components';
 	import type { Action } from 'svelte/action';
 	import type { Readable, Writable } from 'svelte/store';
 	import { storable } from '@stores';

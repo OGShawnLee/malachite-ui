@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { CONTEXT } from './state';
-	import Render from '@components/render';
+	import { Render } from '@components';
 	import type { Action } from 'svelte/action';
-    import type { Forwarder } from '$lib';
+	import type { Forwarder } from '$lib';
 
 	const { Open, button } = CONTEXT.getContext();
 	const { Proxy, action } = button;

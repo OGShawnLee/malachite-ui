@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CONTEXT } from './state';
-	import Render from '@components/render';
+	import { Render } from '@components';
 	import type { Action } from 'svelte/action';
 	import type { Forwarder } from '$lib';
 
