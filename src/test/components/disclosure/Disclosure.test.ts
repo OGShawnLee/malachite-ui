@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import * as samples from './samples';
-import { elementTagNames } from '@components/render'
+import { elementTagNames } from '@components/render';
 import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/svelte';
 import { hasTagName, isDisabled, isHTMLElement } from '@predicate';
 import { generateActions, isValidComponentName } from '@test-utils';
@@ -14,9 +14,8 @@ describe('Behaviour', () => {
 	const { Behaviour, ForwardActions } = samples;
 
 	it('Should be closed by default', async () => {
-		const { findByText } = render(Behaviour, { props: { panelTestId: 'unique-panel' } });
-		const check = async () => await findByText('unique-panel');
-		expect(check()).rejects.toBeUndefined();
+		const { findByTestId } = render(Behaviour, { props: { panelTestId: 'unique-panel' } });
+		expect(() => findByTestId('unique-panel')).rejects.toBeUndefined();
 	});
 
 	describe('Button', () => {
