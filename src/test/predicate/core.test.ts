@@ -61,6 +61,30 @@ describe('isBoolean', () => {
 	});
 });
 
+describe('isEmpty', () => {
+	const { isEmpty } = core;
+	it('Should return true when an array is empty', () => {
+		expect(isEmpty([])).toBe(true);
+	});
+
+	it('Should return false when an array is not empty', () => {
+		expect(isEmpty([1])).toBe(false);
+	});
+
+	describe('string value', () => {
+		it('Should work with strings', () => {
+			expect(isEmpty('')).toBe(true);
+		});
+
+		it('Should return true if the string is whitespace', () => {
+			expect(
+				isEmpty(`    
+			
+				`)
+			).toBe(true);
+		});
+	});
+});
 
 describe('isFunction', () => {
 	const { isFunction } = core;

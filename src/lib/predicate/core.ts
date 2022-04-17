@@ -1,3 +1,8 @@
+export function isAround(num: number, range: { min?: number; max?: number } = {}) {
+	const { min = 0, max = Infinity } = range;
+	return num >= min && num < max;
+}
+
 export function isArray<T>(
 	val: unknown,
 	predicate: (item: unknown, index: number, self: unknown[]) => item is T
@@ -15,6 +20,11 @@ export function isArray<T = unknown>(
 
 export function isBoolean(val: unknown): val is boolean {
 	return typeof val === 'boolean' || val instanceof Boolean;
+}
+
+export function isEmpty(val: unknown[] | string) {
+	if (isString(val)) return val.replace(/\s+/g, '').length === 0;
+	return val.length === 0;
 }
 
 export function isFunction(val: unknown): val is Function {

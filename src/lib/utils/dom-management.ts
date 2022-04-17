@@ -1,3 +1,21 @@
+import { isHTMLElement } from '$lib/predicate';
+
+export function findElement(
+	container: Document | HTMLElement,
+	predicate: (node: HTMLElement) => unknown
+): HTMLElement | undefined {
+	if (!container.hasChildNodes) return;
+
+	const children = Array.from(container.children);
+	for (const child of children) {
+		if (isHTMLElement(child)) {
+			if (predicate(child)) return child;
+			const match = findElement(child, predicate);
+			if (match) return match;
+		}
+	}
+}
+
 export function setAttribute(
 	node: HTMLElement,
 	[attribute, value]: [string, string],

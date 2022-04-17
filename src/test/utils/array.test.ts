@@ -34,3 +34,28 @@ describe('generate', () => {
 		});
 	});
 });
+
+describe('getFirstAndLast', () => {
+	const { getFirstAndLast } = array;
+	const items = [0, 1, 2, 3];
+
+	it('Should return the first and last in a tuple', () => {
+		expect(getFirstAndLast(items)).toBeInstanceOf(Array);
+		expect(getFirstAndLast(items)).toHaveLength(2);
+	});
+
+	it('Should return the first and last item', () => {
+		expect(getFirstAndLast(items)).toEqual([0, 3]);
+	});
+
+	it('Should return the first item and undefined if the array has only one item', () => {
+		expect(getFirstAndLast([10])).toEqual([10, undefined]);
+	});
+});
+
+describe('makeUnique', () => {
+	it('Should return an array with unique items', () => {
+		const items = [0, 0, 0, 1, 2, 3, 'First', 'First', 1];
+		expect(array.makeUnique(items)).toEqual([0, 1, 2, 3, 'First']);
+	});
+});

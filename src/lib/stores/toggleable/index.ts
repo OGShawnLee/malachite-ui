@@ -1,9 +1,12 @@
 import type { Store } from '$lib';
-import type { Writable } from 'svelte/store';
-import { setAttribute } from '@utils';
+import type { Unsubscriber, Writable } from 'svelte/store';
+import { makeUnique, setAttribute } from '@utils';
 import { hasTagName, isFocusable, isHTMLElement, isNullish, isWithin } from '@predicate';
 import { useCleanup, useCollector, useDataSync, useListener } from '@hooks';
 import { storable } from '@stores/storable';
+
+export * from './handler';
+export * from './plugin';
 
 export class Toggleable {
 	protected readonly Open: Store<boolean>;
@@ -89,26 +92,41 @@ export class Toggleable {
 		this: Toggleable,
 		element: HTMLElement,
 		options: {
+			isToggler?: boolean;
 			onChange?: (isOpen: boolean) => void;
 		} = {}
 	) {
-		const { onChange } = options;
+		const { onChange, isToggler = true } = options;
 		this.primitive.button = this.handleAttributes.button(element);
 		return useCollector({
 			beforeCollection: () => {
 				this.primitive.button = undefined;
 			},
-			init: () => [this.listen(onChange), this.handleClick(element)]
+			init: () => [this.listen(onChange), isToggler && this.handleClick(element)]
 		});
 	}
 
-	panel(this: Toggleable, element: HTMLElement) {
+	panel(
+		this: Toggleable,
+		element: HTMLElement,
+		options: {
+			handlers?: Array<(this: Toggleable, panel: HTMLElement) => Unsubscriber>;
+			plugins?: Array<(this: Toggleable, panel: HTMLElement) => Unsubscriber>;
+			onOpen?: (panel: HTMLElement) => void;
+		} = {}
+	) {
+		const { handlers = [], plugins = [], onOpen } = options;
+
 		this.primitive.panel = element;
 		return useCollector({
 			beforeCollection: () => {
 				this.primitive.panel = undefined;
 			},
-			init: () => []
+			init: () => [
+				onOpen && this.Open.subscribe((isOpen) => isOpen && onOpen(element)),
+				makeUnique(handlers).map((handler) => handler.bind(this)(element)),
+				makeUnique(plugins).map((plugins) => plugins.bind(this)(element))
+			]
 		});
 	}
 
