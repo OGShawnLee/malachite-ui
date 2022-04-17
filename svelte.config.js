@@ -24,8 +24,10 @@ const config = {
 					'@predicate/*': path.resolve('src/lib/predicate/*'),
 					'@stores': path.resolve('src/lib/stores'),
 					'@stores/*': path.resolve('src/lib/stores/*'),
+					'@test-utils': path.resolve('src/test-utils'),
+					'@test-utils/*': path.resolve('src/test-utils/*'),
 					'@utils': path.resolve('src/lib/utils'),
-					'@utils/*': path.resolve('src/lib/utils/*')
+					'@utils/*': path.resolve('src/lib/utils/*'),
 				}
 			}
 		}
