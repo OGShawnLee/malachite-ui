@@ -99,15 +99,15 @@ describe('Behaviour', () => {
 				});
 			});
 		});
+	});
 
-		describe('Panel', () => {
-			describe('attributes', () => {
-				describe('id', () => {
-					it('Should have an appropiate disclosure id', async () => {
-						const { findByText } = render(Behaviour, { props: { open: true } });
-						const panel = await findByText('Panel Element');
-						expect(isValidComponentName(panel, 'disclosure', 'panel')).toBe(true);
-					});
+	describe('Panel', () => {
+		describe('attributes', () => {
+			describe('id', () => {
+				it('Should have an appropiate disclosure id', async () => {
+					const { findByText } = render(Behaviour, { props: { open: true } });
+					const panel = await findByText('Panel Element');
+					expect(isValidComponentName(panel, 'disclosure', 'panel')).toBe(true);
 				});
 			});
 		});
