@@ -15,11 +15,11 @@ export function handleEscapeKey(this: Toggleable) {
 	});
 }
 
-export function handleFocusLeave(this: Toggleable) {
+export function handleFocusLeave(this: Toggleable, panel: HTMLElement) {
 	return useWindowListener('focusin', (event) => {
-		if (event.target === window) return;
-		if (event.target === document.body || this.isClosed || isWithin(this.tuple, event.target))
-			return;
+		if (this.isClosed || event.target === window || event.target === document.body) return;
+		if (this.isFocusForced && !isWithin(panel, event.target)) return this.close(event);
+		if (isWithin(this.tuple, event.target)) return;
 
 		this.close(event);
 	});

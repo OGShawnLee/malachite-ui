@@ -1,25 +1,33 @@
 import type { Store } from '$lib';
-import type { Unsubscriber, Writable } from 'svelte/store';
-import { makeUnique, setAttribute } from '@utils';
+import type { Readable, Unsubscriber, Writable } from 'svelte/store';
+import { focusFirstElement, makeUnique, setAttribute } from '@utils';
 import { hasTagName, isFocusable, isHTMLElement, isNullish, isWithin } from '@predicate';
 import { useCleanup, useCollector, useDataSync, useListener } from '@hooks';
 import { storable } from '@stores/storable';
+import { tick } from 'svelte';
 
 export * from './handler';
 export * from './plugin';
 
 export class Toggleable {
 	protected readonly Open: Store<boolean>;
+	protected readonly FocusForce: Store<Readable<boolean>>;
+
 	protected readonly primitive: {
+		isFocusForced: boolean;
 		isOpen: boolean;
 		button?: HTMLElement;
 		panel?: HTMLElement;
 	} = {
+		isFocusForced: false,
 		isOpen: false
 	};
 
-	constructor({ Open, initialValue = false, notifier }: Expand<Toggleable.Options> = {}) {
+	constructor(options: Expand<Toggleable.Options> = {}) {
+		const { Open, initialValue = false, notifier, ForceFocus } = options;
+
 		this.Open = storable({ Store: Open, initialValue, notifier });
+		this.FocusForce = storable({ Store: ForceFocus, initialValue: false });
 	}
 
 	get subscribe() {
@@ -30,9 +38,15 @@ export class Toggleable {
 		return this.Open.sync;
 	}
 
-	listen(this: Toggleable, onChange?: (isOpen: boolean) => void) {
+	listen(this: Toggleable, button: HTMLElement, onChange?: (isOpen: boolean) => void) {
 		const sync = useDataSync(this.primitive);
-		return useCleanup(sync(this.Open, 'isOpen', onChange));
+		return useCleanup(
+			sync(this.FocusForce, 'isFocusForced'),
+			sync(this.Open, 'isOpen', (isOpen) => {
+				this.handleFocusForced(isOpen, button);
+			}),
+			onChange && this.Open.subscribe(onChange)
+		);
 	}
 
 	open(this: Toggleable) {
@@ -69,6 +83,13 @@ export class Toggleable {
 		}
 	}
 
+	protected async handleFocusForced(isOpen: boolean, button: HTMLElement) {
+		await tick();
+		if (this.isFocusForced && isOpen && this.elements.panel) {
+			focusFirstElement(this.elements.panel, { fallback: button });
+		}
+	}
+
 	protected isValidRef(this: Toggleable, ref?: Event | HTMLElement) {
 		const target = isHTMLElement(ref) ? ref : ref?.target;
 		return !isNullish(target) && isFocusable(target) && !isWithin(this.elements.panel, target);
@@ -102,7 +123,7 @@ export class Toggleable {
 			beforeCollection: () => {
 				this.primitive.button = undefined;
 			},
-			init: () => [this.listen(onChange), isToggler && this.handleClick(element)]
+			init: () => [this.listen(element, onChange), isToggler && this.handleClick(element)]
 		});
 	}
 
@@ -130,6 +151,10 @@ export class Toggleable {
 		});
 	}
 
+	get isFocusForced() {
+		return this.primitive.isFocusForced;
+	}
+
 	get isOpen() {
 		return this.primitive.isOpen;
 	}
@@ -149,6 +174,7 @@ export class Toggleable {
 
 export namespace Toggleable {
 	export interface Options {
+		ForceFocus?: Readable<boolean>;
 		Open?: Writable<boolean> | boolean;
 		initialValue?: boolean;
 		notifier?: (isOpen: boolean) => void;

@@ -1,0 +1,44 @@
+<script lang="ts">
+	import Popover from './state';
+	import { Render } from '@components';
+	import type { Forwarder } from '$lib';
+	import type { Readable } from 'svelte/store';
+
+	export let forceFocus: Readable<boolean> | boolean = false;
+
+	const { Open, ForceFocus, close, button, overlay, panel } = new Popover({
+		ForceFocus: {
+			Store: forceFocus,
+			initialValue: false,
+			notifier: (newValue) => (forceFocus = newValue)
+		}
+	});
+
+	$: ForceFocus.sync({ previous: $ForceFocus, value: forceFocus });
+
+	let className: Nullable<string> = undefined;
+
+	export { className as class };
+	export let as: RenderElementTagName = 'div';
+	export let disabled: Nullable<boolean> = undefined;
+	export let element: HTMLElement | undefined = undefined;
+	export let use: Expand<Forwarder.Actions> = [];
+</script>
+
+<Render {as} bind:element class={className} {...$$restProps} {use}>
+	{#if $Open}
+		<slot name="overlay" overlay={overlay.action} />
+		<slot name="up-panel" panel={panel.action} {close} />
+	{/if}
+	<slot
+		isOpen={$Open}
+		isDisabled={disabled}
+		overlay={overlay.action}
+		button={button.action}
+		panel={panel.action}
+		{close}
+	/>
+	{#if $Open}
+		<slot name="panel" panel={panel.action} {close} />
+	{/if}
+</Render>
