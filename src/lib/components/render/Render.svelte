@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Action } from 'svelte/action';
+	import type { Forwarder } from '$lib';
 	import { forwardActions } from '@core';
 	import { Bridge } from '$lib/stores';
 	import { onMount } from 'svelte';
@@ -10,7 +10,7 @@
 	export let as: RenderElementTagName = 'slot';
 	export let disabled: Nullable<boolean> = undefined;
 	export let element: HTMLElement | null = null;
-	export let use: [action: Action, parameter?: any][] = [];
+	export let use: Expand<Forwarder.Actions> = [];
 
 	export let Proxy: Bridge = new Bridge();
 

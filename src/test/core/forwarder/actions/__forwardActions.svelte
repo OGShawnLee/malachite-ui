@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { Action } from 'svelte/action';
+	import type { Forwarder } from '$lib';
 	import { forwardActions } from '@core';
 
-	export let use: [Action, any][] = [];
+	export let use: Expand<Forwarder.Actions> = [];
 
 	export let first: Action = () => {};
 	export let firstParam: string = 'James';

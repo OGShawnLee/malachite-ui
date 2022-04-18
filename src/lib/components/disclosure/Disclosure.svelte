@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Disclosure from './state';
 	import { Render } from '@components';
-	import type { Action } from 'svelte/action';
+	import type { Forwarder } from '$lib';
 	import type { Readable, Writable } from 'svelte/store';
 	import { storable } from '@stores';
 	import { isNotStore } from '@predicate';
@@ -28,7 +28,7 @@
 	export { className as class };
 	export let as: RenderElementTagName = 'slot';
 	export let element: HTMLElement | undefined = undefined;
-	export let use: [action: Action, parameter?: any][] = [];
+	export let use: Expand<Forwarder.Actions> = [];
 </script>
 
 <Render {as} class={className} disabled={$Disabled} bind:element {...$$restProps} {use}>

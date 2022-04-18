@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { CONTEXT } from './state';
 	import { Render } from '@components';
-	import type { Action } from 'svelte/action';
 	import type { Forwarder } from '$lib';
 
 	const { Open, button } = CONTEXT.getContext();
@@ -13,7 +12,7 @@
 	export let as: RenderElementTagName = 'button';
 	export let disabled: Nullable<boolean> = undefined;
 	export let element: HTMLElement | undefined = undefined;
-	export let use: [action: Action, parameter?: any][] = [];
+	export let use: Expand<Forwarder.Actions> = [];
 
 	let finalUse: Forwarder.Actions;
 	$: finalUse = [...use, [action]];
