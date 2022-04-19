@@ -13,7 +13,8 @@ export function useContext<C>(configuration: {
 		getContext: <T extends boolean = true>(
 			strict = true as T
 		): [T] extends [true] ? C : C | undefined => {
-			if (!hasContext(name)) throw new Error(`Unable to Find ${name} Context. Did you set it?`);
+			if (strict && !hasContext(name))
+				throw new Error(`Unable to Find ${name} Context. Did you set it?`);
 
 			const value = getContext(name);
 
