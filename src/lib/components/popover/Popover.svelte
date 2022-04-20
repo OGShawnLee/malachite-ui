@@ -6,7 +6,7 @@
 
 	export let forceFocus: Readable<boolean> | boolean = false;
 
-	const { Open, ForceFocus, close, button, overlay, panel } = new Popover({
+	const { Open, ForceFocus, ShowOverlay, close, button, overlay, panel } = new Popover({
 		ForceFocus: {
 			Store: forceFocus,
 			initialValue: false,
@@ -26,8 +26,10 @@
 </script>
 
 <Render {as} bind:element class={className} {...$$restProps} {use}>
-	{#if $Open}
+	{#if $Open && $ShowOverlay}
 		<slot name="overlay" overlay={overlay.action} />
+	{/if}
+	{#if $Open}
 		<slot name="up-panel" panel={panel.action} {close} />
 	{/if}
 	<slot

@@ -1,10 +1,20 @@
 <script lang="ts">
 	import Popover from './state';
+	import { GroupContext } from './Group.state';
 	import { Render } from '@components';
 	import type { Forwarder } from '$lib';
+	import { storable } from '@stores';
 
-	const { Open, overlay } = Popover.getContext();
-	const { Proxy, action } = overlay;
+	const PopoverContext = Popover.getContext(false);
+	const {
+		Open,
+		overlay: { Proxy, action }
+	} = PopoverContext ? PopoverContext : GroupContext.getContext();
+
+	const ShowOverlay = storable({
+		Store: Popover.getContext(false)?.ShowOverlay,
+		initialValue: true
+	});
 
 	let className: Nullable<string> = undefined;
 
@@ -18,7 +28,7 @@
 	$: finalUse = [...use, [action]];
 </script>
 
-{#if $Open}
+{#if $Open && $ShowOverlay}
 	<Render {as} {Proxy} class={className} bind:disabled bind:element {...$$restProps} use={finalUse}>
 		<slot isOpen={$Open} isDisabled={disabled} overlay={action} />
 	</Render>

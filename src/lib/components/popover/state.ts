@@ -1,5 +1,7 @@
+import type Group from './Group.state';
 import type { Store } from '$lib';
-import type { Readable, Updater } from 'svelte/store';
+import { type Readable, type Updater, readable } from 'svelte/store';
+import { GroupContext } from './Group.state';
 import { Component } from '@core';
 import { Bridge, storable, Toggleable } from '@stores';
 import {
@@ -20,7 +22,15 @@ export default class Popover extends Component {
 	protected readonly Overlay = new Bridge();
 
 	readonly Open: Readable<boolean>;
+	readonly ShowOverlay = readable(true, (set) => {
+		if (this.groupClient) {
+			return this.groupClient.Mode.subscribe((mode) => {
+				set(mode === 'UNIQUE');
+			});
+		}
+	});
 	readonly ForceFocus: Store<Readable<boolean>>;
+	readonly groupClient: ReturnType<Group['initClient']> | undefined;
 
 	constructor({ ForceFocus }: Options) {
 		super({ component: 'popover', index: Popover.generateIndex() });
@@ -28,9 +38,12 @@ export default class Popover extends Component {
 		this.Toggleable = new Toggleable({ ForceFocus: this.ForceFocus });
 		this.Open = makeReadable(this.Toggleable);
 
+		this.groupClient = GroupContext.getContext(false)?.initClient(this.Toggleable);
+
 		Popover.Context.setContext({
 			Open: this.Open,
 			ForceFocus: this.ForceFocus,
+			ShowOverlay: this.ShowOverlay,
 			button: this.button,
 			overlay: this.overlay,
 			panel: this.panel,
@@ -59,7 +72,8 @@ export default class Popover extends Component {
 				this.Panel.Name.subscribe((id) => {
 					if (id) element.setAttribute('aria-controls', id);
 					else element.removeAttribute('aria-controls');
-				})
+				}),
+				this.groupClient?.button(element)
 			]
 		});
 	}
@@ -79,11 +93,13 @@ export default class Popover extends Component {
 		return this.defineActionComponent({
 			Bridge: this.Panel,
 			onMount: this.nameChild('panel'),
-			destroy: ({ element }) =>
+			destroy: ({ element }) => [
 				this.Toggleable.panel(element, {
 					plugins: [usePreventInternalFocus],
-					handlers: [handleClickOutside, handleEscapeKey, handleFocusLeave]
-				})
+					handlers: this.groupClient ? [] : [handleClickOutside, handleEscapeKey, handleFocusLeave]
+				}),
+				this.groupClient?.panel(element)
+			]
 		});
 	}
 
@@ -108,5 +124,5 @@ interface Options {
 
 type Context = ExtractContext<
 	Popover,
-	'Open' | 'ForceFocus' | 'button' | 'panel' | 'overlay' | 'close'
+	'Open' | 'ForceFocus' | 'ShowOverlay' | 'button' | 'panel' | 'overlay' | 'close'
 >;
