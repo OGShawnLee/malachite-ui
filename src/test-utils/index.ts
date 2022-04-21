@@ -4,7 +4,7 @@ import type { SpyInstance } from 'vitest';
 import { destroy, generate } from '@utils';
 import { useDOMTraversal } from '@hooks';
 import { notifiable } from '@stores';
-import { isAround, isEmpty, isHTMLElement } from '@predicate';
+import { isAround, isHTMLElement } from '@predicate';
 import { derived, writable } from 'svelte/store';
 
 export function appendChild<T extends Node>(child: T, container: Node = document.body) {
@@ -13,9 +13,12 @@ export function appendChild<T extends Node>(child: T, container: Node = document
 
 export function fuseElementsName(elements: Element[]) {
 	return elements
-		.map((element) => {
-			if (isEmpty(element.id)) throw new Error('Element doest not have a valid id');
-			return element.id;
+		.map(({ id }) => id)
+		.sort((second, first) => {
+			const firstIndex = first.match(/\d+/g)?.[1] || 0;
+			const secondIndex = second.match(/\d+/g)?.[1] || 0;
+
+			return Number(secondIndex) - Number(firstIndex);
 		})
 		.join(' ');
 }
