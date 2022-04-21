@@ -68,6 +68,63 @@ export function defineActionComponent(Settings: {
 	};
 }
 
+export function defineActionComponentWithParams<T>(Settings: {
+	Bridge?: Bridge;
+	onInit?: (context: { Bridge: Bridge }) => void;
+	onMount:
+		| ((context: { element: HTMLElement; parameter: T | undefined; Bridge: Bridge }) => string)
+		| string;
+	onUpdate?: (context: {
+		element: HTMLElement;
+		name: string;
+		parameter: T | undefined;
+		Bridge: Bridge;
+	}) => void;
+	destroy?:
+		| Collectable
+		| ((context: {
+				Bridge: Bridge;
+				element: HTMLElement;
+				name: string;
+				parameter: {
+					initialValue: T | undefined;
+					value: T | undefined;
+				};
+		  }) => Collectable);
+}) {
+	const { Bridge: Shard = new Bridge(), onInit, onMount, onUpdate, destroy } = Settings;
+	onInit?.({ Bridge: Shard });
+	return {
+		Proxy: Shard,
+		action(element: HTMLElement, parameter?: T) {
+			const name = isFunction(onMount) ? onMount({ element, parameter, Bridge: Shard }) : onMount;
+			const initialValue = parameter;
+			const parameterData = { initialValue, value: parameter };
+			return {
+				update(parameter?: T) {
+					if (onUpdate && parameter !== parameterData.value)
+						onUpdate({ Bridge: Shard, element, name, parameter });
+
+					parameterData.value = parameter;
+				},
+				destroy: useCollector({
+					beforeInit: () => [Shard.onMount(element, name)],
+					init: () => {
+						if (isFunction(destroy)) {
+							const collect = destroy({ Bridge: Shard, element, name, parameter: parameterData });
+
+							if (isArray(collect)) return collect;
+							return collect ? [collect] : [];
+						}
+
+						return destroy ?? [];
+					}
+				})
+			};
+		}
+	};
+}
+
 export function* indexGenerator() {
 	let index = 0;
 	while (true) yield index++;

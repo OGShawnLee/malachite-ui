@@ -1,3 +1,4 @@
+export * from './activable';
 export * from './notifiable';
 export * from './storable';
 export * from './toggleable';
