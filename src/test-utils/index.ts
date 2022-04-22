@@ -1,5 +1,5 @@
 import type { Updater } from 'svelte/store';
-import type { Collectable } from '$lib';
+import type { Collectable } from '$lib/types';
 import type { SpyInstance } from 'vitest';
 import { destroy, generate } from '@utils';
 import { useDOMTraversal } from '@hooks';

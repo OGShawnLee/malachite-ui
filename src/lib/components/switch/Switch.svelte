@@ -2,7 +2,7 @@
 	import Switch from './state';
 	import { Render } from '@components';
 	import type { Writable } from 'svelte/store';
-	import type { Forwarder } from '$lib';
+	import type { Forwarder } from '$lib/types';
 	import { isNotStore } from '@predicate';
 
 	export let checked: Writable<boolean> | boolean = false;

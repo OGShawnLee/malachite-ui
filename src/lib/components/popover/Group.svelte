@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Group from './Group.state';
 	import { Render } from '@components';
-	import type { Forwarder } from '$lib';
+	import type { Forwarder } from '$lib/types';
 	import type { Readable } from 'svelte/store';
 	import { storable } from '@stores';
 	import { onMount } from 'svelte';

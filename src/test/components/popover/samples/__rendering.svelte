@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Forwarder } from '$lib';
+	import type { Forwarder } from '$lib/types';
 	import { Popover, PopoverButton, PopoverOverlay, PopoverPanel } from '@components';
 
 	interface ComponentConfig {

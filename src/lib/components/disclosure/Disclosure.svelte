@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Disclosure from './state';
 	import { Render } from '@components';
-	import type { Forwarder } from '$lib';
+	import type { Forwarder } from '$lib/types';
 	import type { Readable, Writable } from 'svelte/store';
 	import { storable } from '@stores';
 	import { isNotStore } from '@predicate';

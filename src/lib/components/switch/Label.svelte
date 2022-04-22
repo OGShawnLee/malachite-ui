@@ -2,7 +2,7 @@
 	import Switch from './state';
 	import { GroupContext } from './Group.state';
 	import { Render } from '@components';
-	import type { Forwarder } from '$lib';
+	import type { Forwarder } from '$lib/types';
 	import { Bridge } from '@stores';
 
 	export let passive = false;

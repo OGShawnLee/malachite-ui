@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Switch from './state';
 	import { Render } from '@components';
-	import type { Forwarder } from '$lib';
+	import type { Forwarder } from '$lib/types';
 	import { Bridge } from '@stores';
 	import { GroupContext } from './Group.state';
 

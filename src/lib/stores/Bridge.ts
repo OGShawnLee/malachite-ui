@@ -1,4 +1,4 @@
-import type { Collectable } from '$lib';
+import type { Collectable } from '$lib/types';
 import { makeReadable } from '@utils';
 import { useCollector, useDataSync, useValidator } from '@hooks';
 import { isDisabled } from '@predicate';

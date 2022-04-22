@@ -1,5 +1,5 @@
 import type Group from './Group.state';
-import type { Store } from '$lib';
+import type { Store } from '$lib/types';
 import { type Readable, type Updater, readable } from 'svelte/store';
 import { GroupContext } from './Group.state';
 import { Component } from '@core';

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Action } from 'svelte/action';
-	import type { Forwarder } from '$lib';
+	import type { Forwarder } from '$lib/types';
 	import { forwardActions } from '@core';
 
 	export let use: Expand<Forwarder.Actions> = [];

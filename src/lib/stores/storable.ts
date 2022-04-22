@@ -1,4 +1,4 @@
-import type { Store } from '$lib';
+import type { Store } from '$lib/types';
 import type { Readable, StartStopNotifier, Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
 import { notifiable } from '@stores/notifiable';
@@ -39,7 +39,7 @@ export function storable<T>(options: {
 			: writable(initialValue, start);
 	}
 
-	function sync(this:void, configuration: { previous: T; value: Readable<T> | T }) {
+	function sync(this: void, configuration: { previous: T; value: Readable<T> | T }) {
 		const { previous, value } = configuration;
 		if (isStore(value)) return;
 		if (isWritable(Store) && previous !== value) Store.set(value);

@@ -1,4 +1,4 @@
-import type { Collectable } from '$lib';
+import type { Collectable } from '$lib/types';
 import { isArray, isFunction, isObject, isPromise } from '@predicate';
 
 export async function destroy(collectable: Collectable) {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { CONTEXT } from './state';
 	import { Render } from '@components';
-	import type { Forwarder } from '$lib';
+	import type { Forwarder } from '$lib/types';
 
 	const { Open, button } = CONTEXT.getContext();
 	const { Proxy, action } = button;

@@ -1,5 +1,5 @@
 import type { Action } from 'svelte/action';
-import type { Forwarder } from '$lib';
+import type { Forwarder } from '$lib/types';
 import { useCleanup } from '@hooks';
 
 type BuiltAction = Forwarder.BuiltAction;

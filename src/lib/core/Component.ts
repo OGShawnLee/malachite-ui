@@ -1,4 +1,4 @@
-import type { Collectable } from '$lib';
+import type { Collectable } from '$lib/types';
 import { Bridge } from '@stores';
 import { useCollector } from '@hooks';
 import { isArray, isFunction, isNumber, isString } from '@predicate';

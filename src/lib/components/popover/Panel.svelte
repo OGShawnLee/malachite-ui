@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Popover from './state';
 	import { Render } from '@components';
-	import type { Forwarder } from '$lib';
+	import type { Forwarder } from '$lib/types';
 
 	const { Open, panel, close } = Popover.getContext();
 	const { Proxy, action } = panel;
