@@ -5,11 +5,13 @@
 	export let open: Writable<boolean> | boolean | undefined = undefined;
 </script>
 
-<Disclosure {open}>
+<Disclosure {open} data-testid="disclosure-root" let:button let:panel let:close>
 	<DisclosureButton as="slot" let:button>
-		<button use:button> Button Element </button>
+		<button use:button> Toggle </button>
 	</DisclosureButton>
-	<DisclosurePanel as="slot" let:panel>
-		<div use:panel>Panel Element</div>
+	<DisclosurePanel as="slot" let:panel let:close>
+		<div use:panel data-testid="disclosure-panel">
+			<button on:click={close}> Close Panel </button>
+		</div>
 	</DisclosurePanel>
 </Disclosure>

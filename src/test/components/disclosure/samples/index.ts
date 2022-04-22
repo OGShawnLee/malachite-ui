@@ -1,10 +1,5 @@
 export { default as ActionComponent } from './[mode]-action-component.svelte';
 export { default as Behaviour } from './[mode]-component.svelte';
-export { default as ForwardActions } from './__forward-actions.svelte';
-export { default as PropOpen } from './[prop]-open.svelte';
-export { default as PropDisabled } from './[prop]-disabled.svelte';
-export { default as SlotComponent } from './[mode]-slot-component.svelte';
-export { default as SlotPropAction } from './[slot-prop]-action.svelte';
-export { default as SlotPropClose } from './[slot-prop]-close.svelte';
-export { default as SlotUpPanel } from './[slot]-up-panel.svelte';
+export { default as ForwardedActions } from './__forwarded-actions.svelte';
 export { default as Rendering } from './__rendering.svelte';
+export { default as SlotComponent } from './[mode]-slot-component.svelte';

@@ -5,7 +5,9 @@
 	export let open: Writable<boolean> | boolean | undefined = undefined;
 </script>
 
-<Disclosure {open} let:button let:panel>
-	<button use:button> Button Element </button>
-	<div slot="panel" use:panel>Panel Element</div>
+<Disclosure {open} data-testid="disclosure-root" let:button let:panel let:close>
+	<button use:button>Toggle</button>
+	<div slot="panel" data-testid="disclosure-panel" use:panel let:close>
+		<button on:click={close}> Close Panel </button>
+	</div>
 </Disclosure>

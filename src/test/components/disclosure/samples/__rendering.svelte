@@ -2,31 +2,24 @@
 	import type { Forwarder } from '$lib';
 	import { Disclosure, DisclosureButton, DisclosurePanel } from '@components';
 
-	export let as: {
-		root?: RenderElementTagName;
-		button?: RenderElementTagName;
-		panel?: RenderElementTagName;
-	} = {};
+	interface ComponentConfig {
+		as?: RenderElementTagName;
+		use?: Forwarder.Actions;
+		rest?: {};
+	}
 
-	export let rest: {
-		root?: {};
-		button?: {};
-		panel?: {};
-	} = {};
-
-	export let use: {
-		root?: Forwarder.Actions;
-		button?: Forwarder.Actions;
-		panel?: Forwarder.Actions;
-	} = {};
+	export let button: ComponentConfig = {};
+	export let panel: ComponentConfig = {};
 </script>
 
-<Disclosure open as={as.root} use={use.root} {...rest.root} data-testid="root">
-	Disclosure
-	<DisclosureButton as={as.button} use={use.button} {...rest.button} data-testid="button"
-		>Button</DisclosureButton
+<Disclosure open>
+	<DisclosureButton
+		data-testid="disclosure-button"
+		as={button?.as}
+		use={button?.use}
+		{...button.rest}
 	>
-	<DisclosurePanel as={as.panel} use={use.panel} {...rest.panel} data-testid="panel">
-		Panel
-	</DisclosurePanel>
+		Toggle
+	</DisclosureButton>
+	<DisclosurePanel data-testid="disclosure-panel" as={panel?.as} use={panel?.use} {...panel.rest} />
 </Disclosure>
