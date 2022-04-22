@@ -8,20 +8,8 @@ export default defineConfig({
 		alias: {
 			$lib: resolve('src/lib'),
 			'$lib/*': resolve('src/lib/*'),
-			'@components': resolve('src/lib/components'),
-			'@components/*': resolve('src/lib/components/*'),
-			'@core': resolve('src/lib/core'),
-			'@core/*': resolve('src/lib/core/*'),
-			'@hooks': resolve('src/lib/hooks'),
-			'@hooks/*': resolve('src/lib/hooks/*'),
-			'@predicate': resolve('src/lib/predicate'),
-			'@predicate/*': resolve('src/lib/predicate/*'),
-			'@stores': resolve('src/lib/stores'),
-			'@stores/*': resolve('src/lib/stores/*'),
 			'@test-utils': resolve('src/test-utils'),
-			'@test-utils/*': resolve('src/test-utils/*'),
-			'@utils': resolve('src/lib/utils'),
-			'@utils/*': resolve('src/lib/utils/*')
+			'@test-utils/*': resolve('src/test-utils/*')
 		}
 	},
 	test: {
