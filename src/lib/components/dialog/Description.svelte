@@ -18,5 +18,5 @@
 </script>
 
 <Render {as} bind:element {Proxy} class={className} {...$$restProps} use={finalUse}>
-	<slot title={action} />
+	<slot description={action} />
 </Render>
