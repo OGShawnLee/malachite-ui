@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Group from './Group.state';
-	import { Render } from '@components';
+	import { Render } from '$lib/components';
 	import type { Forwarder } from '$lib/types';
 	import type { Readable } from 'svelte/store';
-	import { storable } from '@stores';
+	import { storable } from '$lib/stores';
 	import { onMount } from 'svelte';
 
 	export let expanded: Readable<boolean> | boolean = false;

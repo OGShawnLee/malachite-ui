@@ -1,6 +1,12 @@
 <script lang="ts">
 	import type { Readable } from 'svelte/store';
-	import { Popover, PopoverButton, PopoverGroup, PopoverOverlay, PopoverPanel } from '@components';
+	import {
+		Popover,
+		PopoverButton,
+		PopoverGroup,
+		PopoverOverlay,
+		PopoverPanel
+	} from '$lib/components';
 	import { useRange } from '@test-utils';
 
 	export let expanded: Readable<boolean> | boolean = false;

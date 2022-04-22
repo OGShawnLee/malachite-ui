@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Switch from './state';
-	import { Render } from '@components';
+	import { Render } from '$lib/components';
 	import type { Writable } from 'svelte/store';
 	import type { Forwarder } from '$lib/types';
-	import { isNotStore } from '@predicate';
+	import { isNotStore } from '$lib/predicate';
 
 	export let checked: Writable<boolean> | boolean = false;
 

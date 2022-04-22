@@ -1,5 +1,5 @@
 <script>
-	import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '@components';
+	import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '$lib/components';
 
 	let checked = false;
 	let passive = false;

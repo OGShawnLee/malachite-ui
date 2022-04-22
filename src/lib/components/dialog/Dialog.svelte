@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Dialog from './state';
-	import { Render, Portal } from '@components';
+	import { Render, Portal } from '$lib/components';
 	import type { Readable, Writable } from 'svelte/store';
 	import type { Forwarder } from '$lib/types';
-	import { storable } from '@stores';
-	import { isNotStore } from '@predicate';
+	import { storable } from '$lib/stores';
+	import { isNotStore } from '$lib/predicate';
 
 	export let open: Writable<boolean> | boolean = false;
 	export let initialFocus: Readable<Nullable<HTMLElement>> | Nullable<HTMLElement> = undefined;

@@ -1,5 +1,5 @@
-import { notifiable } from '@stores';
-import { isWritable } from '@predicate';
+import { notifiable } from '$lib/stores';
+import { isWritable } from '$lib/predicate';
 import { get, writable } from 'svelte/store';
 
 describe('options', () => {

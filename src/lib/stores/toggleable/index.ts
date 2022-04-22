@@ -1,9 +1,9 @@
 import type { Store } from '$lib/types';
 import type { Readable, Unsubscriber, Writable } from 'svelte/store';
-import { focusFirstElement, makeUnique, setAttribute } from '@utils';
-import { hasTagName, isFocusable, isHTMLElement, isNullish, isWithin } from '@predicate';
-import { useCleanup, useCollector, useDataSync, useListener } from '@hooks';
-import { storable } from '@stores/storable';
+import { focusFirstElement, makeUnique, setAttribute } from '$lib/utils';
+import { hasTagName, isFocusable, isHTMLElement, isNullish, isWithin } from '$lib/predicate';
+import { useCleanup, useCollector, useDataSync, useListener } from '$lib/hooks';
+import { storable } from '$lib/stores/storable';
 import { tick } from 'svelte';
 
 export * from './handler';

@@ -1,5 +1,5 @@
 <script>
-	import { Disclosure, DisclosureButton, DisclosurePanel } from '@components';
+	import { Disclosure, DisclosureButton, DisclosurePanel } from '$lib/components';
 	import { generateActions } from '@test-utils';
 </script>
 

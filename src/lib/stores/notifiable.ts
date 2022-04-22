@@ -1,6 +1,6 @@
 import type { StartStopNotifier, Updater, Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
-import { isStore } from '@predicate';
+import { isStore } from '$lib/predicate';
 
 export function notifiable<T>(options: {
 	initialValue: Writable<T> | T;

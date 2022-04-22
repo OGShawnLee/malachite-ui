@@ -1,6 +1,6 @@
-import * as store from '@utils/store-management';
+import * as store from '$lib/utils/store-management';
 import { derived, get, readable, writable } from 'svelte/store';
-import { isStore, isWritable } from '@predicate';
+import { isStore, isWritable } from '$lib/predicate';
 
 describe('makeReadable', () => {
 	const { makeReadable } = store;

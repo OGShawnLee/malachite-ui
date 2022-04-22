@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Group from './Group.state';
-	import { Render } from '@components';
+	import { Render } from '$lib/components';
 	import type { Forwarder } from '$lib/types';
 
 	const { Checked, label, description } = new Group();

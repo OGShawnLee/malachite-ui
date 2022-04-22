@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
-	import { initIndexGenerator } from '@core';
-	import { isHTMLElement } from '@predicate';
+	import { initIndexGenerator } from '$lib/core';
+	import { isHTMLElement } from '$lib/predicate';
 	import { tick } from 'svelte';
 
 	const generateIndex = initIndexGenerator();

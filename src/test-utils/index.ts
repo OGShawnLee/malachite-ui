@@ -1,10 +1,10 @@
 import type { Updater } from 'svelte/store';
 import type { Collectable } from '$lib/types';
 import type { SpyInstance } from 'vitest';
-import { destroy, generate } from '@utils';
-import { useDOMTraversal } from '@hooks';
-import { notifiable } from '@stores';
-import { isAround, isHTMLElement } from '@predicate';
+import { destroy, generate } from '$lib/utils';
+import { useDOMTraversal } from '$lib/hooks';
+import { notifiable } from '$lib/stores';
+import { isAround, isHTMLElement } from '$lib/predicate';
 import { derived, writable } from 'svelte/store';
 
 export function appendChild<T extends Node>(child: T, container: Node = document.body) {

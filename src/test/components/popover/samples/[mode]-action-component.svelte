@@ -1,5 +1,5 @@
 <script>
-	import { Popover } from '@components';
+	import { Popover } from '$lib/components';
 </script>
 
 <Popover forceFocus let:button let:overlay let:panel let:close>

@@ -1,5 +1,5 @@
-import * as array from '@utils/array';
-import { isArray } from '@predicate';
+import * as array from '$lib/utils/array';
+import { isArray } from '$lib/predicate';
 
 describe('generate', () => {
 	const { generate } = array;

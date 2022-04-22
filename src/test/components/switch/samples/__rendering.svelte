@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Forwarder } from '$lib/types';
-	import { Switch, SwitchDescription, SwitchLabel } from '@components';
+	import { Switch, SwitchDescription, SwitchLabel } from '$lib/components';
 
 	interface ComponentConfig {
 		as?: RenderElementTagName;

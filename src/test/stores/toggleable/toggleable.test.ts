@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
-import { handleClickOutside, handleEscapeKey, handleFocusLeave, Toggleable } from '@stores';
+import { handleClickOutside, handleEscapeKey, handleFocusLeave, Toggleable } from '$lib/stores';
 import { Addons, Base as Component } from './samples';
 import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/svelte';
-import { isBoolean, isObject, isStore } from '@predicate';
+import { isBoolean, isObject, isStore } from '$lib/predicate';
 import { appendChild, useCleaner } from '@test-utils';
 import { get, writable } from 'svelte/store';
 import { useDOMTraversal } from '$lib/hooks';

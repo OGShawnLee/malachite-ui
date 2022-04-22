@@ -1,10 +1,10 @@
-import { Component } from '@core';
-import { Hashable, storable, Toggleable } from '@stores';
+import { Component } from '$lib/core';
+import { Hashable, storable, Toggleable } from '$lib/stores';
 import { type Readable, derived } from 'svelte/store';
-import { useCollector, useContext, useDataSync, useListener, useWindowListener } from '@hooks';
+import { useCollector, useContext, useDataSync, useListener, useWindowListener } from '$lib/hooks';
 import { tick } from 'svelte';
-import { isObject, isWithin } from '@predicate';
-import { makeReadable } from '@utils';
+import { isObject, isWithin } from '$lib/predicate';
+import { makeReadable } from '$lib/utils';
 
 export default class Group extends Component {
 	protected readonly Hash = new Hashable<HTMLElement, PopoverInstance>();

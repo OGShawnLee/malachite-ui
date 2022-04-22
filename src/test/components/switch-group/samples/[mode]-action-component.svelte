@@ -1,5 +1,5 @@
 <script>
-	import { Switch, SwitchGroup } from '@components';
+	import { Switch, SwitchGroup } from '$lib/components';
 	import { useRange } from '@test-utils';
 
 	export let amount = useRange(3);

@@ -1,5 +1,5 @@
 <script>
-	import { Popover, PopoverButton, PopoverGroup, PopoverPanel } from '@components';
+	import { Popover, PopoverButton, PopoverGroup, PopoverPanel } from '$lib/components';
 	import { useRange, useToggle } from '@test-utils';
 	import { fade, fly, scale, slide } from 'svelte/transition';
 

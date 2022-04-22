@@ -1,5 +1,5 @@
 import Base from './__base.svelte';
-import { useDOMTraversal } from '@hooks';
+import { useDOMTraversal } from '$lib/hooks';
 import { cleanup, render } from '@testing-library/svelte';
 import { hasTagName } from '$lib/predicate';
 

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Disclosure from './state';
-	import { Render } from '@components';
+	import { Render } from '$lib/components';
 	import type { Forwarder } from '$lib/types';
 	import type { Readable, Writable } from 'svelte/store';
-	import { storable } from '@stores';
-	import { isNotStore } from '@predicate';
+	import { storable } from '$lib/stores';
+	import { isNotStore } from '$lib/predicate';
 
 	export let open: Writable<boolean> | boolean = false;
 	export let disabled: Readable<Nullable<boolean>> | Nullable<boolean> = undefined;

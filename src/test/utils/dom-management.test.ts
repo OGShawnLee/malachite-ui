@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
-import * as dom from '@utils/dom-management';
-import { hasTagName } from '@predicate';
+import * as dom from '$lib/utils/dom-management';
+import { hasTagName } from '$lib/predicate';
 
 describe('setAttribute', () => {
 	const { setAttribute } = dom;

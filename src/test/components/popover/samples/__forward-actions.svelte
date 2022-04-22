@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Popover, PopoverButton, PopoverOverlay, PopoverPanel } from '@components';
+	import { Popover, PopoverButton, PopoverOverlay, PopoverPanel } from '$lib/components';
 	import { generateActions } from '@test-utils';
 
 	export let showPanel = true;

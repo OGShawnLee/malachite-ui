@@ -1,4 +1,4 @@
-import { isFunction } from '@predicate';
+import { isFunction } from '$lib/predicate';
 
 export function generate<T extends (index: number) => unknown>(
 	length: number,

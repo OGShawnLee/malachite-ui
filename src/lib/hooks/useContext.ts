@@ -1,5 +1,5 @@
 import { getContext, hasContext, setContext } from 'svelte';
-import { LIBRARY_NAME } from '@core';
+import { LIBRARY_NAME } from '$lib/core';
 
 export function useContext<C>(configuration: {
 	component: string;

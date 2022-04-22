@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Switch, SwitchGroup, SwitchLabel } from '@components';
+	import { Switch, SwitchGroup, SwitchLabel } from '$lib/components';
 
 	export let passive: boolean | undefined = undefined;
 </script>

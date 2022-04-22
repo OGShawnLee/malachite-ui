@@ -6,7 +6,7 @@
 		DialogDescription,
 		DialogOverlay,
 		DialogTitle
-	} from '@components';
+	} from '$lib/components';
 	import { useRange } from '@test-utils';
 
 	export let Titles = useRange(1);

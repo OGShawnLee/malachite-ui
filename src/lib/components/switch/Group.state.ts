@@ -1,8 +1,8 @@
 import type Switch from './state';
 import { get, writable } from 'svelte/store';
-import { useContext } from '@hooks';
-import { isObject } from '@predicate';
-import { Bridge } from '@stores';
+import { useContext } from '$lib/hooks';
+import { isObject } from '$lib/predicate';
+import { Bridge } from '$lib/stores';
 
 export default class Group {
 	readonly Checked = writable(false);

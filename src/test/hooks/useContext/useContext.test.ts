@@ -1,10 +1,10 @@
 import Parent from './__parent.svelte';
 import Child from './__child.svelte';
-import { useContext } from '@hooks';
+import { useContext } from '$lib/hooks';
 import { isObject, isString } from '$lib/predicate';
 import { cleanup, render } from '@testing-library/svelte';
 
-afterEach(() => cleanup())
+afterEach(() => cleanup());
 
 const context = useContext({
 	component: 'disclosure',

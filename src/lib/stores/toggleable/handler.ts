@@ -1,4 +1,4 @@
-import type { Toggleable } from '@stores';
+import type { Toggleable } from '$lib/stores';
 import { useWindowListener } from '$lib/hooks';
 import { isWithin } from '$lib/predicate';
 

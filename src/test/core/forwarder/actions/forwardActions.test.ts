@@ -1,7 +1,7 @@
 import Component from './__forwardActions.svelte';
 import { generateActions, generateSpyFunctions } from '@test-utils';
 import { act, cleanup, render } from '@testing-library/svelte';
-import { generate } from '@utils';
+import { generate } from '$lib/utils';
 
 afterEach(() => cleanup());
 

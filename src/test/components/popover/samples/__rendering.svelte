@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Forwarder } from '$lib/types';
-	import { Popover, PopoverButton, PopoverOverlay, PopoverPanel } from '@components';
+	import { Popover, PopoverButton, PopoverOverlay, PopoverPanel } from '$lib/components';
 
 	interface ComponentConfig {
 		as?: RenderElementTagName;

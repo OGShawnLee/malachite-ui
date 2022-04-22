@@ -1,4 +1,4 @@
-import { isNullish } from '@predicate';
+import { isNullish } from '$lib/predicate';
 
 // hasTagName
 export function hasTagName<T extends keyof HTMLElementTagNameMap>(

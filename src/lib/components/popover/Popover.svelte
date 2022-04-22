@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Popover from './state';
-	import { Render } from '@components';
+	import { Render } from '$lib/components';
 	import type { Forwarder } from '$lib/types';
 	import type { Readable } from 'svelte/store';
 

@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom';
 import type { SvelteComponent } from 'svelte';
 import * as samples from './samples';
-import { Disclosure } from '@components';
+import { Disclosure } from '$lib/components';
 import { act, fireEvent, render } from '@testing-library/svelte';
-import { elementTagNames } from '@components/render';
-import { hasTagName } from '@predicate';
+import { elementTagNames } from '$lib/components/render';
+import { hasTagName } from '$lib/predicate';
 import { generateActions, isValidComponentName, useToggle } from '@test-utils';
 
 function initComponent(Component: typeof SvelteComponent, props = {}) {
@@ -165,7 +165,7 @@ describe('Props', () => {
 		it('Should work with a store', async () => {
 			const [open, toggle] = useToggle(true);
 			const { button, getByTestId } = initComponent(Behaviour, { open });
-			const panel = getByTestId("disclosure-panel");
+			const panel = getByTestId('disclosure-panel');
 			expect(button.ariaExpanded).toBe('true');
 			expect(button).toHaveAttribute('aria-controls', panel.id);
 
@@ -304,8 +304,8 @@ describe('Slot Props', () => {
 			'Should expose a close function from the %s scope',
 			async (scope) => {
 				const { button, getByTestId, getByText } = initComponent(Behaviour);
-				await fireEvent.click(button)
-				const panel = getByTestId("disclosure-panel");
+				await fireEvent.click(button);
+				const panel = getByTestId('disclosure-panel');
 				const holder = getByText(`Close ${capitalize(scope)}`);
 
 				await fireEvent.click(holder);

@@ -1,4 +1,4 @@
-import { useValidator } from '@hooks';
+import { useValidator } from '$lib/hooks';
 import { get, writable } from 'svelte/store';
 import { useCleaner } from '@test-utils';
 

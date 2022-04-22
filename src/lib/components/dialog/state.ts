@@ -1,16 +1,16 @@
 import type { Readable, Updater, Writable } from 'svelte/store';
-import { Component } from '@core';
-import { Bridge, Group, Toggleable } from '@stores';
+import { Component } from '$lib/core';
+import { Bridge, Group, Toggleable } from '$lib/stores';
 import {
 	handleClickOutside,
 	handleEscapeKey,
 	handleFocusLeave,
 	usePreventInternalFocus,
 	useFocusTrap
-} from '@stores/toggleable';
-import { focusFirstElement, makeReadable } from '@utils';
-import { useContext, useListener } from '@hooks';
-import { isObject, isHTMLElement } from '@predicate';
+} from '$lib/stores/toggleable';
+import { focusFirstElement, makeReadable } from '$lib/utils';
+import { useContext, useListener } from '$lib/hooks';
+import { isObject, isHTMLElement } from '$lib/predicate';
 import { tick } from 'svelte';
 
 export default class Dialog extends Component {

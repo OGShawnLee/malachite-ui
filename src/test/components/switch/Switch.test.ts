@@ -2,8 +2,8 @@ import '@testing-library/jest-dom';
 import type { SvelteComponent } from 'svelte';
 import * as samples from './samples';
 import { act, fireEvent, render } from '@testing-library/svelte';
-import { Switch } from '@components';
-import { hasTagName } from '@predicate';
+import { Switch } from '$lib/components';
+import { hasTagName } from '$lib/predicate';
 import {
 	fuseElementsName,
 	generateActions,
@@ -11,8 +11,8 @@ import {
 	useRange,
 	useToggle
 } from '@test-utils';
-import { elementTagNames } from '@components/render';
-import { useDOMTraversal } from '@hooks';
+import { elementTagNames } from '$lib/components/render';
+import { useDOMTraversal } from '$lib/hooks';
 
 function initComponent(Component: typeof SvelteComponent, props = {}) {
 	const result = render(Component, { props });

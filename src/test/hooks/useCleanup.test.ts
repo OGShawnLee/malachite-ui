@@ -1,7 +1,7 @@
-import { useCleanup } from '@hooks';
+import { useCleanup } from '$lib/hooks';
 import { generateSpyFunctions } from '@test-utils';
-import { generate } from '@utils';
-import { isFunction } from '@predicate';
+import { generate } from '$lib/utils';
+import { isFunction } from '$lib/predicate';
 
 it('Should return an async function', () => {
 	const func = useCleanup();

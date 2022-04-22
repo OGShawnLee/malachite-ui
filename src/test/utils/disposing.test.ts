@@ -1,6 +1,6 @@
-import * as disposing from '@utils/disposing';
+import * as disposing from '$lib/utils/disposing';
 import { generateSpyFunctions } from '@test-utils';
-import { generate } from '@utils';
+import { generate } from '$lib/utils';
 
 describe('destroy', () => {
 	const { destroy } = disposing;

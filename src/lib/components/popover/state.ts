@@ -2,17 +2,17 @@ import type Group from './Group.state';
 import type { Store } from '$lib/types';
 import { type Readable, type Updater, readable } from 'svelte/store';
 import { GroupContext } from './Group.state';
-import { Component } from '@core';
-import { Bridge, storable, Toggleable } from '@stores';
+import { Component } from '$lib/core';
+import { Bridge, storable, Toggleable } from '$lib/stores';
 import {
 	handleClickOutside,
 	handleEscapeKey,
 	handleFocusLeave,
 	usePreventInternalFocus
-} from '@stores/toggleable';
-import { makeReadable } from '@utils';
-import { useContext, useListener } from '@hooks';
-import { isObject } from '@predicate';
+} from '$lib/stores/toggleable';
+import { makeReadable } from '$lib/utils';
+import { useContext, useListener } from '$lib/hooks';
+import { isObject } from '$lib/predicate';
 
 export default class Popover extends Component {
 	protected readonly Toggleable: Toggleable;

@@ -1,5 +1,5 @@
 import type { Collectable } from '$lib/types';
-import { destroy } from '@utils';
+import { destroy } from '$lib/utils';
 
 export function useCollector(options: {
 	afterInit?: () => Collectable;

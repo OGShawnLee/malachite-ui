@@ -1,7 +1,7 @@
-import type { Toggleable } from '@stores';
-import { getFirstAndLast, getFocusableElements } from '@utils';
-import { useWindowListener } from '@hooks';
-import { isEmpty, isHTMLElement, isWithin } from '@predicate';
+import type { Toggleable } from '$lib/stores';
+import { getFirstAndLast, getFocusableElements } from '$lib/utils';
+import { useWindowListener } from '$lib/hooks';
+import { isEmpty, isHTMLElement, isWithin } from '$lib/predicate';
 
 export function useFocusTrap(this: Toggleable, panel: HTMLElement) {
 	const fallback = document.activeElement;

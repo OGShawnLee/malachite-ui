@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Render from '@components/render';
+	import Render from '$lib/components/render';
 
 	export let as: RenderElementTagName = 'div';
 	export let func: (element: HTMLElement) => void;

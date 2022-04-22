@@ -1,5 +1,5 @@
 <script>
-	import { Popover, PopoverButton, PopoverOverlay, PopoverPanel } from '@components';
+	import { Popover, PopoverButton, PopoverOverlay, PopoverPanel } from '$lib/components';
 	import { fade, slide, scale } from 'svelte/transition';
 	import { sineOut } from 'svelte/easing';
 </script>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Writable } from 'svelte/store';
-	import { Disclosure, DisclosureButton, DisclosurePanel } from '@components';
+	import { Disclosure, DisclosureButton, DisclosurePanel } from '$lib/components';
 
 	export let open: Writable<boolean> | boolean | undefined = undefined;
 	export let showPanel = true;

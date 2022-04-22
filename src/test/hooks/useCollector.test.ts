@@ -1,6 +1,6 @@
 import { generateSpyFunctions } from '@test-utils';
-import { generate } from '@utils';
-import { useCollector } from '@hooks';
+import { generate } from '$lib/utils';
+import { useCollector } from '$lib/hooks';
 
 it('Should return an async function', () => {
 	const func = useCollector({ init: () => [] });

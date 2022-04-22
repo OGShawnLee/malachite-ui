@@ -1,10 +1,10 @@
 import type { Readable, Updater, Writable } from 'svelte/store';
-import { type Activable, Bridge, Group, activable } from '@stores';
-import { Component, defineActionComponentWithParams } from '@core';
+import { type Activable, Bridge, Group, activable } from '$lib/stores';
+import { Component, defineActionComponentWithParams } from '$lib/core';
 import { GroupContext } from './Group.state';
-import { makeReadable, setAttribute } from '@utils';
-import { useContext, useListener } from '@hooks';
-import { hasTagName, isObject } from '@predicate';
+import { makeReadable, setAttribute } from '$lib/utils';
+import { useContext, useListener } from '$lib/hooks';
+import { hasTagName, isObject } from '$lib/predicate';
 import { onMount } from 'svelte';
 
 export default class Switch extends Component {

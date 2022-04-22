@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Readable } from 'svelte/store';
-	import { Popover, PopoverButton, PopoverOverlay, PopoverPanel } from '@components';
+	import { Popover, PopoverButton, PopoverOverlay, PopoverPanel } from '$lib/components';
 
 	export let forceFocus: Readable<boolean> | boolean = true;
 </script>

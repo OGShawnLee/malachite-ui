@@ -1,4 +1,4 @@
-import * as store from '@predicate/store';
+import * as store from '$lib/predicate/store';
 import { derived, readable, writable } from 'svelte/store';
 
 describe('isStore', () => {

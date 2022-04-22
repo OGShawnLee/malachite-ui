@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CONTEXT } from './state';
-	import { Render } from '@components';
+	import { Render } from '$lib/components';
 	import type { Forwarder } from '$lib/types';
 
 	const { Open, button } = CONTEXT.getContext();

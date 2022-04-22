@@ -1,6 +1,6 @@
-import { elementTagNames } from '@components/render';
-import { hasTagName } from '@predicate';
-import { findElement } from '@utils';
+import { elementTagNames } from '$lib/components/render';
+import { hasTagName } from '$lib/predicate';
+import { findElement } from '$lib/utils';
 import {
 	fuseElementsName,
 	generateActions,

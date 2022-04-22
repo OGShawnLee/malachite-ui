@@ -1,7 +1,7 @@
-import * as dom from '@predicate/dom';
+import * as dom from '$lib/predicate/dom';
 import { appendChild, useCleaner } from '@test-utils';
-import { generate } from '@utils';
-import { useListener } from '@hooks';
+import { generate } from '$lib/utils';
+import { useListener } from '$lib/hooks';
 
 const { add, destroy } = useCleaner();
 afterEach(() => destroy());

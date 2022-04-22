@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Writable } from 'svelte/store';
-	import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '@components';
+	import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '$lib/components';
 	import { generateActions, useRange } from '@test-utils';
 
 	export let amount = useRange(3);

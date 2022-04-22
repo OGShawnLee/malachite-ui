@@ -1,4 +1,4 @@
-import { useDataSync } from '@hooks';
+import { useDataSync } from '$lib/hooks';
 import { get, writable } from 'svelte/store';
 import { useCleaner } from '@test-utils';
 

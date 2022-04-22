@@ -1,5 +1,5 @@
-import { storable } from '@stores';
-import { isWritable, isStore } from '@predicate';
+import { storable } from '$lib/stores';
+import { isWritable, isStore } from '$lib/predicate';
 import { derived, get, readable, writable } from 'svelte/store';
 import { useCleaner } from '../../test-utils';
 

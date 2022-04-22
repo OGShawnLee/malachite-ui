@@ -1,12 +1,12 @@
 import '@testing-library/jest-dom';
 import { Behaviour, Overlay } from './samples';
-import { elementTagNames } from '@components/render';
-import { PopoverGroup } from '@components';
+import { elementTagNames } from '$lib/components/render';
+import { PopoverGroup } from '$lib/components';
 import { act, fireEvent, render } from '@testing-library/svelte';
-import { hasTagName } from '@predicate';
+import { hasTagName } from '$lib/predicate';
 import { generateActions } from '@test-utils';
-import { useDOMTraversal } from '@hooks';
-import { findElement } from '@utils';
+import { useDOMTraversal } from '$lib/hooks';
+import { findElement } from '$lib/utils';
 import type { SvelteComponent } from 'svelte';
 
 function initComponent(Component: typeof SvelteComponent, props: { expanded?: boolean } = {}) {

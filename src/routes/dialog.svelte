@@ -5,7 +5,7 @@
 		DialogDescription,
 		DialogOverlay,
 		DialogTitle
-	} from '@components';
+	} from '$lib/components';
 	import { useToggle } from '@test-utils';
 	import { fade, scale } from 'svelte/transition';
 

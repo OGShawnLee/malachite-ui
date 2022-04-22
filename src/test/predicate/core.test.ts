@@ -1,4 +1,4 @@
-import * as core from '@predicate/core';
+import * as core from '$lib/predicate/core';
 
 describe('isArray', () => {
 	const { isArray } = core;

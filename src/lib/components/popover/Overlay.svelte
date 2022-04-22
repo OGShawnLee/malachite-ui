@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Popover from './state';
 	import { GroupContext } from './Group.state';
-	import { Render } from '@components';
+	import { Render } from '$lib/components';
 	import type { Forwarder } from '$lib/types';
-	import { storable } from '@stores';
+	import { storable } from '$lib/stores';
 
 	const PopoverContext = Popover.getContext(false);
 	const {

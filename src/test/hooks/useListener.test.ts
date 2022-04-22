@@ -1,4 +1,4 @@
-import { useListener } from '@hooks';
+import { useListener } from '$lib/hooks';
 import { useCleaner } from '@test-utils';
 import { fireEvent } from '@testing-library/dom';
 

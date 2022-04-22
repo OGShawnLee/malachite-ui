@@ -1,5 +1,5 @@
 import type { Updater, Writable } from 'svelte/store';
-import { storable } from '@stores/storable';
+import { storable } from '$lib/stores/storable';
 
 export function activable(configuration: {
 	Store?: Writable<boolean> | boolean;

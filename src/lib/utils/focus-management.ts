@@ -1,6 +1,6 @@
-import { useDOMTraversal } from '@hooks';
-import { isFocusable, isWithin } from '@predicate';
-import { findElement } from '@utils';
+import { useDOMTraversal } from '$lib/hooks';
+import { isFocusable, isWithin } from '$lib/predicate';
+import { findElement } from '$lib/utils';
 
 export function focusFirstElement(
 	container: HTMLElement,

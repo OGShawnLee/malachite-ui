@@ -1,8 +1,8 @@
 import type { Store } from '$lib/types';
 import type { Readable, StartStopNotifier, Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
-import { notifiable } from '@stores/notifiable';
-import { isStore, isWritable } from '@predicate';
+import { notifiable } from '$lib/stores/notifiable';
+import { isStore, isWritable } from '$lib/predicate';
 
 export function storable<T>(Settings: {
 	Store?: Nullable<Writable<T> | T>;

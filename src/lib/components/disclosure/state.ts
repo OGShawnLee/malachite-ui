@@ -1,9 +1,9 @@
 import type { Readable, Writable } from 'svelte/store';
-import { Component } from '@core';
-import { Bridge, Toggleable } from '@stores';
-import { makeReadable } from '@utils';
-import { useContext } from '@hooks';
-import { isBoolean, isObject } from '@predicate';
+import { Component } from '$lib/core';
+import { Bridge, Toggleable } from '$lib/stores';
+import { makeReadable } from '$lib/utils';
+import { useContext } from '$lib/hooks';
+import { isBoolean, isObject } from '$lib/predicate';
 
 export default class Disclosure extends Component {
 	protected readonly Toggleable: Toggleable;

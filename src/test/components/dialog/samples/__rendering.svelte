@@ -6,7 +6,7 @@
 		DialogDescription,
 		DialogOverlay,
 		DialogTitle
-	} from '@components';
+	} from '$lib/components';
 
 	interface ComponentConfig {
 		as?: RenderElementTagName;

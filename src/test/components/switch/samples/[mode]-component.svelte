@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Switch } from '@components';
+	import { Switch } from '$lib/components';
 	import type { Writable } from 'svelte/store';
 
 	export let checked: Writable<boolean> | boolean | undefined = undefined;

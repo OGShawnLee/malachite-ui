@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
-import Render, { elementTagNames } from '@components/render';
+import Render, { elementTagNames } from '$lib/components/render';
 import { BindElement, BindValue } from './samples';
 import { act, cleanup, render } from '@testing-library/svelte';
-import { hasTagName } from '@predicate';
+import { hasTagName } from '$lib/predicate';
 import { generateActions } from '@test-utils';
 
 afterEach(() => cleanup());

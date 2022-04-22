@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Disclosure, DisclosureButton, DisclosurePanel } from '@components';
+	import { Disclosure, DisclosureButton, DisclosurePanel } from '$lib/components';
 	export let disabled: Nullable<boolean> = undefined;
 </script>
 

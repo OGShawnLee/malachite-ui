@@ -1,5 +1,5 @@
 import type { Readable } from 'svelte/store';
-import { Hashable } from '@stores';
+import { Hashable } from '$lib/stores';
 import { derived } from 'svelte/store';
 
 export class Group {

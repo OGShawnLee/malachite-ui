@@ -1,5 +1,5 @@
 <script>
-	import { Switch, SwitchGroup, SwitchLabel } from '@components';
+	import { Switch, SwitchGroup, SwitchLabel } from '$lib/components';
 	import { useRange } from '@test-utils';
 
 	export let labels = useRange(3);

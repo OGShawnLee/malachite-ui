@@ -1,7 +1,7 @@
 import type { Collectable } from '$lib/types';
-import { Bridge } from '@stores';
-import { useCollector } from '@hooks';
-import { isArray, isFunction, isNumber, isString } from '@predicate';
+import { Bridge } from '$lib/stores';
+import { useCollector } from '$lib/hooks';
+import { isArray, isFunction, isNumber, isString } from '$lib/predicate';
 
 export const LIBRARY_NAME = 'malachite';
 

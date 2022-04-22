@@ -1,4 +1,4 @@
-import { traverse } from '@utils';
+import { traverse } from '$lib/utils';
 
 export function useDOMTraversal(
 	container: Element,

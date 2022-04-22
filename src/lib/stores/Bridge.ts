@@ -1,7 +1,7 @@
 import type { Collectable } from '$lib/types';
-import { makeReadable } from '@utils';
-import { useCollector, useDataSync, useValidator } from '@hooks';
-import { isDisabled } from '@predicate';
+import { makeReadable } from '$lib/utils';
+import { useCollector, useDataSync, useValidator } from '$lib/hooks';
+import { isDisabled } from '$lib/predicate';
 import { writable } from 'svelte/store';
 import { tick } from 'svelte';
 

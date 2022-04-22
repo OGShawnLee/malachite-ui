@@ -5,7 +5,7 @@
 		DialogDescription,
 		DialogOverlay,
 		DialogTitle
-	} from '@components';
+	} from '$lib/components';
 
 	let initialFocus: HTMLElement;
 	export let initialFocusTarget: 'EXTERNAL' | 'DIALOG' | 'OVERLAY' | 'VALID' | null = null;

@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
 import { ActionComponent, Render } from './samples';
-import { Bridge } from '@stores';
-import {elementTagNames} from '@components/render'
-import { isStore, isWritable } from '@predicate';
+import { Bridge } from '$lib/stores';
+import { elementTagNames } from '$lib/components/render';
+import { isStore, isWritable } from '$lib/predicate';
 import { generateSpyFunctions, useCleaner } from '@test-utils';
 import { get } from 'svelte/store';
 import { act, render, waitFor } from '@testing-library/svelte';

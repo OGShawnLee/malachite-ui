@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Render from '@components/render';
-	import { Bridge } from '@stores';
+	import Render from '$lib/components/render';
+	import { Bridge } from '$lib/stores';
 	import { onMount } from 'svelte';
 
 	export let Proxy: Bridge = new Bridge();

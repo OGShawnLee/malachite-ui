@@ -1,5 +1,5 @@
-import { Hashable } from '@stores';
-import { isNumber, isObject, isStore } from '@predicate';
+import { Hashable } from '$lib/stores';
+import { isNumber, isObject, isStore } from '$lib/predicate';
 import { get } from 'svelte/store';
 
 describe('hashable', () => {

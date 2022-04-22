@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom';
 import type { SvelteComponent } from 'svelte';
 import { render } from '@testing-library/svelte';
-import { SwitchGroup } from '@components';
+import { SwitchGroup } from '$lib/components';
 import { ActionComponent, Behaviour } from './samples';
-import { elementTagNames } from '@components/render';
-import { hasTagName } from '@predicate';
+import { elementTagNames } from '$lib/components/render';
+import { hasTagName } from '$lib/predicate';
 import { fuseElementsName, generateActions } from '@test-utils';
 
 function initComponent(Component: typeof SvelteComponent, props = {}) {
@@ -58,9 +58,9 @@ describe('Rendering', () => {
 		const attributes = { tabIndex: '4', title: 'a switch group' };
 		const { getByTestId } = render(SwitchGroup, {
 			props: {
-				as: "div",
+				as: 'div',
 				'data-testid': 'switch-group',
-				...attributes,
+				...attributes
 			}
 		});
 		const group = getByTestId('switch-group');
@@ -73,7 +73,7 @@ describe('Rendering', () => {
 	it('Should be able of forwarding actions', () => {
 		const actions = generateActions(3);
 		const { getByTestId } = render(SwitchGroup, {
-			props: { as:"div", use: actions, 'data-testid': 'switch-group' }
+			props: { as: 'div', use: actions, 'data-testid': 'switch-group' }
 		});
 		const group = getByTestId('switch-group');
 		for (const [action, parameter] of actions) {

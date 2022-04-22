@@ -2,10 +2,10 @@ import '@testing-library/jest-dom';
 import * as samples from './samples';
 import type { SvelteComponent } from 'svelte';
 import { act, cleanup, fireEvent, render } from '@testing-library/svelte';
-import { findElement } from '@utils';
+import { findElement } from '$lib/utils';
 import { writable } from 'svelte/store';
-import { hasTagName } from '@predicate';
-import { elementTagNames } from '@components/render';
+import { hasTagName } from '$lib/predicate';
+import { elementTagNames } from '$lib/components/render';
 import { generateActions, isValidComponentName } from '@test-utils';
 
 afterEach(() => cleanup());

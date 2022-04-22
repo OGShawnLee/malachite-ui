@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import Component from './__base.svelte';
-import * as utils from '@utils/focus-management';
+import * as utils from '$lib/utils/focus-management';
 import { cleanup, render } from '@testing-library/svelte';
 import { findElement } from '$lib/utils';
 import { hasTagName } from '$lib/predicate';

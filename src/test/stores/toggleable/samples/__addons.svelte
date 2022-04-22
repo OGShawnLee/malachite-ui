@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Toggleable } from '@stores';
+	import type { Toggleable } from '$lib/stores';
 
 	export let Open: Toggleable;
 	export let options: { panel?: {} } = {};

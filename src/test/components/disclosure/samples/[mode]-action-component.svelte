@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Writable } from 'svelte/store';
-	import { Disclosure } from '@components';
+	import { Disclosure } from '$lib/components';
 
 	export let open: Writable<boolean> | boolean | undefined = undefined;
 </script>

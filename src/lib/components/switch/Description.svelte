@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Switch from './state';
-	import { Render } from '@components';
+	import { Render } from '$lib/components';
 	import type { Forwarder } from '$lib/types';
-	import { Bridge } from '@stores';
+	import { Bridge } from '$lib/stores';
 	import { GroupContext } from './Group.state';
 
 	const { Checked, initDescription } = Switch.getContext(false) || GroupContext.getContext();
