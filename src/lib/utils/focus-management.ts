@@ -1,3 +1,4 @@
+import type { Nullable } from '$lib/types';
 import { useDOMTraversal } from '$lib/hooks';
 import { isFocusable, isWithin } from '$lib/predicate';
 import { findElement } from '$lib/utils';

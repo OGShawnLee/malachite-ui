@@ -1,6 +1,19 @@
 import type { Writable, Readable, Unsubscriber } from 'svelte/store';
 import type { Action } from 'svelte/action';
 
+type Collectable =
+	| Unsubscriber
+	| Nullable<boolean>
+	| (() => Promise<Collectable>)
+	| Promise<Collectable>
+	| Collectable[]
+	| { destroy: Collectable }
+	| void;
+
+type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+
+type ExtractContext<C, K extends keyof C> = OmitAllThisParameter<Pick<C, K>>;
+
 namespace Forwarder {
 	type Actions = [action: Action, parameter?: any][];
 
@@ -12,14 +25,13 @@ namespace Forwarder {
 	}
 }
 
-type Collectable =
-	| Unsubscriber
-	| Nullable<boolean>
-	| (() => Promise<Collectable>)
-	| Promise<Collectable>
-	| Collectable[]
-	| { destroy: Collectable }
-	| void;
+type Nullable<T> = T | null | undefined;
+
+type OmitAllThisParameter<T> = {
+	[P in keyof T]: OmitThisParameter<T[P]>;
+};
+
+type RenderElementTagName = keyof HTMLElementTagNameMap | 'slot';
 
 type Store<S> = [S] extends [Readable<infer V>]
 	? {

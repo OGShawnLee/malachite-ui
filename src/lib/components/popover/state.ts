@@ -1,4 +1,5 @@
 import type Group from './Group.state';
+import type { ExtractContext } from '$lib/types';
 import type { Store } from '$lib/types';
 import { type Readable, type Updater, readable } from 'svelte/store';
 import { GroupContext } from './Group.state';

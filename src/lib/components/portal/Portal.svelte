@@ -31,6 +31,8 @@
 </script>
 
 <script lang="ts">
+	import type { Nullable } from '$lib/types';
+
 	export let id: Nullable<string> = undefined;
 	export let target: HTMLElement | string = 'body';
 

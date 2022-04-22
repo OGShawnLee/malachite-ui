@@ -1,4 +1,4 @@
-import type { Store } from '$lib/types';
+import type { Nullable, Store } from '$lib/types';
 import type { Readable, StartStopNotifier, Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
 import { notifiable } from '$lib/stores/notifiable';

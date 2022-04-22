@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Group from './Group.state';
 	import { Render } from '$lib/components';
-	import type { Forwarder } from '$lib/types';
+	import type { Forwarder, Nullable, RenderElementTagName } from '$lib/types';
 
 	const { Checked, label, description } = new Group();
 

@@ -1,4 +1,5 @@
 import type Switch from './state';
+import type { ExtractContext } from '$lib/types';
 import { get, writable } from 'svelte/store';
 import { useContext } from '$lib/hooks';
 import { isObject } from '$lib/predicate';

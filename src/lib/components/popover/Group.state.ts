@@ -1,3 +1,4 @@
+import type { ExtractContext, Nullable } from '$lib/types';
 import { Component } from '$lib/core';
 import { Hashable, storable, Toggleable } from '$lib/stores';
 import { type Readable, derived } from 'svelte/store';

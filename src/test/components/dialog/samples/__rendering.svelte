@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Forwarder } from '$lib/types';
+	import type { Forwarder, RenderElementTagName } from '$lib/types';
 	import {
 		Dialog,
 		DialogContent,

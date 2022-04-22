@@ -1,3 +1,4 @@
+import type { Nullable } from '$lib/types';
 import type { Toggleable } from '$lib/stores';
 import { getFirstAndLast, getFocusableElements } from '$lib/utils';
 import { useWindowListener } from '$lib/hooks';

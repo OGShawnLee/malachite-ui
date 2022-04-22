@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Forwarder } from '$lib/types';
+	import type { Forwarder, Nullable, RenderElementTagName } from '$lib/types';
 	import { forwardActions } from '$lib/core';
 	import { Bridge } from '$lib/stores';
 	import { onMount } from 'svelte';

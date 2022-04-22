@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Render from '$lib/components/render';
+	import type { Nullable, RenderElementTagName } from '$lib/types';
 	import { Bridge } from '$lib/stores';
 	import { onMount } from 'svelte';
 

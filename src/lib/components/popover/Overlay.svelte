@@ -2,7 +2,7 @@
 	import Popover from './state';
 	import { GroupContext } from './Group.state';
 	import { Render } from '$lib/components';
-	import type { Forwarder } from '$lib/types';
+	import type { Forwarder, Nullable, RenderElementTagName } from '$lib/types';
 	import { storable } from '$lib/stores';
 
 	const PopoverContext = Popover.getContext(false);

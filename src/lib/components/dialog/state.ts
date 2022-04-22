@@ -1,4 +1,5 @@
 import type { Readable, Updater, Writable } from 'svelte/store';
+import type { ExtractContext, Nullable } from '$lib/types';
 import { Component } from '$lib/core';
 import { Bridge, Group, Toggleable } from '$lib/stores';
 import {

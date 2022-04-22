@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Context } from './state';
 	import { Render } from '$lib/components';
-	import type { Forwarder } from '$lib/types';
+	import type { Forwarder, Nullable, RenderElementTagName } from '$lib/types';
 	import { Bridge } from '$lib/stores';
 
 	const { action, Proxy } = Context.getContext().initDescription({ Description: new Bridge() });

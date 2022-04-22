@@ -1,4 +1,5 @@
 import type { Readable, Updater, Writable } from 'svelte/store';
+import type { ExtractContext } from '$lib/types';
 import { type Activable, Bridge, Group, activable } from '$lib/stores';
 import { Component, defineActionComponentWithParams } from '$lib/core';
 import { GroupContext } from './Group.state';

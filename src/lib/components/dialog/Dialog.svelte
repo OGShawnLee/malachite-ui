@@ -2,7 +2,7 @@
 	import Dialog from './state';
 	import { Render, Portal } from '$lib/components';
 	import type { Readable, Writable } from 'svelte/store';
-	import type { Forwarder } from '$lib/types';
+	import type { Forwarder, Nullable, RenderElementTagName } from '$lib/types';
 	import { storable } from '$lib/stores';
 	import { isNotStore } from '$lib/predicate';
 

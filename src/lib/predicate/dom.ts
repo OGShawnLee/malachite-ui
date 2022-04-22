@@ -1,3 +1,4 @@
+import type { Nullable } from '$lib/types';
 import { isNullish } from '$lib/predicate';
 
 // hasTagName
