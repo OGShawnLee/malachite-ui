@@ -1,5 +1,5 @@
 import type { Readable, Updater, Writable } from 'svelte/store';
-import type { ExtractContext, Nullable } from '$lib/types';
+import type { Expand, ExtractContext, Nullable } from '$lib/types';
 import { Component } from '$lib/core';
 import { Bridge, Group, Toggleable } from '$lib/stores';
 import {
@@ -26,22 +26,13 @@ export default class Dialog extends Component {
 	readonly Open: Readable<boolean>;
 	initialFocus: Nullable<HTMLElement>;
 
-	constructor(Settings: {
-		Store: Writable<boolean> | boolean;
-		initialValue: boolean;
-		notifier: Updater<boolean>;
-		initialFocus: Nullable<HTMLElement>;
-	}) {
+	constructor({ Store, initialFocus, initialValue, notifier }: Expand<Options>) {
 		super({ component: 'dialog', index: Dialog.generateIndex() });
 
-		this.Toggleable = new Toggleable({
-			Open: Settings.Store,
-			initialValue: Settings.initialValue,
-			notifier: Settings.notifier
-		});
+		this.Toggleable = new Toggleable({ Open: Store, initialValue, notifier });
 
 		this.Open = makeReadable(this.Toggleable);
-		this.initialFocus = Settings.initialFocus;
+		this.initialFocus = initialFocus;
 
 		Context.setContext({
 			Open: this.Open,
@@ -165,3 +156,10 @@ type Context = ExtractContext<
 	Dialog,
 	'Open' | 'close' | 'overlay' | 'dialog' | 'content' | 'initTitle' | 'initDescription'
 >;
+
+interface Options {
+	Store: Writable<boolean> | boolean;
+	initialFocus: Nullable<HTMLElement>;
+	initialValue: boolean;
+	notifier: (isOpen: boolean) => void;
+}
