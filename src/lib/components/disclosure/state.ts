@@ -1,7 +1,7 @@
 import type { Readable, Writable } from 'svelte/store';
 import type { ExtractContext, Nullable } from '$lib/types';
 import { Component } from '$lib/core';
-import { Bridge, Toggleable } from '$lib/stores';
+import { Bridge, Toggleable, usePreventInternalFocus } from '$lib/stores';
 import { makeReadable } from '$lib/utils';
 import { useContext } from '$lib/hooks';
 import { isBoolean, isObject } from '$lib/predicate';
@@ -70,7 +70,10 @@ export default class Disclosure extends Component {
 		return this.defineActionComponent({
 			Bridge: this.Panel,
 			onMount: this.nameChild('panel'),
-			destroy: ({ element }) => this.Toggleable.panel(element)
+			destroy: ({ element }) =>
+				this.Toggleable.panel(element, {
+					plugins: [usePreventInternalFocus]
+				})
 		});
 	}
 
