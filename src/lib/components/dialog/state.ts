@@ -9,7 +9,7 @@ import {
 	usePreventInternalFocus,
 	useFocusTrap
 } from '$lib/stores/toggleable';
-import { focusFirstElement, makeReadable } from '$lib/utils';
+import { focusFirstElement, makeReadable, useHideScrollbar } from '$lib/utils';
 import { useContext, useListener } from '$lib/hooks';
 import { isObject, isHTMLElement } from '$lib/predicate';
 import { tick } from 'svelte';
@@ -104,7 +104,8 @@ export default class Dialog extends Component {
 					this.Descriptions.Name.subscribe((id) => {
 						if (id) element.setAttribute('aria-describedby', id);
 						else element.removeAttribute('aria-describedby');
-					})
+					}),
+					useHideScrollbar(makeReadable(this.Toggleable))
 				];
 			}
 		});

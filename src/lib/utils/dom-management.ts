@@ -1,4 +1,5 @@
 import { isHTMLElement } from '$lib/predicate';
+import type { Readable } from 'svelte/store';
 
 export function findElement(
 	container: Document | HTMLElement,
@@ -40,4 +41,12 @@ export function* traverse(container: Element | undefined): Generator<Element, vo
 	for (const element of children) {
 		yield* traverse(element);
 	}
+}
+
+export function useHideScrollbar(Open: Readable<boolean>) {
+	const body = document.body;
+	const initialOverflow = body.style.overflow;
+	return Open.subscribe((isOpen) => {
+		body.style.overflow = isOpen ? 'hidden' : initialOverflow;
+	});
 }
