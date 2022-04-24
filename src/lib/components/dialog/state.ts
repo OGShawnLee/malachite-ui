@@ -17,11 +17,11 @@ import { tick } from 'svelte';
 export default class Dialog extends Component {
 	protected readonly Toggleable: Toggleable;
 
-	protected readonly Overlay: Bridge;
-	protected readonly Dialog: Bridge;
-	protected readonly Content: Bridge;
-	protected readonly Titles: Group;
-	protected readonly Descriptions: Group;
+	protected readonly Overlay = new Bridge();
+	protected readonly Dialog = new Bridge();
+	protected readonly Content = new Bridge();
+	protected readonly Titles = new Group();
+	protected readonly Descriptions = new Group();
 
 	readonly Open: Readable<boolean>;
 	initialFocus: Nullable<HTMLElement>;
@@ -39,12 +39,6 @@ export default class Dialog extends Component {
 			initialValue: Settings.initialValue,
 			notifier: Settings.notifier
 		});
-
-		this.Overlay = new Bridge();
-		this.Dialog = new Bridge();
-		this.Content = new Bridge();
-		this.Titles = new Group();
-		this.Descriptions = new Group();
 
 		this.Open = makeReadable(this.Toggleable);
 		this.initialFocus = Settings.initialFocus;
