@@ -1,6 +1,14 @@
 {
 	"name": "malachite-ui",
 	"version": "0.4.2",
+	"author": {
+		"name": "Edgar Vázquez García",
+		"email": "OGShawnLee@gmail.com",
+		"url": "https://github.com/OGShawnLee"
+	},
+	"repository": {
+		"url": "https://github.com/OGShawnLee/malachite-ui/tree/main"
+	},
 	"scripts": {
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
