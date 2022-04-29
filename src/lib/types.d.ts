@@ -25,6 +25,16 @@ export namespace Forwarder {
 	}
 }
 
+export type NavigationKey =
+	| 'ArrowUp'
+	| 'ArrowRight'
+	| 'ArrowLeft'
+	| 'ArrowDown'
+	| 'Enter'
+	| 'Home'
+	| 'End'
+	| 'Space';
+
 export type Nullable<T> = T | null | undefined;
 
 export type OmitAllThisParameter<T> = {

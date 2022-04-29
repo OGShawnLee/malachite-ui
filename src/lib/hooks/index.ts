@@ -3,6 +3,7 @@ export * from './useCollector';
 export * from './useDataSync';
 export * from './useDOMTraversal';
 export * from './useListener';
+export * from './usePair';
 export * from './useValidator';
 export * from './useContext';
 export * from './useWindowListener';

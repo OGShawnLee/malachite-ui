@@ -55,6 +55,14 @@ export function isPromise(val: unknown): val is Promise<unknown> {
 	return val instanceof Promise;
 }
 
+export function isServer() {
+	try {
+		return !window;
+	} catch {
+		return true;
+	}
+}
+
 export function isString(val: unknown): val is string {
 	return typeof val === 'string' || val instanceof String;
 }

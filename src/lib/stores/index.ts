@@ -5,3 +5,5 @@ export * from './toggleable';
 export * from './Bridge';
 export * from './Group';
 export * from './Hashable';
+export * from './navigable';
+export * from './Ordered';

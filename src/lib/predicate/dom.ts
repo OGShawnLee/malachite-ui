@@ -1,4 +1,4 @@
-import type { Nullable } from '$lib/types';
+import type { NavigationKey, Nullable } from '$lib/types';
 import { isNullish } from '$lib/predicate';
 
 // hasTagName
@@ -28,6 +28,23 @@ export function isFocusable(element: HTMLElement | EventTarget) {
 
 export function isHTMLElement(val: unknown): val is HTMLElement {
 	return val instanceof HTMLElement;
+}
+
+export function isNavigationKey(code: string): code is NavigationKey {
+	return [
+		'ArrowUp',
+		'ArrowRight',
+		'ArrowLeft',
+		'ArrowDown',
+		'End',
+		'Enter',
+		'Home',
+		'Space'
+	].includes(code);
+}
+
+export function isNotDisabled(val: Nullable<EventTarget | HTMLElement>) {
+	return isHTMLElement(val) && !isDisabled(val);
 }
 
 export function isWithin(
