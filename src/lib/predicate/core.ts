@@ -1,3 +1,5 @@
+import type { Expand } from '$lib/types';
+
 export function isAround(num: number, range: { min?: number; max?: number } = {}) {
 	const { min = 0, max = Infinity } = range;
 	return num >= min && num < max;
