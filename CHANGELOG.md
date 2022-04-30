@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/OGShawnLee/malachite-ui/compare/v0.4.0...v0.5.0) (2022-04-30)
+
+
+### Features
+
+* **component:** add tabs component ([d4dfba8](https://github.com/OGShawnLee/malachite-ui/commit/d4dfba83603d8d80e8da26acf4c7d685b91b992a))
+
+
+### Bug Fixes
+
+* **dialog:** expose description action properly ([e093174](https://github.com/OGShawnLee/malachite-ui/commit/e09317454873839c0e3b9e6d05c475eb3ef433db))
+* **dialog:** hide scrollbar while dialog is open ([9b9f5cf](https://github.com/OGShawnLee/malachite-ui/commit/9b9f5cf284095f56e227fdd11b34dfda122d711c))
+* **disclosure:** prevent focusing panel children during outro transition ([72e9097](https://github.com/OGShawnLee/malachite-ui/commit/72e9097f3200cac404ad91786d93a77865845082))
+* **ts:** add missing Expand type ([d9cd128](https://github.com/OGShawnLee/malachite-ui/commit/d9cd128b2f0a7ff9db0e60111b5edc0a96be4da8))
+
 ### [0.4.2](https://github.com/OGShawnLee/malachite-ui/compare/v0.4.0...v0.4.2) (2022-04-24)
 
 ### Bug Fixes
