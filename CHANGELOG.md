@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.1](https://github.com/OGShawnLee/malachite-ui/compare/v0.4.0...v0.5.1) (2022-05-01)
+
+### Bug Fixes
+
+- **package:** export library entry point properly ([8ba97f7](https://github.comOGShawnLee/malachite-ui/commit/8ba97f7699c2c1b4094acfbcbf1b40e0af93a3ff))
+
 ## [0.5.0](https://github.com/OGShawnLee/malachite-ui/compare/v0.4.0...v0.5.0) (2022-04-30)
 
 ### Features
