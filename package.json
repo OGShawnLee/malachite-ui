@@ -25,7 +25,7 @@
 		"release": "standard-version"
 	},
 	"exports": {
-		".": "./index"
+		".": "./index.js"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "next",
