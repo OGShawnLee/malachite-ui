@@ -1,9 +1,9 @@
-import type { Expand, ExtractContext, Nullable, Store } from '$lib/types';
-import { derived, type Readable, type Writable } from 'svelte/store';
+import type { Expand, ExtractContext, Navigable as Nav, Nullable, Store } from '$lib/types';
+import type { Readable, Writable } from 'svelte/store';
 import { Component } from '$lib/core';
 import { Bridge, Hashable, Ordered, Navigable } from '$lib/stores';
 import { useManualSync } from '$lib/stores/addons';
-import { writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import { useCollector, useContext, usePair } from '$lib/hooks';
 import { makeReadable } from '$lib/utils';
 import { isObject } from '$lib/predicate';
@@ -11,7 +11,7 @@ import { onDestroy } from 'svelte';
 
 export default class Tabs extends Component {
 	protected readonly Navigable: Navigable;
-	protected readonly Tabs: Ordered<Navigable.Member>;
+	protected readonly Tabs: Ordered<Nav.Member>;
 	protected readonly Panels = new Hashable<number, PanelInstance>();
 
 	readonly Index: Readable<number>;

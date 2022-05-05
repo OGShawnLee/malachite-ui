@@ -1,1 +1,1 @@
-export * from './navigable/addons';
+export * from './navigable/plugin';
