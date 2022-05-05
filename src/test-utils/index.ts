@@ -132,3 +132,11 @@ export function useRange(initialValue: number, config: { min?: number; max?: num
 		}
 	};
 }
+
+export function waitAWhile(timeout = 1000) {
+	return new Promise<void>((resolve) => {
+		setTimeout(() => {
+			resolve();
+		}, timeout);
+	});
+}

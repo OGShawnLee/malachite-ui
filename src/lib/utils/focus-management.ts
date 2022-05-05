@@ -1,5 +1,5 @@
 import type { Nullable } from '$lib/types';
-import { useDOMTraversal } from '$lib/hooks';
+import { useDOMTraversal, useListener } from '$lib/hooks';
 import { isFocusable, isWithin } from '$lib/predicate';
 import { findElement } from '$lib/utils';
 
@@ -35,4 +35,10 @@ export function getFocusableElements(container: Element, callback?: (child: Elem
 			(child) => callback(child) && isFocusable(child)
 		) as HTMLElement[];
 	return useDOMTraversal(container, isFocusable) as HTMLElement[];
+}
+
+export function preventTabbing(element: HTMLElement) {
+	return useListener(element, 'keydown', (event) => {
+		if (event.code === 'Tab') event.preventDefault();
+	});
 }

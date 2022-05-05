@@ -44,8 +44,13 @@ export default class Navigation<T> extends Finder<T> {
 		};
 	}
 
-	protected async focusElement(index: number, shouldFocus = true) {
+	protected async focusElement(index: number, shouldFocus = this.shouldFocus) {
 		if (shouldFocus) this.primitive.elements.at(index)?.focus();
+	}
+
+	hardSet(index: number, shouldFocus = true) {
+		this.Index.set(index);
+		this.focusElement(index, shouldFocus);
 	}
 
 	set(index: number, shouldFocus = true) {
@@ -53,14 +58,19 @@ export default class Navigation<T> extends Finder<T> {
 			this.Index.set(index);
 			this.focusElement(index, shouldFocus);
 		}
+
+		this.Waiting.set(false);
 	}
 
-	interact(action: number | Updater<number>) {
+	interact(action: number | Updater<number>, focus = this.shouldFocus) {
 		this.TargetIndex.update((index) => {
 			const nextIndex = isFunction(action) ? action(index) : action;
-			this.focusElement(nextIndex);
+			this.focusElement(nextIndex, focus);
 			return nextIndex;
 		});
+
+		if (this.isManual) return;
+		this.Waiting.set(false);
 	}
 
 	navigate(direction: 'BACK' | 'NEXT', updater: (index: number, isOverflowed: boolean) => number) {
@@ -73,12 +83,14 @@ export default class Navigation<T> extends Finder<T> {
 
 	goBack() {
 		this.navigate('BACK', (index, isOverflowed) => {
+			if (isOverflowed && this.isFinite) return index;
 			return isOverflowed ? this.Ordered.size - 1 : index - 1;
 		});
 	}
 
 	goNext() {
 		this.navigate('NEXT', (index, isOverflowed) => {
+			if (isOverflowed && this.isFinite) return index;
 			return isOverflowed ? 0 : index + 1;
 		});
 	}
@@ -93,18 +105,47 @@ export default class Navigation<T> extends Finder<T> {
 
 	handleNextKey(code: 'ArrowDown' | 'ArrowRight', ctrlKey = false) {
 		if (this.isVertical) {
-			return code === 'ArrowDown' && (ctrlKey ? this.goLast() : this.goNext());
+			if (code !== 'ArrowDown') return;
+			if (this.isWaiting) return ctrlKey ? this.goLast() : this.goFirst();
+
+			return ctrlKey ? this.goLast() : this.goNext();
 		}
 
-		if (code === 'ArrowRight') ctrlKey ? this.goLast() : this.goNext();
+		if (code !== 'ArrowRight') return;
+		if (this.isWaiting) return ctrlKey ? this.goLast() : this.goFirst();
+
+		ctrlKey ? this.goLast() : this.goNext();
 	}
 
 	handleBackKey(code: 'ArrowUp' | 'ArrowLeft', ctrlKey = false) {
 		if (this.isVertical) {
-			return code === 'ArrowUp' && (ctrlKey ? this.goFirst() : this.goBack());
+			if (code !== 'ArrowUp') return;
+			if (this.isWaiting) return ctrlKey ? this.goFirst() : this.goLast();
+
+			return ctrlKey ? this.goFirst() : this.goBack();
 		}
 
-		if (code === 'ArrowLeft') ctrlKey ? this.goFirst() : this.goBack();
+		if (code !== 'ArrowLeft') return;
+		if (this.isWaiting) return ctrlKey ? this.goFirst() : this.goLast();
+
+		ctrlKey ? this.goFirst() : this.goBack();
+	}
+
+	handleStartAt() {
+		const startAt = this.startAt;
+		switch (startAt) {
+			case 'AUTO':
+				return;
+			case 'FIRST':
+				return this.goFirst();
+			case 'LAST':
+				return this.goLast();
+			default:
+				const isValidIndex = this.isValidIndex(startAt);
+				return isValidIndex
+					? this.set(startAt, false)
+					: this.findValidIndex({ direction: 'BOUNCE', startAt });
+		}
 	}
 
 	static initNavigationHandler(

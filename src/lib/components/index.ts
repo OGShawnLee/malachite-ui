@@ -1,5 +1,6 @@
 export * from './dialog';
 export * from './disclosure';
+export * from './menu';
 export * from './popover';
 export * from './switch';
 export * from './tabs';

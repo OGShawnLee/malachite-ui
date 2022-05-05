@@ -22,18 +22,18 @@ export default class Finder<T> extends Core<T> {
 		startAt?: number;
 	}) {
 		const { direction, furthest, startAt = this.manualIndex } = options;
-		return this.useValidIndex(() => {
+		return this.useValidIndex((defaultIndex) => {
 			switch (direction) {
 				case 'BACK':
 					if (furthest) return this.findIndexFromStart();
 					const previous = this.findIndexFromEnd(startAt - 1);
 					if (previous > -1) return previous;
-					return this.findIndexFromEnd();
+					return this.isFinite ? defaultIndex : this.findIndexFromEnd();
 				case 'NEXT':
 					if (furthest) return this.findIndexFromEnd();
 					const next = this.findIndexFromStart(startAt + 1);
 					if (next > -1) return next;
-					return this.findIndexFromStart();
+					return this.isFinite ? defaultIndex : this.findIndexFromStart();
 				default:
 					const validIndex = this.findIndexFromStart(startAt + 1);
 					return validIndex >= 0 ? validIndex : this.findIndexFromEnd(startAt - 1);

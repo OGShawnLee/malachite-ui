@@ -1,0 +1,25 @@
+<script lang="ts">
+	import { Context } from './state';
+	import { Render } from '$lib/components';
+	import type { Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+
+	const { Open, items } = Context.getContext();
+	const { Proxy, action } = items;
+
+	let className: Nullable<string> = undefined;
+
+	export { className as class };
+	export let as: RenderElementTagName = 'ul';
+	export let disabled: Nullable<boolean> = undefined;
+	export let element: HTMLElement | undefined = undefined;
+	export let use: Expand<Forwarder.Actions> = [];
+
+	let finalUse: Forwarder.Actions;
+	$: finalUse = [...use, [action]];
+</script>
+
+{#if $Open}
+	<Render {as} {Proxy} class={className} bind:disabled bind:element {...$$restProps} use={finalUse}>
+		<slot isOpen={$Open} isDisabled={disabled ?? false} items={action} />
+	</Render>
+{/if}

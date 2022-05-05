@@ -101,6 +101,14 @@ export class Toggleable {
 				if (hasTagName(button, 'button')) setAttribute(button, ['type', 'button']);
 				else setAttribute(button, ['role', 'button']);
 				return button;
+			},
+			panel: (panel: HTMLElement, { isFocusable }: { isFocusable?: boolean } = {}) => {
+				if (isFocusable)
+					setAttribute(panel, ['tabIndex', '0'], {
+						predicate: () => panel.tabIndex <= -1
+					});
+
+				return panel;
 			}
 		};
 	}
@@ -131,14 +139,15 @@ export class Toggleable {
 		this: Toggleable,
 		element: HTMLElement,
 		options: {
+			isFocusable?: boolean;
 			handlers?: Array<(this: Toggleable, panel: HTMLElement) => Unsubscriber>;
 			plugins?: Array<(this: Toggleable, panel: HTMLElement) => Unsubscriber>;
 			onOpen?: (panel: HTMLElement) => void;
 		} = {}
 	) {
-		const { handlers = [], plugins = [], onOpen } = options;
+		const { isFocusable, handlers = [], plugins = [], onOpen } = options;
 
-		this.primitive.panel = element;
+		this.primitive.panel = this.handleAttributes.panel(element, { isFocusable });
 		return useCollector({
 			beforeCollection: () => {
 				this.primitive.panel = undefined;

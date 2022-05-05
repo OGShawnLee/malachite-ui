@@ -1,9 +1,9 @@
 import Navigation from './Navigation';
 import type { Expand, Navigable as Nav } from '$lib/types';
 import type { Bridge } from '$lib/stores/Bridge';
-import type { Unsubscriber } from 'svelte/store';
 import { useCollector, useListener } from '$lib/hooks';
 import { tick } from 'svelte';
+import type { Unsubscriber } from 'svelte/store';
 import { makeUnique } from '$lib/utils';
 
 export class Navigable<T = {}> extends Navigation<T> {
@@ -13,10 +13,13 @@ export class Navigable<T = {}> extends Navigation<T> {
 
 	listen() {
 		return useCollector({
-			init: () => super.listen(),
+			init: () =>
+				super.listen({
+					beforeIndexSelection: () => this.handleStartAt()
+				}),
 			afterInit: async () => {
 				await tick();
-				if (this.isValidIndex(this.index)) return;
+				if (this.isValidIndex(this.index) || this.isWaiting) return;
 				this.set(this.findValidIndex({ direction: 'BOUNCE' }), false);
 			}
 		});
@@ -30,15 +33,26 @@ export class Navigable<T = {}> extends Navigation<T> {
 		return this.Ordered.add(element, { Active, Selected, isDisabled, element, ...Value });
 	}
 
-	initNavigation(
+	async initNavigation(
 		parent: HTMLElement,
 		options: {
 			handler?: (this: Navigable, parent: HTMLElement) => Unsubscriber;
 			plugins?: Array<(this: Navigable, parent: HTMLElement) => Unsubscriber>;
+			preventTabbing?: boolean;
+			onClose?: (this: Navigable) => void;
 		} = {}
-	): () => Promise<void> {
-		const { handler, plugins = [] } = options;
+	): Promise<() => Promise<void>> {
+		const { handler, plugins = [], preventTabbing, onClose } = options;
+		const tabHandler = preventTabbing
+			? (await import('$lib/utils/focus-management')).preventTabbing
+			: null;
 		return useCollector({
+			beforeCollection: () => {
+				onClose?.bind(this)();
+			},
+			beforeInit: () => {
+				return [tabHandler && tabHandler(parent)];
+			},
 			init: () => [this.Ordered.initOrdering(parent), this.listen()],
 			afterInit: () => {
 				return [
@@ -49,7 +63,12 @@ export class Navigable<T = {}> extends Navigation<T> {
 		});
 	}
 
-	initItem(element: HTMLElement, { Bridge, Value }: { Bridge: Bridge; Value: T & Nav.Item }) {
+	initItem(
+		element: HTMLElement,
+		{ Bridge, Value, ...rest }: { Bridge: Bridge; Value: T & Nav.Item; focusOnSelection?: boolean }
+	) {
+		const { focusOnSelection = true } = rest;
+
 		const set = (index: number) => this.set(index, false);
 		const { Index } = this.add(element, { Bridge, Value });
 		let index = 0;
@@ -73,7 +92,7 @@ export class Navigable<T = {}> extends Navigation<T> {
 						set(this.findValidIndex({ direction: 'BOUNCE', startAt: index }));
 					}
 				}),
-				useListener(element, 'click', () => this.set(index))
+				useListener(element, 'click', () => this.set(index, focusOnSelection))
 			]
 		});
 	}

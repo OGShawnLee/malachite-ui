@@ -11,19 +11,21 @@ export default class Core<T> extends Initialiser<T> {
 		super(Options);
 	}
 
-	listen() {
+	listen({ beforeIndexSelection }: { beforeIndexSelection?: (this: Core<T>) => void } = {}) {
 		const sync = useDataSync(this.primitive);
 		return useCollector({
+			beforeInit: () => [
+				sync(this.Ordered.Children, 'elements'),
+				sync(this.Manual, 'isManual', (isManual) => {
+					this.TargetIndex = this[isManual ? 'ManualIndex' : 'Index'];
+				}),
+				sync(this.Vertical, 'isVertical'),
+				sync(this.Waiting, 'isWaiting'),
+				sync(this.Finite, 'isFinite')
+			],
 			init: () => {
-				return [
-					sync(this.Index, 'index'),
-					sync(this.Manual, 'isManual', (isManual) => {
-						this.TargetIndex = this[isManual ? 'ManualIndex' : 'Index'];
-					}),
-					sync(this.ManualIndex, 'manualIndex'),
-					sync(this.Vertical, 'isVertical'),
-					sync(this.Ordered.Children, 'elements')
-				];
+				beforeIndexSelection?.bind(this)();
+				return [sync(this.Index, 'index'), sync(this.ManualIndex, 'manualIndex')];
 			},
 			afterInit: () => {
 				return [sync(this.Active, 'active'), sync(this.Selected, 'selected')];
@@ -32,29 +34,35 @@ export default class Core<T> extends Initialiser<T> {
 	}
 
 	listenActive(
-		callback: (context: {
+		callback?: (context: {
 			active: [HTMLElement, T & Member] | undefined;
 			previous: [HTMLElement, T & Member] | undefined;
 		}) => void
 	) {
-		return this.useListenMember('Active', (current, previous) => {
-			callback({ active: current, previous });
-		});
+		if (callback)
+			return this.useListenMember('Active', (current, previous) => {
+				callback({ active: current, previous });
+			});
+
+		return this.useListenMember('Active', () => {});
 	}
 
 	listenSelected(
-		callback: (context: {
+		callback?: (context: {
 			selected: [HTMLElement, T & Member] | undefined;
 			previous: [HTMLElement, T & Member] | undefined;
 		}) => void
 	) {
-		return this.useListenMember('Selected', (current, previous) => {
-			callback({ selected: current, previous });
-		});
+		if (callback)
+			return this.useListenMember('Selected', (current, previous) => {
+				callback({ selected: current, previous });
+			});
+
+		return this.useListenMember('Selected', () => {});
 	}
 
 	isOverflowed(direction: 'BACK' | 'NEXT') {
-		const { manualIndex, length } = this;
+		const { length, manualIndex } = this;
 		return { BACK: manualIndex - 1 < 0, NEXT: manualIndex + 1 >= length }[direction];
 	}
 

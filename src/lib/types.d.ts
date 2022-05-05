@@ -1,6 +1,6 @@
 import type { Writable, Readable, Unsubscriber } from 'svelte/store';
 import type { Action } from 'svelte/action';
-import type { Ordered } from '$lib/stores/Ordered'
+import type { Ordered } from '$lib/stores/Ordered';
 
 export type Collectable =
 	| Unsubscriber
@@ -48,17 +48,25 @@ export namespace Navigable {
 		Index?: Writable<number> | number;
 		Manual?: Readable<boolean> | boolean;
 		Vertical?: Readable<boolean> | boolean;
+		ShouldWait?: Readable<boolean> | boolean;
+		Finite?: Readable<boolean> | boolean;
+		shouldFocus?: boolean;
+		startAt?: StartAt;
 	} & { Ordered: Ordered<T & Member> };
 
 	interface Primitive<T> {
 		active: [HTMLElement, T & Member] | undefined;
 		elements: HTMLElement[];
 		index: number;
+		isFinite: boolean;
 		isManual: boolean;
 		isVertical: boolean;
+		isWaiting: boolean;
 		manualIndex: number;
 		selected: [HTMLElement, T & Member] | undefined;
 	}
+
+	export type StartAt = 'AUTO' | 'FIRST' | 'LAST' | number;
 }
 
 export type NavigationKey =
