@@ -705,7 +705,7 @@ describe('Rendering', () => {
 	});
 });
 
-const { ActionComponent, IsSelected } = samples;
+const { ActionComponent, IsActive, IsSelected } = samples;
 describe('Slot Props', () => {
 	describe('TabGroup', () => {
 		it('Should expose the tabList action', async () => {
@@ -768,6 +768,38 @@ describe('Slot Props', () => {
 				expect(tab).toHaveAttribute('aria-controls', panel.id);
 				expect(panel).toHaveAttribute('aria-labelledby', tab.id);
 			}
+		});
+
+		describe('isActive', () => {
+			it('Should expose the current active state', async () => {
+				const { getAllByTestId, tabList, tabs } = initComponent(IsActive);
+				const holders = getAllByTestId('tab-isActive-holder');
+				expect(holders[0]).toHaveTextContent('true');
+				expect(tabs[0].ariaSelected).toBe('true');
+
+				await fireEvent.keyDown(tabList, { code: 'ArrowRight' });
+				expect(holders[1]).toHaveTextContent('true');
+				expect(tabs[1].ariaSelected).toBe('true');
+
+				await fireEvent.keyDown(tabList, { code: 'ArrowRight' });
+				expect(holders[2]).toHaveTextContent('true');
+				expect(tabs[2].ariaSelected).toBe('true');
+			});
+
+			it('Should be true for the currently focused Tab in Manual Mode', async () => {
+				const { getAllByTestId, tabList, tabs } = initComponent(IsActive, { manual: true });
+				const holders = getAllByTestId('tab-isActive-holder');
+				expect(holders[0]).toHaveTextContent('true');
+				expect(tabs[0].ariaSelected).toBe('true');
+
+				await fireEvent.keyDown(tabList, { code: 'ArrowRight' });
+				expect(holders[1]).toHaveTextContent('true');
+				expect(tabs[0].ariaSelected).toBe('true');
+
+				await fireEvent.keyDown(tabList, { code: 'ArrowRight' });
+				expect(holders[2]).toHaveTextContent('true');
+				expect(tabs[0].ariaSelected).toBe('true');
+			});
 		});
 
 		describe('isSelected', () => {

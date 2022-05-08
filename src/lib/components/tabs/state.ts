@@ -72,6 +72,7 @@ export default class Tabs extends Component {
 						});
 					}
 				}),
+				this.Navigable.listenActive(),
 				this.Navigable.listenSelected(({ selected, previous }) => {
 					if (selected) {
 						const [element] = selected;

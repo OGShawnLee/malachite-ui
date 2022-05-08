@@ -99,4 +99,41 @@
 			</div>
 		</TabGroup>
 	</section>
+
+	<section>
+		<TabGroup manual let:tabList let:tabPanels>
+			<div use:tabList>
+				<Tab as="slot" let:tab let:isActive let:isSelected>
+					<button use:tab class="focus:(ring-2 ring-black)" class:text-green-400={isSelected}>
+						Tab 1 {isSelected}
+						{isActive}
+					</button>
+				</Tab>
+				<Tab as="slot" let:tab let:isActive let:isSelected>
+					<button use:tab class="focus:(ring-2 ring-black)" class:text-green-400={isSelected}>
+						Tab 2 {isSelected}
+						{isActive}
+					</button>
+				</Tab>
+				<Tab as="slot" let:tab let:isActive let:isSelected>
+					<button use:tab class="focus:(ring-2 ring-black)" class:text-green-400={isSelected}>
+						Tab 3 {isSelected}
+						{isActive}
+					</button>
+				</Tab>
+				<Tab as="slot" let:tab let:isActive let:isSelected>
+					<button use:tab class="focus:(ring-2 ring-black)" class:text-green-400={isSelected}>
+						Tab 4 {isSelected}
+						{isActive}
+					</button>
+				</Tab>
+			</div>
+			<div use:tabPanels>
+				<TabPanel>Panel 1</TabPanel>
+				<TabPanel>Panel 2</TabPanel>
+				<TabPanel>Panel 3</TabPanel>
+				<TabPanel>Panel 4</TabPanel>
+			</div>
+		</TabGroup>
+	</section>
 </main>

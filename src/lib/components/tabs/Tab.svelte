@@ -7,7 +7,7 @@
 	const Proxy = new Bridge();
 	const tab = Context.getContext().initTab(Proxy).action;
 
-	const { Disabled, Selected } = Proxy;
+	const { Active, Disabled, Selected } = Proxy;
 
 	let className: Nullable<string> = undefined;
 	export { className as class };
@@ -21,5 +21,5 @@
 </script>
 
 <Render {as} {Proxy} bind:element bind:disabled class={className} use={finalUse} {...$$restProps}>
-	<slot isDisabled={$Disabled ?? false} isSelected={$Selected} {tab} />
+	<slot isDisabled={$Disabled ?? false} isActive={$Active} isSelected={$Selected} {tab} />
 </Render>
