@@ -13,6 +13,8 @@ declare const __propDef: {
 		use?: [action: import('svelte/action').Action<HTMLElement, any>, parameter?: any][] | undefined;
 	};
 	events: {
+		click: MouseEvent;
+	} & {
 		[evt: string]: CustomEvent<any>;
 	};
 	slots: {

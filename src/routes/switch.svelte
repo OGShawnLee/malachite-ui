@@ -16,6 +16,7 @@
 			bind:checked
 			class="{checked ? 'bg-cyan-900' : 'bg-cyan-700'}
 		  relative inline-flex flex-shrink-0 h-[38px] w-[74px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 outline-none focus:(ring-1 ring-black)"
+			on:click={console.log}
 		>
 			<span class="sr-only">Toggle Color Theme</span>
 			<span

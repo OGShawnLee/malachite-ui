@@ -263,6 +263,17 @@ describe('Behaviour', () => {
 	});
 });
 
+describe('Events', () => {
+	it('Should forward click events', async () => {
+		const click = vi.fn<[MouseEvent]>(() => {});
+		const { getByTestId } = render(Behaviour, { props: { click } });
+		const button = getByTestId('switch-root');
+		await fireEvent.click(button);
+		expect(click).toBeCalled();
+		expect(click.mock.calls[0][0]).toBeInstanceOf(MouseEvent);
+	});
+});
+
 describe('Multiple', () => {
 	const { Multiple } = samples;
 

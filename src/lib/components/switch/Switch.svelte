@@ -29,7 +29,16 @@
 	$: finalUse = [...use, [action]];
 </script>
 
-<Render {as} bind:element {Proxy} class={className} bind:disabled {...$$restProps} use={finalUse}>
+<Render
+	{as}
+	bind:element
+	{Proxy}
+	class={className}
+	bind:disabled
+	{...$$restProps}
+	use={finalUse}
+	on:click
+>
 	<slot
 		isChecked={$Checked}
 		isDisabled={disabled}
