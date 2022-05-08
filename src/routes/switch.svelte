@@ -14,8 +14,10 @@
 	<div class="grid grid-cols-4 gap-8">
 		<Switch
 			bind:checked
-			class="{checked ? 'bg-cyan-900' : 'bg-cyan-700'}
-		  relative inline-flex flex-shrink-0 h-[38px] w-[74px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 outline-none focus:(ring-1 ring-black)"
+			class={{
+				base: 'relative inline-flex flex-shrink-0 h-[38px] w-[74px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 outline-none focus:(ring-1 ring-black)',
+				checked: { on: 'bg-cyan-900', off: 'bg-cyan-700' }
+			}}
 			on:click={console.log}
 		>
 			<span class="sr-only">Toggle Color Theme</span>
@@ -83,9 +85,10 @@
 				Change Theme from Dark to Light and vice versa
 			</SwitchDescription>
 			<Switch
-				class="{isChecked
-					? 'bg-rose-900'
-					: 'bg-rose-700'} relative inline-flex flex-shrink-0 h-[38px] w-[74px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 outline-none focus:(ring-1 ring-black)"
+				class={{
+					base: 'relative inline-flex flex-shrink-0 h-[38px] w-[74px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 outline-none focus:(ring-1 ring-black)',
+					checked: { on: 'bg-rose-900', off: 'bg-rose-700' }
+				}}
 			>
 				<span
 					aria-hidden="true"

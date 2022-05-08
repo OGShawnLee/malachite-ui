@@ -1,10 +1,11 @@
 <script lang="ts">
 	import Group from './Group.state';
 	import { Render } from '$lib/components';
-	import type { Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+	import type { ClassName, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
 	import type { Readable } from 'svelte/store';
 	import { storable } from '$lib/stores';
 	import { onMount } from 'svelte';
+	import { useClassNameResolver } from '$lib/hooks';
 
 	export let expanded: Readable<boolean> | boolean = false;
 
@@ -18,16 +19,19 @@
 
 	const { AllClosed, AllOpen, Open, overlay } = State;
 
-	export let className: Nullable<string> = undefined;
+	export let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
 
 	export { className as class };
 	export let as: RenderElementTagName = 'div';
 	export let element: HTMLElement | undefined = undefined;
 	export let disabled: Nullable<boolean> = undefined;
 	export let use: Expand<Forwarder.Actions> = [];
+
+	$: resolve = useClassNameResolver(className);
+	$: finalClassName = resolve({ isDisabled: disabled ?? false, isOpen: $Open });
 </script>
 
-<Render {as} bind:element class={className} {use} {...$$restProps}>
+<Render {as} bind:element class={finalClassName} {use} {...$$restProps}>
 	{#if $Open}
 		<slot name="overlay" overlay={overlay.action} />
 	{/if}

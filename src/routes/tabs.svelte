@@ -1,5 +1,6 @@
-<script>
+<script lang="ts">
 	import { Tab, TabGroup, TabPanel } from '$lib/components';
+	import { useClassNameResolver } from '$lib/hooks';
 	import { useRange, useToggle } from '@test-utils';
 
 	const range = useRange(6, { min: 0 });
@@ -9,6 +10,14 @@
 	let [vertical, toggleVertical] = useToggle(false);
 
 	let index = 69;
+
+	const className = useClassNameResolver<'isActive' | 'isDisabled' | 'isSelected'>({
+		base: 'px-6 py-2 font-medium focus:(ring-2 ring-black)',
+		active: 'text-green-400',
+		disabled: 'opacity-40',
+		selected: 'bg-green-800',
+		dual: 'bg-amber-600 text-white'
+	});
 </script>
 
 <input type="number" bind:value={index} />
@@ -133,6 +142,21 @@
 				<TabPanel>Panel 2</TabPanel>
 				<TabPanel>Panel 3</TabPanel>
 				<TabPanel>Panel 4</TabPanel>
+			</div>
+		</TabGroup>
+	</section>
+
+	<section>
+		<TabGroup manual let:tabList let:tabPanels>
+			<div use:tabList>
+				<Tab class={className}>Tab 1</Tab>
+				<Tab class={className}>Tab 2</Tab>
+				<Tab class={className} disabled>Tab 3</Tab>
+			</div>
+			<div use:tabPanels>
+				<TabPanel>Panel 1</TabPanel>
+				<TabPanel>Panel 2</TabPanel>
+				<TabPanel>Panel 3</TabPanel>
 			</div>
 		</TabGroup>
 	</section>

@@ -2,9 +2,10 @@
 	import Tabs from './state';
 	import { Render } from '$lib/components';
 	import type { Readable } from 'svelte/store';
-	import type { Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+	import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
 	import { storable } from '$lib/stores';
 	import { isNotStore } from '$lib/predicate';
+	import { useClassNameResolver } from '$lib/hooks';
 
 	export let index = 0;
 	export let manual: Readable<boolean> | boolean = false;
@@ -27,14 +28,18 @@
 	$: ShouldOrder.sync({ previous: $ShouldOrder, value: order });
 	$: Vertical.sync({ previous: $Vertical, value: vertical });
 
-	let className: Nullable<string> = undefined;
+	let className: ClassName<'isDisabled'> = undefined;
+
 	export { className as class };
 	export let as: RenderElementTagName = 'div';
 	export let disabled: Nullable<boolean> = undefined;
 	export let element: HTMLElement | undefined = undefined;
 	export let use: Expand<Forwarder.Actions> = [];
+
+	$: resolve = useClassNameResolver(className);
+	$: finalClassName = resolve({ isDisabled: disabled ?? false });
 </script>
 
-<Render {as} bind:element {disabled} class={className} {use} {...$$restProps}>
+<Render {as} bind:element {disabled} class={finalClassName} {use} {...$$restProps}>
 	<slot isDisabled={disabled} tabList={tabList.action} tabPanels={tabPanels.action} />
 </Render>

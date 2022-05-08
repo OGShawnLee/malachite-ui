@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { Context } from './state';
 	import { Render } from '$lib/components';
-	import type { Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+	import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+	import { useClassNameResolver } from '$lib/hooks';
 
 	const { Proxy, action } = Context.getContext().tabPanels;
 
-	let className: Nullable<string> = undefined;
+	let className: ClassName<'isDisabled'> = undefined;
+
 	export { className as class };
 	export let as: RenderElementTagName = 'div';
 	export let element: HTMLElement | undefined = undefined;
@@ -14,8 +16,11 @@
 
 	let finalUse: Forwarder.Actions;
 	$: finalUse = [...use, [action]];
+
+	$: resolve = useClassNameResolver(className);
+	$: finalClass = resolve({ isDisabled: disabled ?? false });
 </script>
 
-<Render {as} {Proxy} bind:element bind:disabled class={className} use={finalUse} {...$$restProps}>
+<Render {as} {Proxy} bind:element bind:disabled class={finalClass} use={finalUse} {...$$restProps}>
 	<slot isDisabled={disabled ?? false} tabPanels={action} />
 </Render>

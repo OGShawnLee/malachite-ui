@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { CONTEXT } from './state';
 	import { Render } from '$lib/components';
-	import type { Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+	import type { ClassName, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+	import { useClassNameResolver } from '$lib/hooks';
 
 	const { Open, button } = CONTEXT.getContext();
 	const { Proxy, action } = button;
 
-	let className: Nullable<string> = undefined;
+	let className: ClassName<'isDisabled'> = undefined;
 
 	export { className as class };
 	export let as: RenderElementTagName = 'button';
@@ -16,8 +17,19 @@
 
 	let finalUse: Forwarder.Actions;
 	$: finalUse = [...use, [action]];
+
+	$: resolve = useClassNameResolver(className);
+	$: finalClassName = resolve({ isDisabled: disabled ?? false });
 </script>
 
-<Render {as} {Proxy} class={className} bind:disabled bind:element {...$$restProps} use={finalUse}>
+<Render
+	{as}
+	{Proxy}
+	class={finalClassName}
+	bind:disabled
+	bind:element
+	{...$$restProps}
+	use={finalUse}
+>
 	<slot isOpen={$Open} isDisabled={disabled} button={action} />
 </Render>

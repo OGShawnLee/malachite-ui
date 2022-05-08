@@ -15,7 +15,12 @@
 		Expanded {$expanded}
 	</button>
 
-	<PopoverGroup as="section" class="flex flex-col gap-4" {expanded} let:allOpen>
+	<PopoverGroup
+		as="section"
+		class={{ base: 'flex flex-col gap-4', open: { on: 'bg-light-900', off: 'bg-light-300' } }}
+		{expanded}
+		let:allOpen
+	>
 		<h2 class="pl-8 | text-xl font-medium">Component Popover Group {allOpen}</h2>
 		<div class="grid grid-cols-4 gap-4">
 			{#each $range as index}

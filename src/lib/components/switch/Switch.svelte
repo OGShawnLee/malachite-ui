@@ -2,8 +2,9 @@
 	import Switch from './state';
 	import { Render } from '$lib/components';
 	import type { Writable } from 'svelte/store';
-	import type { Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+	import type { ClassName, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
 	import { isNotStore } from '$lib/predicate';
+	import { useClassNameResolver } from '$lib/hooks';
 
 	export let checked: Writable<boolean> | boolean = false;
 
@@ -15,7 +16,7 @@
 
 	$: sync({ previous: $Checked, value: checked });
 
-	let className: Nullable<string> = undefined;
+	let className: ClassName<'isDisabled' | 'isChecked'> = undefined;
 
 	export { className as class };
 	export let as: RenderElementTagName = 'button';
@@ -27,13 +28,16 @@
 
 	let finalUse: Forwarder.Actions;
 	$: finalUse = [...use, [action]];
+
+	$: resolve = useClassNameResolver(className);
+	$: finalClassName = resolve({ isChecked: $Checked, isDisabled: disabled ?? false });
 </script>
 
 <Render
 	{as}
 	bind:element
 	{Proxy}
-	class={className}
+	class={finalClassName}
 	bind:disabled
 	{...$$restProps}
 	use={finalUse}

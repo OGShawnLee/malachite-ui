@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Menu, MenuButton, MenuItem, MenuItems } from '$lib';
+	import { useClassNameResolver } from '$lib/hooks';
 	import { useToggle } from '@test-utils';
 	import { fade } from 'svelte/transition';
 
@@ -14,41 +15,57 @@
 	function doSuff(this: HTMLElement) {
 		console.log(this.textContent);
 	}
+
+	const className = useClassNameResolver<'isDisabled' | 'isSelected'>({
+		base: 'px-6 py-2 cursor-pointer',
+		disabled: 'opacity-40',
+		selected: 'bg-cyan-400'
+	});
 </script>
 
-<button on:click={toggleHorizontal}>
+<button class="px-6 py-2 font-medium" on:click={toggleHorizontal}>
 	Toggle Horizontal {$horizontal}
 </button>
-<button on:click={toggleFinite}>
+<button class="px-6 py-2 font-medium" on:click={toggleFinite}>
 	Toggle Finite {$finite}
 </button>
 
 <Menu as="div" class="flex flex-col gap-6" {horizontal} {finite}>
-	<MenuButton class="px-6 py-2 font-medium">Toggle</MenuButton>
+	<MenuButton class={{ base: 'px-6 py-2 font-medium', open: 'bg-cyan-200' }}>Toggle</MenuButton>
 	<MenuItems class="flex flex-col gap-3">
-		<MenuItem class="px-6 py-2 font-medium" on:click={doSuff}>Activate</MenuItem>
-		<MenuItem class="px-6 py-2 font-medium opacity-40" disabled on:click={doSuff}>Delete</MenuItem>
-		<MenuItem class="px-6 py-2 font-medium" on:click={doSuff}>Edit</MenuItem>
-		<MenuItem class="px-6 py-2 font-medium opacity-40" disabled on:click={doSuff}>Nuke</MenuItem>
+		<MenuItem class={className} on:click={doSuff}>Activate</MenuItem>
+		<MenuItem class={className} disabled on:click={doSuff}>Delete</MenuItem>
+		<MenuItem class={className} on:click={doSuff}>Edit</MenuItem>
+		<MenuItem class={className} disabled on:click={doSuff}>Nuke</MenuItem>
 	</MenuItems>
 </Menu>
 
-<button on:click={togglePrimitiveHorizontal}>
+<button class="px-6 py-2 font-medium" on:click={togglePrimitiveHorizontal}>
 	Toggle Horizontal {primitiveHorizontal}
 </button>
 <Menu as="div" class="flex flex-col gap-6" horizontal={primitiveHorizontal} let:items>
-	<MenuButton class="px-6 py-2 font-medium">Toggle</MenuButton>
+	<MenuButton
+		class={{ base: 'px-6 py-2 font-medium', open: { on: 'bg-cyan-200', off: 'bg-gray-300' } }}
+	>
+		Toggle
+	</MenuButton>
 	<div slot="items" class="flex flex-col gap-3" use:items transition:fade>
-		<MenuItem class="px-6 py-2 font-medium opacity-40" disabled let:isSelected>
+		<MenuItem class={className} disabled let:isSelected>
 			Activate {isSelected}
 		</MenuItem>
-		<MenuItem class="px-6 py-2 font-medium" let:isSelected>
+		<MenuItem
+			class={({ isSelected }) => `px-6 py-2 font-medium ${isSelected ? 'bg-red-400' : ''}`}
+			let:isSelected
+		>
 			Delete {isSelected}
 		</MenuItem>
-		<MenuItem class="px-6 py-2 font-medium" let:isSelected>
+		<MenuItem
+			class={({ isSelected }) => `px-6 py-2 font-medium ${isSelected ? 'bg-cyan-400' : ''}`}
+			let:isSelected
+		>
 			Edit {isSelected}
 		</MenuItem>
-		<MenuItem class="px-6 py-2 font-medium opacity-40" disabled let:isSelected>
+		<MenuItem class={className} disabled let:isSelected>
 			Nuke {isSelected}
 		</MenuItem>
 	</div>
@@ -96,7 +113,7 @@
 </Menu>
 
 <Menu>
-	<MenuButton>Toggle</MenuButton>
+	<MenuButton class="px-6 py-2 font-medium">Toggle</MenuButton>
 	<MenuItems data-testid="menu-panel">
 		<MenuItem disabled let:isSelected>
 			A Item <span> {isSelected} </span>
@@ -124,6 +141,6 @@
 
 <style>
 	:global(button:focus) {
-		background-color: hsl(0, 0%, 40%);
+		background-color: hsl(0, 0%, 90%);
 	}
 </style>

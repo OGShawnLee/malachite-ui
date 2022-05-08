@@ -1,12 +1,12 @@
 import { SvelteComponentTyped } from 'svelte';
 import type { Writable } from 'svelte/store';
-import type { Nullable, RenderElementTagName } from '$lib/types';
+import type { ClassName, Nullable, RenderElementTagName } from '$lib/types';
 
 declare const __propDef: {
 	props: {
 		[x: string]: any;
 		checked?: boolean | Writable<boolean> | undefined;
-		class?: Nullable<string>;
+		class?: ClassName<'isChecked' | 'isDisabled'>;
 		as?: RenderElementTagName | undefined;
 		disabled?: Nullable<boolean>;
 		element?: HTMLElement | undefined;

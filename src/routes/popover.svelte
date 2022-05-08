@@ -69,6 +69,21 @@
 	</PopoverPanel>
 </Popover>
 
+<Popover as="slot" forceFocus let:close>
+	<PopoverButton
+		class={({ isOpen }) => `px-6 py-2 font-medium ${isOpen ? 'text-green-300' : 'text-green-700'}`}
+	>
+		Toggle
+	</PopoverButton>
+	<PopoverPanel class="max-w-sm p-8 | grid gap-3 | bg-white">
+		<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos delectus illo ipsum.</p>
+		<div class="flex gap-3">
+			<button class="px-8 py-2 font-medium" on:click={close}> Close Me </button>
+			<a class="block px-8 py-2 font-medium" href="/"> Home </a>
+		</div>
+	</PopoverPanel>
+</Popover>
+
 <style>
 	:global(.over-center) {
 		@apply top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2;

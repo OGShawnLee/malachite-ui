@@ -1,12 +1,12 @@
 import { SvelteComponentTyped } from 'svelte';
-import type { Nullable, RenderElementTagName } from '$lib/types';
+import type { ClassName, Nullable, RenderElementTagName } from '$lib/types';
 import type { Readable } from 'svelte/store';
 
 declare const __propDef: {
 	props: {
 		[x: string]: any;
 		forceFocus?: boolean | Readable<boolean> | undefined;
-		class?: Nullable<string>;
+		class?: ClassName<'isDisabled' | 'isOpen'>;
 		as?: RenderElementTagName | undefined;
 		disabled?: Nullable<boolean>;
 		element?: HTMLElement | undefined;

@@ -7,7 +7,7 @@
 <a href="/">Home</a>
 
 <!-- WE CANNOT USE TRANSITIONS HERE BECAUSE SVELTE:ELEMENT DOES NOT SUPPORT TRANSITION|LOCAL -->
-<Disclosure class="disclosure">
+<Disclosure class={{ base: 'disclosure', open: 'disclosure--open' }}>
 	<DisclosureButton class="disclosure__button">Toggle</DisclosureButton>
 	<DisclosurePanel class="disclosure__panel" as="nav" let:close>
 		<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat, at!</p>

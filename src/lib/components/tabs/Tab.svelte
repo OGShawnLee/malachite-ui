@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { Context } from './state';
 	import { Render } from '$lib/components';
-	import type { Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+	import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
 	import { Bridge } from '$lib/stores';
+	import { useClassNameResolver } from '$lib/hooks';
 
 	const Proxy = new Bridge();
 	const tab = Context.getContext().initTab(Proxy).action;
 
 	const { Active, Disabled, Selected } = Proxy;
 
-	let className: Nullable<string> = undefined;
+	let className: ClassName<'isActive' | 'isDisabled' | 'isSelected'> = undefined;
+
 	export { className as class };
 	export let as: RenderElementTagName = 'button';
 	export let element: HTMLElement | undefined = undefined;
@@ -18,8 +20,23 @@
 
 	let finalUse: Forwarder.Actions;
 	$: finalUse = [...use, [tab]];
+
+	$: resolve = useClassNameResolver(className);
+	$: finalClassName = resolve({
+		isActive: $Active,
+		isDisabled: $Disabled ?? false,
+		isSelected: $Selected
+	});
 </script>
 
-<Render {as} {Proxy} bind:element bind:disabled class={className} use={finalUse} {...$$restProps}>
+<Render
+	{as}
+	{Proxy}
+	bind:element
+	bind:disabled
+	class={finalClassName}
+	use={finalUse}
+	{...$$restProps}
+>
 	<slot isDisabled={$Disabled ?? false} isActive={$Active} isSelected={$Selected} {tab} />
 </Render>
