@@ -1,3 +1,4 @@
+export * from './useClassNameResolver';
 export * from './useCleanup';
 export * from './useCollector';
 export * from './useDataSync';

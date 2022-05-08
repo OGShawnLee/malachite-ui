@@ -81,8 +81,22 @@ export type NavigationKey =
 
 export type Nullable<T> = T | null | undefined;
 
+export type NullableRecursively<T> = T extends infer O
+	? {
+			[P in keyof O]?: O[P] extends (...args: any) => any
+				? O[P] | null | undefined
+				: O[P] extends object
+				? ?Expand<NullableRecursively<O[P]>>
+				: O[P] | null | undefined;
+	  }
+	: Nullable<T>;
+
 export type OmitAllThisParameter<T> = {
 	[P in keyof T]: OmitThisParameter<T[P]>;
+};
+
+export type Optional<T> = {
+	[P in keyof T]?: T[P];
 };
 
 export type RenderElementTagName = keyof HTMLElementTagNameMap | 'slot';
@@ -94,3 +108,32 @@ export type Store<S> = [S] extends [Readable<infer V>]
 	: {
 			sync(this: void, configuration: { previous: S; value: Readable<S> | S }): void;
 	  } & Writable<S>;
+
+// * -> useClassNameResolver
+
+declare type ClassName<S extends ComponentStates> = Nullable<
+	string | ClassNameObject<S> | FunctionClassName<S>
+>;
+
+export type ClassNameObject<S extends ComponentStates = ComponentStates> = NullableRecursively<{
+	active: string | SwitchClassName;
+	base: string | FunctionClassName<S> | ClassNameObject<S>;
+	checked: string | SwitchClassName;
+	disabled: string;
+	dual: string; // isActive && isSelected || isActive && isChecked || isChecked && isSelected
+	triple: string; // isActive && isChecked && isSelected
+	open: string | SwitchClassName;
+	selected: string | SwitchClassName;
+}>;
+
+declare type ComponentState<S extends ComponentStates = ComponentStates> = Expand<
+	Record<S, boolean>
+>;
+
+declare type FunctionClassName<S extends ComponentStates> = (
+	state: ComponentState<S>
+) => Nullable<string>;
+
+declare type ComponentStates = 'isActive' | 'isChecked' | 'isDisabled' | 'isOpen' | 'isSelected';
+
+export type SwitchClassName = Expand<NullableRecursively<{ on: string; off: string }>>;
