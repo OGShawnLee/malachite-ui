@@ -36,5 +36,5 @@
 </script>
 
 <Render {as} bind:element {disabled} class={className} {use} {...$$restProps}>
-	<slot tabList={tabList.action} tabPanels={tabPanels.action} />
+	<slot isDisabled={disabled} tabList={tabList.action} tabPanels={tabPanels.action} />
 </Render>
