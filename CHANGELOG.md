@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/**OGShawnLee**/malachite-ui/compare/v0.5.1...v0.6.0) (2022-05-09)
+
+### Features
+
+- **component:** add menu component ([1806a23](https://github.com/OGShawnLee/malachite-ui/commit/1806a2307694087d759606484109da1febe550ab))
+- **component:** add support for advanced className prop ([00a18b5](https://github.com/OGShawnLee/malachite-ui/commit/00a18b5f8447481dec59cc27bd37d1dfdede6537))
+- **hooks:** add useClassNameResolver hook ([c31f784](https://github.com/OGShawnLee/malachite-ui/commit/c31f78457da72afb43a49b9686239aef8f93d690))
+- improve tree-shaking ([a8bf994](https://github.com/OGShawnLee/malachite-ui/commit/a8bf9948c2d234b20fe8bbea4855eea312d86067))
+- **switch:** forward Switch click events ([d47b155](https://github.com/OGShawnLee/malachite-ui/commit/d47b155a7c678afe1e291b4859ee3acf578a1a21))
+- **tabs:** expose Tab active state via isActive slot prop ([a6e5132](https://github.com/OGShawnLee/malachite-ui/commit/a6e513242bfbac998be75ee75b7bcf73b72b85ff))
+
+### Bug Fixes
+
+- **tabs:** expose TabGroup disabled state via isDisabled slot prop ([0f76c4e](https://github.com/OGShawnLee/malachite-ui/commit/0f76c4e04a7f1fe03b8069e804072e311ae931eb))
+
 ### [0.5.1](https://github.com/OGShawnLee/malachite-ui/compare/v0.4.0...v0.5.1) (2022-05-01)
 
 ### Bug Fixes
