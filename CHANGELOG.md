@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.1](https://github.com/OGShawnLee/malachite-ui/compare/v0.6.0...v0.6.1) (2022-05-09)
+
+### Bug Fixes
+
+- **ts:** correct NullableRecursively syntax typo ([23e0184](https://github.com/OGShawnLee/malachite-ui/commit/23e01841548d9413238afca9aeb11da38a4780bb))
+
 ## [0.6.0](https://github.com/**OGShawnLee**/malachite-ui/compare/v0.5.1...v0.6.0) (2022-05-09)
 
 ### Features
