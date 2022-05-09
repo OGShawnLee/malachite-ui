@@ -1,11 +1,15 @@
 <script lang="ts">
 	import type { Toggleable } from '$lib/stores';
+	import type { Unsubscriber } from 'svelte/store';
+
 	export let Open: Toggleable;
+	export let handlers: Array<(this: Toggleable) => Unsubscriber> = [];
+
 	function button(element: HTMLElement) {
 		return { destroy: Open.button(element) };
 	}
 	function panel(element: HTMLElement) {
-		return { destroy: Open.panel(element) };
+		return { destroy: Open.panel(element, { handlers }) };
 	}
 </script>
 

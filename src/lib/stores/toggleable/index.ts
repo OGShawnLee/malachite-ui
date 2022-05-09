@@ -114,7 +114,16 @@ export class Toggleable {
 	}
 
 	protected handleClick(this: Toggleable, button: HTMLElement) {
-		return useListener(button, 'click', this.toggle.bind(this));
+		return useCleanup(
+			useListener(button, 'mousedown', (event) => {
+				if (this.isFocusForced && this.isOpen) event.preventDefault();
+			}),
+			useListener(button, 'click', async () => {
+				this.toggle();
+				await tick();
+				if (this.isClosed) button.focus();
+			})
+		);
 	}
 
 	button(

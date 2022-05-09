@@ -3,7 +3,7 @@ import { handleClickOutside, handleEscapeKey, handleFocusLeave, Toggleable } fro
 import { Addons, Base as Component } from './samples';
 import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/svelte';
 import { isBoolean, isObject, isStore } from '$lib/predicate';
-import { appendChild, useCleaner } from '@test-utils';
+import { appendChild, useCleaner, waitAWhile } from '@test-utils';
 import { get, writable } from 'svelte/store';
 import { useDOMTraversal } from '$lib/hooks';
 
@@ -92,6 +92,64 @@ describe('options', () => {
 			expect(notifier).toBeCalledTimes(3);
 			expect(notifier).toBeCalledWith(true);
 		});
+	});
+});
+
+describe('ForceFocus', () => {
+	const ForceFocus = writable(true);
+	it('Should focus the first focusable element inside the panel upon opening', async () => {
+		const Open = new Toggleable({ ForceFocus });
+		const { getByText } = render(Component, { props: { Open } });
+		await act(() => Open.open());
+		const element = getByText('Internal Ref');
+		expect(element).toHaveFocus();
+	});
+
+	it('Should close upon focusing the button when using handleFocusLeave handler', async () => {
+		const Open = new Toggleable({ ForceFocus });
+		render(Component, { props: { Open, handlers: [handleFocusLeave] } });
+		await act(() => Open.open());
+		const { button, panel } = Open.elements;
+		expect(panel).toBeInTheDocument();
+
+		await act(() => button?.focus());
+		expect(panel).not.toBeInTheDocument();
+	});
+
+	it('Should not prevent toggling the panel by clicking the button', async () => {
+		const Open = new Toggleable({ ForceFocus });
+		render(Component, { props: { Open, handlers: [handleFocusLeave] } });
+		const { button } = Open.elements;
+		await fireEvent.click(button!);
+		const panel = Open.elements.panel;
+		expect(panel).toBeInTheDocument();
+
+		await fireEvent.click(button!);
+		expect(panel).not.toBeInTheDocument();
+	});
+
+	it('Should not prevent focusing a reference upon closing', async () => {
+		const Open = new Toggleable({ ForceFocus });
+		const { getByText } = render(Component, { props: { Open, handlers: [handleFocusLeave] } });
+		const ref = getByText('Ref');
+		await act(() => Open.open());
+		const { panel } = Open.elements;
+
+		await act(() => Open.close(ref));
+		expect(ref).toHaveFocus();
+		expect(panel).not.toBeInTheDocument();
+	});
+
+	it('Should not prevent the button from having focus upon closing by click', async () => {
+		const Open = new Toggleable({ ForceFocus });
+		const { getByText } = render(Component, { props: { Open, handlers: [handleFocusLeave] } });
+		const button = getByText('Button');
+		await fireEvent.click(button);
+		const panel = getByText('Panel');
+
+		await fireEvent.click(button);
+		expect(panel).not.toBeInTheDocument();
+		expect(button).toHaveFocus();
 	});
 });
 
