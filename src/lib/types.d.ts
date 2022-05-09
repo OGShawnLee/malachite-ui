@@ -86,7 +86,7 @@ export type NullableRecursively<T> = T extends infer O
 			[P in keyof O]?: O[P] extends (...args: any) => any
 				? O[P] | null | undefined
 				: O[P] extends object
-				? ?Expand<NullableRecursively<O[P]>>
+				? Expand<NullableRecursively<O[P]>>
 				: O[P] | null | undefined;
 	  }
 	: Nullable<T>;
