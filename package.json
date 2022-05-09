@@ -27,6 +27,7 @@
 	"exports": {
 		".": "./index.js"
 	},
+	"sideEffects": false,
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
