@@ -22,7 +22,7 @@
 
 <input type="number" bind:value={index} />
 
-<main class="container mx-auto my-8 | flex flex-col gap-12">
+<main class="container mx-auto my-8 | flex flex-col gap-12 h-[1000px]">
 	<section>
 		<button on:click={range.increment}> Increase </button>
 		<button on:click={range.decrement}> Decrement </button>

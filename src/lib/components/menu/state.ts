@@ -76,6 +76,7 @@ export default class Menu extends Component {
 				}),
 				useListener(element, 'keydown', (event) => {
 					if (!isNavigationKey(event.code)) return;
+					if (['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft']) event.preventDefault();
 					switch (event.code) {
 						case 'ArrowDown':
 							if (!this.isVertical) return;
@@ -137,9 +138,11 @@ export default class Menu extends Component {
 							switch (code) {
 								case 'ArrowDown':
 								case 'ArrowRight':
+									event.preventDefault();
 									return this.handleNextKey(code, ctrlKey);
 								case 'ArrowLeft':
 								case 'ArrowUp':
+									event.preventDefault();
 									return this.handleBackKey(code, ctrlKey);
 								case 'End':
 									return this.goLast();

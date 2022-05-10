@@ -56,13 +56,15 @@ export default class Tabs extends Component {
 				this.Navigable.initNavigation(element, {
 					plugins: [useManualSync],
 					handler() {
-						return Navigable.initNavigationHandler(element, ({ code, ctrlKey }) => {
+						return Navigable.initNavigationHandler(element, ({ event, code, ctrlKey }) => {
 							switch (code) {
 								case 'ArrowDown':
 								case 'ArrowRight':
+									event.preventDefault();
 									return this.handleNextKey(code, ctrlKey);
 								case 'ArrowLeft':
 								case 'ArrowUp':
+									event.preventDefault();
 									return this.handleBackKey(code, ctrlKey);
 								case 'End':
 									return this.goLast();
