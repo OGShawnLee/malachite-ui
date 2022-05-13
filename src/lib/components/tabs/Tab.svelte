@@ -8,9 +8,9 @@
 	const Proxy = new Bridge();
 	const tab = Context.getContext().initTab(Proxy).action;
 
-	const { Active, Disabled, Selected } = Proxy;
+	const { Disabled, Selected } = Proxy;
 
-	let className: ClassName<'isActive' | 'isDisabled' | 'isSelected'> = undefined;
+	let className: ClassName<'isDisabled' | 'isSelected'> = undefined;
 
 	export { className as class };
 	export let as: RenderElementTagName = 'button';
@@ -22,11 +22,7 @@
 	$: finalUse = [...use, [tab]];
 
 	$: resolve = useClassNameResolver(className);
-	$: finalClassName = resolve({
-		isActive: $Active,
-		isDisabled: $Disabled ?? false,
-		isSelected: $Selected
-	});
+	$: finalClassName = resolve({ isDisabled: $Disabled ?? false, isSelected: $Selected });
 </script>
 
 <Render
@@ -38,5 +34,5 @@
 	use={finalUse}
 	{...$$restProps}
 >
-	<slot isDisabled={$Disabled ?? false} isActive={$Active} isSelected={$Selected} {tab} />
+	<slot isDisabled={$Disabled ?? false} isSelected={$Selected} {tab} />
 </Render>

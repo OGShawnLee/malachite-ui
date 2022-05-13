@@ -11,12 +11,10 @@
 
 	let index = 69;
 
-	const className = useClassNameResolver<'isActive' | 'isDisabled' | 'isSelected'>({
+	const className = useClassNameResolver<'isDisabled' | 'isSelected'>({
 		base: 'px-6 py-2 font-medium focus:(ring-2 ring-black)',
-		active: 'text-green-400',
 		disabled: 'opacity-40',
-		selected: 'bg-green-800',
-		dual: 'bg-amber-600 text-white'
+		selected: { on: 'bg-green-800 focus:(bg-amber-600 text-white)', off: 'focus:text-green-400' }
 	});
 </script>
 
@@ -112,28 +110,24 @@
 	<section>
 		<TabGroup manual let:tabList let:tabPanels>
 			<div use:tabList>
-				<Tab as="slot" let:tab let:isActive let:isSelected>
+				<Tab as="slot" let:tab let:isSelected>
 					<button use:tab class="focus:(ring-2 ring-black)" class:text-green-400={isSelected}>
 						Tab 1 {isSelected}
-						{isActive}
 					</button>
 				</Tab>
-				<Tab as="slot" let:tab let:isActive let:isSelected>
+				<Tab as="slot" let:tab let:isSelected>
 					<button use:tab class="focus:(ring-2 ring-black)" class:text-green-400={isSelected}>
 						Tab 2 {isSelected}
-						{isActive}
 					</button>
 				</Tab>
-				<Tab as="slot" let:tab let:isActive let:isSelected>
+				<Tab as="slot" let:tab let:isSelected>
 					<button use:tab class="focus:(ring-2 ring-black)" class:text-green-400={isSelected}>
 						Tab 3 {isSelected}
-						{isActive}
 					</button>
 				</Tab>
-				<Tab as="slot" let:tab let:isActive let:isSelected>
+				<Tab as="slot" let:tab let:isSelected>
 					<button use:tab class="focus:(ring-2 ring-black)" class:text-green-400={isSelected}>
 						Tab 4 {isSelected}
-						{isActive}
 					</button>
 				</Tab>
 			</div>
