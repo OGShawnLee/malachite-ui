@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.0](https://github.com/OGShawnLee/malachite-ui/compare/v0.6.2...v0.7.0) (2022-05-13)
+
+### ⚠ BREAKING CHANGES
+
+- **tabs:** remove isActive slot prop
+
+### Features
+
+- **component:** add accordion component ([2416eb0](https://github.com/OGShawnLee/malachite-ui/commit/2416eb09f03ed558b9dbbdd9c827300d9fc19a25))
+
+### Bug Fixes
+
+- **component:** prevent scrolling while using a navigable component ([ace1ecf](https://github.com/OGShawnLee/malachite-ui/commit/ace1ecf106434e20292d236aa5071fff7bcf376a))
+
+- **tabs:** remove isActive slot prop ([6163b08](https://github.com/OGShawnLee/malachite-ui/commit/6163b0887c1d857726b9e3d2954e0f3945711fb3))
+
 ### [0.6.2](https://github.com/OGShawnLee/malachite-ui/compare/v0.6.1...v0.6.2) (2022-05-09)
 
 ### Bug Fixes
