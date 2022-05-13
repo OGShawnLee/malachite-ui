@@ -1,8 +1,8 @@
 import Initialiser from './Initialiser';
-import type { Expand, Navigable } from '$lib/types';
+import type { Expand, Navigable, Nullable } from '$lib/types';
 import type { Updater } from 'svelte/store';
 import { useCollector, useDataSync } from '$lib/hooks';
-import { isAround, isNotDisabled, isNumber } from '$lib/predicate';
+import { isAround, isNotDisabled, isNumber, isWithin } from '$lib/predicate';
 
 type Member = Expand<Navigable.Member>;
 
@@ -61,6 +61,10 @@ export default class Core<T> extends Initialiser<T> {
 		return this.useListenMember('Selected', () => {});
 	}
 
+	indexOf(element: HTMLElement) {
+		return this.primitive.elements.indexOf(element);
+	}
+
 	isOverflowed(direction: 'BACK' | 'NEXT') {
 		const { length, manualIndex } = this;
 		return { BACK: manualIndex - 1 < 0, NEXT: manualIndex + 1 >= length }[direction];
@@ -80,6 +84,10 @@ export default class Core<T> extends Initialiser<T> {
 		if (!isWithinRange) return false;
 		const element = this.primitive.elements[index];
 		return element && isNotDisabled(element);
+	}
+
+	isWithin(target: Nullable<Node | EventTarget>) {
+		return isWithin(this.primitive.elements, target);
 	}
 
 	protected useListenMember(

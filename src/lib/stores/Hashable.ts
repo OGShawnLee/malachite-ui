@@ -8,6 +8,7 @@ export class Hashable<K, V> {
 	readonly Keys: Readable<K[]>;
 	readonly Entries: Readable<[K, V][]>;
 	readonly Values: Readable<V[]>;
+	readonly Size: Readable<number>;
 	constructor() {
 		this.hash = new Map();
 		this.Hash = writable(this.hash);
@@ -15,6 +16,7 @@ export class Hashable<K, V> {
 		this.Entries = derived(this.Hash, (hash) => Array.from(hash.entries()));
 		this.Keys = derived(this.Hash, (hash) => Array.from(hash.keys()));
 		this.Values = derived(this.Hash, (hash) => Array.from(hash.values()));
+		this.Size = derived(this.Hash, (hash) => hash.size);
 	}
 
 	get subscribe() {
