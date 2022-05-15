@@ -255,11 +255,32 @@ describe('Behaviour', () => {
 
 		describe('Header', () => {
 			describe('role', () => {
-				it('should be set to heading', () => {
-					const { headers } = initComponent(Behaviour);
-					for (const header of headers) {
-						expect(header).toHaveAttribute('role', 'heading');
+				it.each(elementTagNames)(
+					'Should be set to heading if the element is not rendered as a heading (h1-h6)',
+					(as) => {
+						const { getByTestId } = render(Rendering, { props: { header: { as } } });
+						const heading = getByTestId('header');
+						expect(hasTagName(heading, as));
+						expect(heading).toHaveAttribute('role');
 					}
+				);
+
+				it.each(['H1', 'H2', 'H3', 'H4', 'H5', 'H6'])(
+					'Should not be set if the element is a heading (%s)',
+					(as) => {
+						const { getByTestId } = render(Rendering, { props: { header: { as } } });
+						const heading = getByTestId('header');
+						expect(hasTagName(heading, as));
+						expect(heading).not.toHaveAttribute('role');
+					}
+				);
+
+				it('Should be overwritten', async () => {
+					const { findByTestId } = render(Rendering, {
+						props: { header: { as: 'div', rest: { role: 'random' } } }
+					});
+					const heading = await findByTestId('header');
+					expect(heading).toHaveAttribute('role', 'heading');
 				});
 			});
 
@@ -310,7 +331,7 @@ describe('Behaviour', () => {
 
 		for (const button of buttons) {
 			const header = button.parentElement!;
-			expect(header).toHaveAttribute('role', 'heading');
+			expect(header).not.toHaveAttribute('role', 'heading');
 			expect(header.ariaLevel).toBe(header.tagName[1]);
 
 			expect(button.ariaExpanded).toBe('false');

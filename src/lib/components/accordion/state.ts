@@ -147,7 +147,10 @@ export default class Accordion extends Component {
 				Bridge: Header,
 				onMount: ({ element, parameter: level }) => {
 					this.handleAriaLevel(element, level);
-					element.setAttribute('role', 'heading');
+					setAttribute(element, ['role', 'heading'], {
+						overwrite: true,
+						predicate: () => !this.isHeadingTagName(element)
+					});
 					return nameChild('header');
 				},
 				onUpdate: ({ element, parameter: level }) => {
@@ -174,6 +177,10 @@ export default class Accordion extends Component {
 				]
 			})
 		});
+	}
+
+	protected isHeadingTagName(element: HTMLElement) {
+		return ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(element.tagName);
 	}
 
 	private static generateIndex = this.initIndexGenerator();
