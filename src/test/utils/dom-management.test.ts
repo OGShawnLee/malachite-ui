@@ -1,6 +1,8 @@
 import '@testing-library/jest-dom';
 import * as dom from '$lib/utils/dom-management';
+import { Render } from '$lib/components';
 import { hasTagName } from '$lib/predicate';
+import { render } from '@testing-library/svelte';
 
 describe('setAttribute', () => {
 	const { setAttribute } = dom;
@@ -24,6 +26,20 @@ describe('setAttribute', () => {
 				div.tabIndex = 10;
 				setAttribute(div, ['tabIndex', '0'], { overwrite: true });
 				expect(div).toHaveAttribute('tabIndex', '0');
+			});
+
+			it('Should work in Svelte actions', async () => {
+				function action(element: HTMLElement) {
+					setAttribute(element, ['role', 'heading'], {
+						overwrite: true
+					});
+				}
+
+				const { findByTestId } = render(Render, {
+					props: { as: 'div', 'data-testid': 'element', role: 'random', use: [[action]] }
+				});
+				const element = await findByTestId('element');
+				expect(element).toHaveAttribute('role', 'heading');
 			});
 		});
 

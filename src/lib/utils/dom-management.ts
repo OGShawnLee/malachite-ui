@@ -1,5 +1,6 @@
-import { isHTMLElement } from '$lib/predicate';
 import type { Readable } from 'svelte/store';
+import { isHTMLElement } from '$lib/predicate';
+import { tick } from 'svelte';
 
 export function findElement(
 	container: Document | HTMLElement,
@@ -17,7 +18,7 @@ export function findElement(
 	}
 }
 
-export function setAttribute(
+export async function setAttribute(
 	node: HTMLElement,
 	[attribute, value]: [string, string],
 	options: {
@@ -28,7 +29,12 @@ export function setAttribute(
 	const { predicate, overwrite } = options;
 	const shouldSetAttribute = predicate?.(node) ?? true;
 	if (shouldSetAttribute) {
-		if (overwrite || !node.hasAttribute(attribute)) node.setAttribute(attribute, value);
+		if (overwrite || !node.hasAttribute(attribute)) {
+			node.setAttribute(attribute, value);
+			await tick();
+			if (node.getAttribute(attribute) === value) return;
+			node.setAttribute(attribute, value);
+		}
 	}
 }
 
