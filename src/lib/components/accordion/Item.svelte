@@ -1,47 +1,47 @@
 <script lang="ts">
-	import { Context } from './state';
-	import { Render } from '$lib/components';
-	import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-	import type { Readable } from 'svelte/store';
-	import { useClassNameResolver } from '$lib/hooks';
-	import { storable, Toggleable } from '$lib/stores';
+  import { Context } from './state';
+  import { Render } from '$lib/components';
+  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+  import type { Readable } from 'svelte/store';
+  import { useClassNameResolver } from '$lib/hooks';
+  import { storable, Toggleable } from '$lib/stores';
 
-	export let open: Readable<boolean> | boolean = false;
+  export let open: Readable<boolean> | boolean = false;
 
-	const InitialOpen = storable({ Store: open, initialValue: false });
+  const InitialOpen = storable({ Store: open, initialValue: false });
 
-	const { Open, button, header, panel, close } = Context.getContext().initItem({
-		Toggleable: new Toggleable(),
-		initialOpen: $InitialOpen
-	});
+  const { Open, button, header, panel, close } = Context.getContext().initItem({
+    Toggleable: new Toggleable(),
+    initialOpen: $InitialOpen
+  });
 
-	let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
+  let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
 
-	export { className as class };
-	export let as: RenderElementTagName = 'div';
-	export let element: HTMLElement | undefined = undefined;
-	export let disabled: Nullable<boolean> = undefined;
-	export let use: Expand<Forwarder.Actions> = [];
+  export { className as class };
+  export let as: RenderElementTagName = 'div';
+  export let element: HTMLElement | undefined = undefined;
+  export let disabled: Nullable<boolean> = undefined;
+  export let use: Expand<Forwarder.Actions> = [];
 
-	$: resolve = useClassNameResolver(className);
-	$: finalClassName = resolve({ isDisabled: disabled ?? false, isOpen: $Open });
+  $: resolve = useClassNameResolver(className);
+  $: finalClassName = resolve({ isDisabled: disabled ?? false, isOpen: $Open });
 </script>
 
 <Render {as} bind:element bind:disabled class={finalClassName} {use} {...$$restProps}>
-	{#if $Open}
-		<slot name="up-panel" panel={panel.action} {close} />
-	{/if}
+  {#if $Open}
+    <slot name="up-panel" panel={panel.action} {close} />
+  {/if}
 
-	<slot
-		isDisabled={disabled}
-		isOpen={$Open}
-		button={button.action}
-		header={header.action}
-		panel={panel.action}
-		{close}
-	/>
+  <slot
+    isDisabled={disabled}
+    isOpen={$Open}
+    button={button.action}
+    header={header.action}
+    panel={panel.action}
+    {close}
+  />
 
-	{#if $Open}
-		<slot name="panel" panel={panel.action} {close} />
-	{/if}
+  {#if $Open}
+    <slot name="panel" panel={panel.action} {close} />
+  {/if}
 </Render>

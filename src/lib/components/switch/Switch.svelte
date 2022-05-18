@@ -1,53 +1,53 @@
 <script lang="ts">
-	import Switch from './state';
-	import { Render } from '$lib/components';
-	import type { Writable } from 'svelte/store';
-	import type { ClassName, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-	import { isNotStore } from '$lib/predicate';
-	import { useClassNameResolver } from '$lib/hooks';
+  import Switch from './state';
+  import { Render } from '$lib/components';
+  import type { Writable } from 'svelte/store';
+  import type { ClassName, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+  import { isNotStore } from '$lib/predicate';
+  import { useClassNameResolver } from '$lib/hooks';
 
-	export let checked: Writable<boolean> | boolean = false;
+  export let checked: Writable<boolean> | boolean = false;
 
-	const { Checked, button, label, description, sync } = new Switch({
-		Store: checked,
-		initialValue: false,
-		notifier: (newValue) => isNotStore(checked) && (checked = newValue)
-	});
+  const { Checked, button, label, description, sync } = new Switch({
+    Store: checked,
+    initialValue: false,
+    notifier: (newValue) => isNotStore(checked) && (checked = newValue)
+  });
 
-	$: sync({ previous: $Checked, value: checked });
+  $: sync({ previous: $Checked, value: checked });
 
-	let className: ClassName<'isDisabled' | 'isChecked'> = undefined;
+  let className: ClassName<'isDisabled' | 'isChecked'> = undefined;
 
-	export { className as class };
-	export let as: RenderElementTagName = 'button';
-	export let disabled: Nullable<boolean> = undefined;
-	export let element: HTMLElement | undefined = undefined;
-	export let use: Expand<Forwarder.Actions> = [];
+  export { className as class };
+  export let as: RenderElementTagName = 'button';
+  export let disabled: Nullable<boolean> = undefined;
+  export let element: HTMLElement | undefined = undefined;
+  export let use: Expand<Forwarder.Actions> = [];
 
-	const { Proxy, action } = button;
+  const { Proxy, action } = button;
 
-	let finalUse: Forwarder.Actions;
-	$: finalUse = [...use, [action]];
+  let finalUse: Forwarder.Actions;
+  $: finalUse = [...use, [action]];
 
-	$: resolve = useClassNameResolver(className);
-	$: finalClassName = resolve({ isChecked: $Checked, isDisabled: disabled ?? false });
+  $: resolve = useClassNameResolver(className);
+  $: finalClassName = resolve({ isChecked: $Checked, isDisabled: disabled ?? false });
 </script>
 
 <Render
-	{as}
-	bind:element
-	{Proxy}
-	class={finalClassName}
-	bind:disabled
-	{...$$restProps}
-	use={finalUse}
-	on:click
+  {as}
+  bind:element
+  {Proxy}
+  class={finalClassName}
+  bind:disabled
+  {...$$restProps}
+  use={finalUse}
+  on:click
 >
-	<slot
-		isChecked={$Checked}
-		isDisabled={disabled}
-		button={button.action}
-		label={label.action}
-		description={description.action}
-	/>
+  <slot
+    isChecked={$Checked}
+    isDisabled={disabled}
+    button={button.action}
+    label={label.action}
+    description={description.action}
+  />
 </Render>

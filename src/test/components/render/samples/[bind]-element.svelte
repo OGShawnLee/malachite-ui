@@ -1,11 +1,11 @@
 <script lang="ts">
-	import Render from '$lib/components/render';
+  import Render from '$lib/components/render';
 
-	export let as: RenderElementTagName = 'div';
-	export let func: (element: HTMLElement) => void;
+  export let as: RenderElementTagName = 'div';
+  export let func: (element: HTMLElement) => void;
 
-	let element: HTMLElement;
-	$: if (element) func(element);
+  let element: HTMLElement;
+  $: if (element) func(element);
 </script>
 
 <Render {as} bind:element data-testid="[bind]-element-{as}" />
