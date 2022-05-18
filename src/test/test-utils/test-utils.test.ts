@@ -5,27 +5,27 @@ import * as utils from '@test-utils';
 
 describe('appendChild', () => {
 	it('Should append the given element to the body by default', () => {
-		const button = document.createElement("button");
+		const button = document.createElement('button');
 		expect(document.body).not.toContainElement(button);
 
 		utils.appendChild(button);
 		expect(document.body).toContainElement(button);
 	});
-    
-    it("Should append it to the given container", () => {
-        const span = document.createElement('span');
 
-        const container = document.createElement("div")
-        utils.appendChild(span, container)
+	it('Should append it to the given container', () => {
+		const span = document.createElement('span');
 
-        expect(container).toContainElement(span)
-    })
+		const container = document.createElement('div');
+		utils.appendChild(span, container);
 
-    it("Should return the appended element", () => {
-        const foo = document.createElement("article")
-        const bar = utils.appendChild(foo)
-        expect(foo).toBe(bar)
-    })
+		expect(container).toContainElement(span);
+	});
+
+	it('Should return the appended element', () => {
+		const foo = document.createElement('article');
+		const bar = utils.appendChild(foo);
+		expect(foo).toBe(bar);
+	});
 });
 
 describe('generateActions', () => {
@@ -98,10 +98,10 @@ describe('generateSpyFunctions', () => {
 		expect(isArray(functions, vi.isMockFunction)).toBe(true);
 	});
 
-    it('Each function should be unique', () => {
-        const functions = generateSpyFunctions(5)
-        const unique = new Set(functions);
-        expect(unique.size).toBe(functions.length)
+	it('Each function should be unique', () => {
+		const functions = generateSpyFunctions(5);
+		const unique = new Set(functions);
+		expect(unique.size).toBe(functions.length);
 	});
 });
 
@@ -144,27 +144,27 @@ describe('useCleaner', () => {
 	});
 
 	describe('add', () => {
-        it("Should be a function", () => {
-            expect(useCleaner().add).toBeInstanceOf(Function)
-        })
-        
+		it('Should be a function', () => {
+			expect(useCleaner().add).toBeInstanceOf(Function);
+		});
+
 		it('Should add the given values to the list of Collectable values', () => {
-            const { add, destroy } = useCleaner();
+			const { add, destroy } = useCleaner();
 			const additional = generateSpyFunctions(10);
 			add(additional), destroy();
 			for (const func of additional) {
-                expect(func).toBeCalledTimes(1);
+				expect(func).toBeCalledTimes(1);
 			}
 		});
 	});
-    
-	describe('destroy', () => {
-        const functions = generateSpyFunctions(5);
-        const { add, destroy } = useCleaner(functions);
 
-        it("Should be a function", () => {
-            expect(useCleaner().destroy).toBeInstanceOf(Function)
-        })
+	describe('destroy', () => {
+		const functions = generateSpyFunctions(5);
+		const { add, destroy } = useCleaner(functions);
+
+		it('Should be a function', () => {
+			expect(useCleaner().destroy).toBeInstanceOf(Function);
+		});
 
 		it('Should destroy the current Collectable values', () => {
 			destroy();
