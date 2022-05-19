@@ -3,7 +3,6 @@
   import { Render } from '$lib/components';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { Bridge } from '$lib/stores';
-  import { onMount } from 'svelte';
   import { useClassNameResolver } from '$lib/hooks';
 
   const Proxy = new Bridge();
@@ -18,9 +17,6 @@
   export let disabled: Nullable<boolean> = undefined;
   export let use: Expand<Forwarder.Actions> = [];
 
-  let isMounted = false;
-  onMount(() => (isMounted = true));
-
   let finalUse: Forwarder.Actions;
   $: finalUse = [...use, [action]];
 
@@ -28,7 +24,7 @@
   $: finalClassName = resolve({ isDisabled: disabled ?? false });
 </script>
 
-{#if $Index === index && isMounted && !$Disabled}
+{#if $Index === index && !$Disabled}
   <Render
     {as}
     {Proxy}
