@@ -87,6 +87,34 @@ Make sure to import components from `malachite-ui/components` to trigger tree-sh
   </Switch>
   ```
 
+  This might seem like **overkill** if you are using **simple and short classNames**, however if you are using **utility CSS frameworks** like **Tailwind CSS** and **WindiCSS** you will very likely have a **substantial amount of classNames**, in that case this really comes in handy for **better readability**.
+
+  ```html
+  <AccordionItem let:isOpen let:header let:panel>
+    <h2 use:header class="h-12">
+      <AccordionButton
+        class="{{
+          base: 'w-full py-2 px-0 | button-reset border-b-blue-50 outline-none transition duration-150 ease-in',
+          open: { on: 'font-bold focus:text-soft-violet', off: 'focus:text-soft-red' },
+        }}"
+      >
+        <span class="flex items-center justify-between">
+          <span class="text-[13.5px] sm:text-base md:text-lg"> {question} </span>
+          <img
+            class="transform duration-150 ease-in"
+            class:rotate-180="{isOpen}"
+            src="{iconArrow}"
+            alt=""
+          />
+        </span>
+      </AccordionButton>
+    </h2>
+    <div slot="panel" use:panel transition:slide="{{ duration: 175, easing: quadOut }}">
+      <p class="text-xs sm:text-sm md:text-base">{answer}</p>
+    </div>
+  </AccordionItem>
+  ```
+
 ## Components
 
 ### Accordion
