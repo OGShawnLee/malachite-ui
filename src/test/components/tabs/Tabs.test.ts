@@ -37,6 +37,25 @@ describe('Behaviour', () => {
 		expect(tabs[0].ariaSelected).toBe('true');
 	});
 
+	const { ActionDisabled } = samples;
+	it('Should not select the first tab by default if it is disabled and rendered as an Action Component', async () => {
+		const { findAllByText } = render(ActionDisabled);
+		const tabs = await findAllByText(/Tab/);
+		expect(tabs[0].ariaSelected).toBe('false');
+		expect(tabs[1].ariaSelected).toBe('true');
+		const panels = await findAllByText(/Panel/);
+		expect(panels[0]).toHaveTextContent('Panel 2');
+	});
+
+	it('Should not select the given tab if it is disabled and rendered as an Action Component', async () => {
+		const { findAllByText } = render(ActionDisabled, { props: { index: 2 } });
+		const tabs = await findAllByText(/Tab/);
+		expect(tabs[2].ariaSelected).toBe('false');
+		expect(tabs[3].ariaSelected).toBe('true');
+		const panels = await findAllByText(/Panel/);
+		expect(panels[0]).toHaveTextContent('Panel 4');
+	});
+
 	describe('Tab', () => {
 		it('Should select the current tab upon click', async () => {
 			const { tabs } = initComponent(Behaviour);
