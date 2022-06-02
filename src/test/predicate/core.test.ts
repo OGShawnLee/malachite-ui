@@ -103,6 +103,158 @@ describe('isFunction', () => {
 	});
 });
 
+describe('isInterface', () => {
+	const { isArray, isBoolean, isFunction, isInterface, isNumber, isString } = core;
+
+	interface User {
+		name: string;
+		display_name: string;
+		created_at: string;
+		is_verified: boolean;
+		children: number;
+		friends: string[];
+	}
+
+	const user = {
+		name: 'Ergo',
+		display_name: 'Vincent Law',
+		created_at: 'June 24 2123',
+		is_verified: false,
+		children: 0,
+		friends: ['RE-L', 'Pino', 'Monad']
+	};
+
+	function isUser(val: unknown): val is User {
+		return isInterface<User>(val, {
+			name: isString,
+			display_name: isString,
+			created_at: isString,
+			is_verified: isBoolean,
+			children: isNumber,
+			friends(val): val is Array<string> {
+				return isArray(val, isString);
+			}
+		});
+	}
+
+	it('Should always return false with arrays', () => {
+		expect(isUser([])).toBe(false);
+		expect(isInterface([], {})).toBe(false);
+	});
+
+	it('Should handle values that are not objects', () => {
+		expect(isUser(123)).toBe(false);
+		expect(isUser('Invalid')).toBe(false);
+		expect(isUser(false)).toBe(false);
+		expect(isUser(true)).toBe(false);
+		expect(isUser(null)).toBe(false);
+		expect(isUser(undefined)).toBe(false);
+	});
+
+	it('Should return true if all the given predicates return true', () => {
+		expect(isUser(user)).toBe(true);
+	});
+
+	it('Should return false if a predicate function returns false', () => {
+		expect(
+			isUser({
+				name: 'John',
+				display_name: 'Doe',
+				created_at: '24 May 1980',
+				is_verified: 'negative',
+				children: 0,
+				friends: ['John Cena', 'John Snow', 'John 117']
+			})
+		).toBe(false);
+	});
+
+	it('Should pass the object property value to the predicate function', () => {
+		const { text, user_id } = {
+			text: "You're kinda slow for a human, aren't ya?",
+			user_id: 123699
+		};
+
+		const tweet = { text, user_id };
+		const textPredicate = vi.fn((value: unknown): value is string => isString(value));
+		const idPredicate = vi.fn((value: unknown): value is number => isNumber(value));
+
+		isInterface<{ text: string; user_id: number }>(tweet, {
+			text(value): value is string {
+				return textPredicate(value);
+			},
+			user_id(value): value is number {
+				return idPredicate(value);
+			}
+		});
+
+		expect(textPredicate).toBeCalledWith(text);
+		expect(idPredicate).toBeCalledWith(user_id);
+	});
+
+	it('Should return false if a predicate property is missing', () => {
+		const john = { name: 'John', display_name: '117', is_verified: true, children: 0 };
+		expect(
+			isInterface<User>(john, {
+				name: core.isString,
+				display_name: core.isString,
+				created_at: core.isString,
+				is_verified: core.isBoolean,
+				children: core.isNumber,
+				friends(val): val is Array<string> {
+					return core.isArray(val, core.isString);
+				}
+			})
+		).toBe(false);
+	});
+
+	describe('Function Value', () => {
+		interface WithFunction {
+			name: string;
+			fight: (foe: string) => boolean;
+		}
+
+		it('Should ask for a simple function predicate ((v) => v is Function)', () => {
+			expect(
+				isInterface<WithFunction>(
+					{ name: 'James', fight: () => false },
+					{
+						name: isString,
+						fight: isFunction
+					}
+				)
+			).toBe(true);
+		});
+	});
+
+	describe('Predicate Function Error', () => {
+		it('Should throw a TypeError if not given a valid predicate function', () => {
+			expect(() =>
+				isInterface(user, {
+					name: isString,
+					display_name: isString,
+					// @ts-expect-error
+					created_at: 'Danger Levels',
+					is_verified: isBoolean,
+					children: isNumber
+				})
+			).toThrow(TypeError);
+		});
+
+		it('Should inform which property key was expecting it', () => {
+			expect(() =>
+				isInterface(user, {
+					name: isString,
+					display_name: isString,
+					// @ts-expect-error
+					created_at: 'Danger Levels',
+					is_verified: isBoolean,
+					children: isNumber
+				})
+			).toThrow(new TypeError('Expected Predicate Function for Property: created_at'));
+		});
+	});
+});
+
 describe('isNullish', () => {
 	const { isNullish } = core;
 	it('Should return true if value is nullish or undefined', () => {

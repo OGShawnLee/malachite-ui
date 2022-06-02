@@ -33,6 +33,27 @@ export function isFunction(val: unknown): val is Function {
 	return typeof val === 'function' || val instanceof Function;
 }
 
+export function isInterface<T>(
+	val: unknown,
+	validators: {
+		[P in keyof T]: T[P] extends Function
+			? (value: unknown) => value is Function
+			: (value: unknown) => value is T[P];
+	}
+): val is T {
+	if (!isObject(val) || isArray(val)) return false;
+
+	const entries = Object.entries(validators);
+	for (const [key, predicate] of entries) {
+		if (!isFunction(predicate))
+			throw new TypeError(`Expected Predicate Function for Property: ${key}`);
+
+		if (!(isObject(val, [key]) && predicate(val[key]))) return false;
+	}
+
+	return true;
+}
+
 export function isNullish(val: unknown): val is null | undefined {
 	return val === null || val === undefined;
 }
