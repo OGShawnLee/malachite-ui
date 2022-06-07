@@ -2,7 +2,7 @@
   import Switch from './state';
   import { GroupContext } from './Group.state';
   import { Render } from '$lib/components';
-  import type { ClassName, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { Bridge } from '$lib/stores';
   import { useClassNameResolver } from '$lib/hooks';
 

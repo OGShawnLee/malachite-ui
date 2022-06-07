@@ -2,7 +2,7 @@
   import Switch from './state';
   import { Render } from '$lib/components';
   import type { Writable } from 'svelte/store';
-  import type { ClassName, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { isNotStore } from '$lib/predicate';
   import { useClassNameResolver } from '$lib/hooks';
 

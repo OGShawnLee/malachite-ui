@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Context } from './state';
   import { Render } from '$lib/components';
-  import type { Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+  import type { Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
 
   const { action, Proxy } = Context.getContext().overlay;
 

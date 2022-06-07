@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { CONTEXT } from './state';
+  import { Context } from './state';
   import { Render } from '$lib/components';
-  import type { ClassName, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { useClassNameResolver } from '$lib/hooks';
 
-  const { Open, button } = CONTEXT.getContext();
+  const { Open, button } = Context.getContext();
   const { Proxy, action } = button;
 
   let className: ClassName<'isDisabled'> = undefined;

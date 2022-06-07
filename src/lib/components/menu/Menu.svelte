@@ -2,7 +2,7 @@
   import Menu from './state';
   import { Render } from '$lib/components';
   import type { Readable } from 'svelte/store';
-  import type { ClassName, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { storable } from '$lib/stores';
   import { useClassNameResolver } from '$lib/hooks';
 

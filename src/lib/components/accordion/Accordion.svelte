@@ -3,7 +3,7 @@
   import { Render } from '$lib/components';
   import { storable } from '$lib/stores';
   import type { Readable } from 'svelte/store';
-  import type { ClassName, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { useClassNameResolver } from '$lib/hooks';
 
   export let finite: Readable<boolean> | boolean = false;

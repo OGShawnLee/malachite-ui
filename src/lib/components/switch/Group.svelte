@@ -1,7 +1,7 @@
 <script lang="ts">
   import Group from './Group.state';
   import { Render } from '$lib/components';
-  import type { ClassName, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { useClassNameResolver } from '$lib/hooks';
 
   const { Checked, label, description } = new Group();

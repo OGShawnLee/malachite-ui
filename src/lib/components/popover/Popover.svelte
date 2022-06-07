@@ -1,7 +1,7 @@
 <script lang="ts">
   import Popover from './state';
   import { Render } from '$lib/components';
-  import type { ClassName, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import type { Readable } from 'svelte/store';
   import { useClassNameResolver } from '$lib/hooks';
 
