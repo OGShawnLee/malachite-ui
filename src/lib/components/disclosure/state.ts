@@ -30,7 +30,7 @@ export default class Disclosure extends Component {
 
 		this.Open = makeReadable(this.Toggleable);
 
-		CONTEXT.setContext({
+		Context.setContext({
 			Open: this.Open,
 			button: this.button,
 			panel: this.panel,
@@ -80,7 +80,7 @@ export default class Disclosure extends Component {
 	private static generateIndex = this.initIndexGenerator();
 }
 
-export const CONTEXT = useContext({
+export const Context = useContext({
 	component: 'disclosure',
 	predicate: (val): val is Context => isObject(val, ['Open', 'button', 'panel', 'close'])
 });
