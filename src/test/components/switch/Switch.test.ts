@@ -2,9 +2,11 @@ import '@testing-library/jest-dom';
 import type { SvelteComponent } from 'svelte';
 import * as samples from './samples';
 import { act, fireEvent, render } from '@testing-library/svelte';
-import { Switch } from '$lib/components';
+import { Switch, SwitchDescription, SwitchLabel } from '$lib/components';
 import { hasTagName } from '$lib/predicate';
 import {
+	ContextParent,
+	createContextParentRenderer,
 	fuseElementsName,
 	generateActions,
 	isValidComponentName,
@@ -12,7 +14,7 @@ import {
 	useToggle
 } from '@test-utils';
 import { elementTagNames } from '$lib/components/render';
-import { useDOMTraversal } from '$lib/hooks';
+import { getContextKey, useDOMTraversal } from '$lib/hooks';
 
 function initComponent(Component: typeof SvelteComponent, props = {}) {
 	const result = render(Component, { props });
@@ -555,6 +557,113 @@ describe('Slot Props', () => {
 
 			await fireEvent.click(button);
 			expect(holder).toHaveTextContent('false');
+		});
+	});
+});
+
+// PLACING THIS BEFORE OTHER TESTS CORRUPTS THEIR CONTEXT
+describe('Context', () => {
+	interface ContextKeys {
+		Checked: any;
+		button: any;
+		initDescription: any;
+		initLabel: any;
+	}
+
+	const [init, messages] = createContextParentRenderer<ContextKeys>(ContextParent, 'switch');
+
+	describe('Unset Context', () => {
+		describe.each([
+			['Description', SwitchDescription],
+			['Label', SwitchLabel]
+		])('%s', (name, Component) => {
+			it('Should throw an error if rendered without a Switch Context', () => {
+				expect(() => render(Component)).toThrow();
+			});
+
+			it('Should try to fallback to a SwitchGroup Context', () => {
+				expect(() => render(Component)).toThrow(
+					`Unable to Find ${getContextKey('switch-group')} Context. Did you set it?`
+				);
+			});
+		});
+	});
+
+	describe('Invalid Context', () => {
+		describe('Switch', () => {
+			interface GroupContextkeys {
+				Checked: any;
+				InitDescription: any;
+				InitLabel: any;
+				initDescription: any;
+				initLabel: any;
+			}
+
+			const [init, message] = createContextParentRenderer<GroupContextkeys>(
+				ContextParent,
+				'switch-group'
+			);
+
+			it('Should throw if given an invalid SwitchGroup Context', () => {
+				expect(() => init(Switch, null)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => init(Switch, null)).toThrow(message.invalid);
+			});
+
+			it('Should validate the context value thoroughly', () => {
+				expect(() =>
+					init(Switch, {
+						Checked: null,
+						initDescription: null,
+						InitDescription: null,
+						initLabel: null,
+						InitLabel: null
+					})
+				).toThrow(message.invalid);
+				expect(() =>
+					init(Switch, {
+						Checked: { subscribe: () => 64 },
+						initDescription: {},
+						InitDescription: {},
+						initLabel: 'Not a Function',
+						InitLabel: false
+					})
+				).toThrow(message.invalid);
+			});
+		});
+
+		describe.each([
+			['Description', SwitchDescription],
+			['Label', SwitchLabel]
+		])('%s', (name, Component) => {
+			it('Should throw an error if rendered with an invalid Switch Context', () => {
+				expect(() => init(Component, null)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => init(Component, null)).toThrow(messages.invalid);
+			});
+
+			it('Should validate the context value thoroughly', () => {
+				expect(() =>
+					init(Component, {
+						Checked: null,
+						button: null,
+						initLabel: null,
+						initDescription: null
+					})
+				).toThrow(messages.invalid);
+				expect(() =>
+					init(Component, {
+						Checked: { subscribe: () => 64 },
+						button: {},
+						initLabel: false,
+						initDescription: {}
+					})
+				).toThrow(messages.invalid);
+			});
 		});
 	});
 });

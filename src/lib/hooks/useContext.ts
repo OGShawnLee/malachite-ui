@@ -6,9 +6,7 @@ export function useContext<C>(configuration: {
 	predicate: (value: unknown) => value is C;
 }) {
 	const { component, predicate } = configuration;
-
-	const name = coolString(`${LIBRARY_NAME}-${component}`);
-
+	const name = getContextKey(component);
 	return {
 		getContext: <T extends boolean = true>(
 			strict = true as T
@@ -37,4 +35,8 @@ function coolString(str: string) {
 		.split('-')
 		.map((str) => str[0].toUpperCase() + str.substring(1))
 		.join('-');
+}
+
+export function getContextKey(component: string) {
+	return coolString(`${LIBRARY_NAME}-${component}`);
 }

@@ -3,7 +3,7 @@ import type { ExtractContext } from '$lib/types';
 import type { Store } from '$lib/types';
 import { type Readable, type Updater, readable } from 'svelte/store';
 import { GroupContext } from './Group.state';
-import { Component } from '$lib/core';
+import { Component, defineActionComponent, initIndexGenerator } from '$lib/core';
 import { Bridge, storable, Toggleable } from '$lib/stores';
 import {
 	handleClickOutside,
@@ -13,7 +13,7 @@ import {
 } from '$lib/stores/toggleable';
 import { makeReadable } from '$lib/utils';
 import { useContext, useListener } from '$lib/hooks';
-import { isObject } from '$lib/predicate';
+import { isActionComponent, isFunction, isInterface, isStore } from '$lib/predicate';
 
 export default class Popover extends Component {
 	protected readonly Toggleable: Toggleable;
@@ -107,7 +107,20 @@ export default class Popover extends Component {
 	private static Context = useContext({
 		component: 'popover',
 		predicate: (val): val is Context =>
-			isObject(val, ['Open', 'ForceFocus', 'button', 'panel', 'overlay'])
+			isInterface<Context>(val, {
+				Open: isStore,
+				ForceFocus(val): val is Store<Readable<boolean>> {
+					return isInterface<Store<Readable<boolean>>>(val, {
+						subscribe: isFunction,
+						sync: isFunction
+					});
+				},
+				ShowOverlay: isStore,
+				button: isActionComponent,
+				panel: isActionComponent,
+				overlay: isActionComponent,
+				close: isFunction
+			})
 	});
 
 	static getContext = this.Context.getContext;

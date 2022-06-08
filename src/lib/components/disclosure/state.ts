@@ -4,7 +4,7 @@ import { Component } from '$lib/core';
 import { Bridge, Toggleable, usePreventInternalFocus } from '$lib/stores';
 import { makeReadable } from '$lib/utils';
 import { useContext } from '$lib/hooks';
-import { isBoolean, isObject } from '$lib/predicate';
+import { isActionComponent, isBoolean, isFunction, isInterface, isStore } from '$lib/predicate';
 
 export default class Disclosure extends Component {
 	protected readonly Toggleable: Toggleable;
@@ -82,7 +82,13 @@ export default class Disclosure extends Component {
 
 export const Context = useContext({
 	component: 'disclosure',
-	predicate: (val): val is Context => isObject(val, ['Open', 'button', 'panel', 'close'])
+	predicate: (val): val is Context =>
+		isInterface<Context>(val, {
+			Open: isStore,
+			button: isActionComponent,
+			panel: isActionComponent,
+			close: isFunction
+		})
 });
 
 interface Configuration {

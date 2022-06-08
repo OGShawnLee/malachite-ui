@@ -4,7 +4,7 @@ import { Hashable, storable, Toggleable } from '$lib/stores';
 import { type Readable, derived } from 'svelte/store';
 import { useCollector, useContext, useDataSync, useListener, useWindowListener } from '$lib/hooks';
 import { tick } from 'svelte';
-import { isObject, isWithin } from '$lib/predicate';
+import { isActionComponent, isFunction, isInterface, isStore, isWithin } from '$lib/predicate';
 import { makeReadable } from '$lib/utils';
 
 export default class Group extends Component {
@@ -233,7 +233,12 @@ export default class Group extends Component {
 
 export const GroupContext = useContext({
 	component: 'popover-group',
-	predicate: (val): val is Context => isObject(val, ['initClient'])
+	predicate: (val): val is Context =>
+		isInterface<Context>(val, {
+			Open: isStore,
+			initClient: isFunction,
+			overlay: isActionComponent
+		})
 });
 
 interface PopoverInstance {

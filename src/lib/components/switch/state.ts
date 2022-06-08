@@ -5,7 +5,7 @@ import { Component, defineActionComponentWithParams } from '$lib/core';
 import { GroupContext } from './Group.state';
 import { makeReadable, setAttribute } from '$lib/utils';
 import { useContext, useListener } from '$lib/hooks';
-import { hasTagName, isObject } from '$lib/predicate';
+import { hasTagName, isActionComponent, isFunction, isInterface, isStore } from '$lib/predicate';
 import { onMount } from 'svelte';
 
 export default class Switch extends Component {
@@ -117,7 +117,12 @@ export default class Switch extends Component {
 	private static Context = useContext({
 		component: 'switch',
 		predicate: (val): val is Context =>
-			isObject(val, ['Checked', 'button', 'initDescription', 'initLabel'])
+			isInterface<Context>(val, {
+				Checked: isStore,
+				button: isActionComponent,
+				initDescription: isFunction,
+				initLabel: isFunction
+			})
 	});
 
 	static getContext = this.Context.getContext;

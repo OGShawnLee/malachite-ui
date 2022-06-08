@@ -1,4 +1,4 @@
-import type { Readable, Updater, Writable } from 'svelte/store';
+import type { Readable, Writable } from 'svelte/store';
 import type { Expand, ExtractContext, Nullable } from '$lib/types';
 import { Component } from '$lib/core';
 import { Bridge, Group, Toggleable } from '$lib/stores';
@@ -11,7 +11,7 @@ import {
 } from '$lib/stores/toggleable';
 import { focusFirstElement, makeReadable, useHideScrollbar } from '$lib/utils';
 import { useContext, useListener } from '$lib/hooks';
-import { isObject, isHTMLElement } from '$lib/predicate';
+import { isHTMLElement, isInterface, isStore, isActionComponent, isFunction } from '$lib/predicate';
 import { tick } from 'svelte';
 
 export default class Dialog extends Component {
@@ -149,7 +149,15 @@ export default class Dialog extends Component {
 export const Context = useContext<Context>({
 	component: 'dialog',
 	predicate: (val): val is Context =>
-		isObject(val, ['Open', 'close', 'overlay', 'dialog', 'content', 'initTitle', 'initDescription'])
+		isInterface<Context>(val, {
+			Open: isStore,
+			content: isActionComponent,
+			dialog: isActionComponent,
+			overlay: isActionComponent,
+			initDescription: isFunction,
+			initTitle: isFunction,
+			close: isFunction
+		})
 });
 
 type Context = ExtractContext<

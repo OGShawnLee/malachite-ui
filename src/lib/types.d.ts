@@ -1,6 +1,17 @@
 import type { Writable, Readable, Unsubscriber } from 'svelte/store';
 import type { Action } from 'svelte/action';
-import type { Ordered } from '$lib/stores/Ordered';
+import type { Bridge, Ordered } from '$lib/stores';
+
+export interface ActionComponent<T = unknown> {
+	Proxy: Bridge;
+	action(
+		element: HTMLElement,
+		parameter?: T
+	): {
+		destroy(): Promise<void>;
+		update?(parameter?: T): void;
+	};
+}
 
 export type Collectable =
 	| Unsubscriber

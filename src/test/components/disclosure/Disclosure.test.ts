@@ -1,11 +1,17 @@
 import '@testing-library/jest-dom';
 import type { SvelteComponent } from 'svelte';
 import * as samples from './samples';
-import { Disclosure } from '$lib/components';
+import { Disclosure, DisclosureButton, DisclosurePanel } from '$lib/components';
 import { act, fireEvent, render } from '@testing-library/svelte';
 import { elementTagNames } from '$lib/components/render';
 import { hasTagName } from '$lib/predicate';
-import { generateActions, isValidComponentName, useToggle } from '@test-utils';
+import {
+	ContextParent,
+	createContextParentRenderer,
+	generateActions,
+	isValidComponentName,
+	useToggle
+} from '@test-utils';
 
 function initComponent(Component: typeof SvelteComponent, props = {}) {
 	const result = render(Component, { props });
@@ -314,5 +320,65 @@ describe('Slot Props', () => {
 		);
 
 		// -> close function behaviour is covered in the Toggleable test suite
+	});
+});
+
+describe('Context', () => {
+	interface ContextKeys {
+		Open: any;
+		button: any;
+		panel: any;
+		close: any;
+	}
+
+	const [init, messages] = createContextParentRenderer<ContextKeys>(ContextParent, 'disclosure');
+
+	describe('Unset Context', () => {
+		describe.each([
+			['Button', DisclosureButton],
+			['Panel', DisclosurePanel]
+		])('%s', (name, Component) => {
+			it('Should throw an error if rendered without a Disclosure Context', () => {
+				expect(() => render(Component)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => render(Component)).toThrow(messages.unset);
+			});
+		});
+	});
+
+	describe('Invalid Context', () => {
+		describe.each([
+			['Button', DisclosureButton],
+			['Panel', DisclosurePanel]
+		])('%s', (name, Component) => {
+			it('Should throw an error if rendered with an invalid Disclosure Context', () => {
+				expect(() => init(Component, null)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => init(Component, null)).toThrow(messages.invalid);
+			});
+
+			it('Should validate the context value thoroughly', () => {
+				expect(() =>
+					init(Component, {
+						Open: null,
+						button: null,
+						panel: null,
+						close: null
+					})
+				).toThrow(messages.invalid);
+				expect(() =>
+					init(Component, {
+						Open: { subscribe: 64 },
+						button: {},
+						panel: {},
+						close: () => 64
+					})
+				).toThrow(messages.invalid);
+			});
+		});
 	});
 });

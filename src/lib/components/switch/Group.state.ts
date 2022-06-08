@@ -2,7 +2,7 @@ import type Switch from './state';
 import type { ExtractContext } from '$lib/types';
 import { get, writable } from 'svelte/store';
 import { useContext } from '$lib/hooks';
-import { isObject } from '$lib/predicate';
+import { isFunction, isInterface, isWritable } from '$lib/predicate';
 import { Bridge } from '$lib/stores';
 
 export default class Group {
@@ -52,7 +52,13 @@ export default class Group {
 export const GroupContext = useContext({
 	component: 'switch-group',
 	predicate: (val): val is Context =>
-		isObject(val, ['Checked', 'InitDescription', 'InitLabel', 'initDescription', 'initLabel'])
+		isInterface<Context>(val, {
+			Checked: isWritable,
+			initDescription: isFunction,
+			initLabel: isFunction,
+			InitDescription: isWritable,
+			InitLabel: isWritable
+		})
 });
 
 type Context = ExtractContext<

@@ -6,7 +6,7 @@ import { useManualSync } from '$lib/stores/addons';
 import { derived, writable } from 'svelte/store';
 import { useCollector, useContext, usePair } from '$lib/hooks';
 import { makeReadable } from '$lib/utils';
-import { isObject } from '$lib/predicate';
+import { isActionComponent, isFunction, isInterface, isObject, isStore } from '$lib/predicate';
 import { onDestroy } from 'svelte';
 
 export default class Tabs extends Component {
@@ -187,7 +187,13 @@ interface Options {
 export const Context = useContext({
 	component: 'tabs',
 	predicate: (val): val is Context =>
-		isObject(val, ['Index', 'initPanel', 'initTab', 'tabList', 'tabPanels'])
+		isInterface<Context>(val, {
+			Index: isStore,
+			initPanel: isFunction,
+			initTab: isFunction,
+			tabList: isActionComponent,
+			tabPanels: isActionComponent
+		})
 });
 
 type Context = ExtractContext<Tabs, 'Index' | 'initPanel' | 'initTab' | 'tabList' | 'tabPanels'>;

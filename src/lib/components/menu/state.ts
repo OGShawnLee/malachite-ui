@@ -12,7 +12,13 @@ import { Component } from '$lib/core';
 import { writable } from 'svelte/store';
 import { useContext, useListener } from '$lib/hooks';
 import { makeReadable } from '$lib/utils';
-import { isNavigationKey, isObject } from '$lib/predicate';
+import {
+	isActionComponent,
+	isFunction,
+	isInterface,
+	isNavigationKey,
+	isStore
+} from '$lib/predicate';
 
 export default class Menu extends Component {
 	protected readonly Toggleable: Toggleable;
@@ -212,7 +218,13 @@ interface Options {
 export const Context = useContext({
 	component: 'menu',
 	predicate: (val): val is Context =>
-		isObject(val, ['Open', 'button', 'initItem', 'items', 'close'])
+		isInterface<Context>(val, {
+			Open: isStore,
+			button: isActionComponent,
+			items: isActionComponent,
+			initItem: isFunction,
+			close: isFunction
+		})
 });
 
 type Context = ExtractContext<Menu, 'Open' | 'button' | 'initItem' | 'items' | 'close'>;

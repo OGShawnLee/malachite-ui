@@ -1,7 +1,14 @@
-import type { Expand, ExtractContext, Navigable as Nav, Store } from '$lib/types';
+import type { ActionComponent, Expand, ExtractContext, Navigable as Nav, Store } from '$lib/types';
 import { type Readable, derived, writable } from 'svelte/store';
 import { Component, defineActionComponent, defineActionComponentWithParams } from '$lib/core';
-import { isNumber, isObject, isString } from '$lib/predicate';
+import {
+	isActionComponent,
+	isFunction,
+	isInterface,
+	isNumber,
+	isStore,
+	isString
+} from '$lib/predicate';
 import { Bridge, Hashable, Navigable, Ordered, type Toggleable } from '$lib/stores';
 import { usePreventInternalFocus } from '$lib/stores/toggleable';
 import { generate, makeReadable, setAttribute } from '$lib/utils';
@@ -200,7 +207,11 @@ function useName(configuration: { parent: string; component: string; index: numb
 
 export const Context = useContext({
 	component: 'accordion',
-	predicate: (val): val is Context => isObject(val, ['accordion', 'initItem'])
+	predicate: (val): val is Context =>
+		isInterface<Context>(val, {
+			accordion: isActionComponent,
+			initItem: isFunction
+		})
 });
 
 type Context = ExtractContext<Accordion, 'accordion' | 'initItem'>;
@@ -208,34 +219,21 @@ type Context = ExtractContext<Accordion, 'accordion' | 'initItem'>;
 export const ItemContext = useContext({
 	component: 'accordion-item',
 	predicate: (val): val is ItemContext =>
-		isObject(val, ['Open', 'close', 'button', 'header', 'panel'])
+		isInterface<ItemContext>(val, {
+			Open: isStore,
+			close: isFunction,
+			button: isActionComponent,
+			panel: isActionComponent,
+			header: isActionComponent
+		})
 });
 
 type ItemContext = {
 	Open: Readable<boolean>;
 	close: (ref?: Event | HTMLElement) => void;
-	button: {
-		Proxy: Bridge;
-		action: (element: HTMLElement) => {
-			destroy: () => Promise<void>;
-		};
-	};
-	header: {
-		Proxy: Bridge;
-		action: (
-			element: HTMLElement,
-			level?: number | string
-		) => {
-			update(level?: number | string): void;
-			destroy: () => Promise<void>;
-		};
-	};
-	panel: {
-		Proxy: Bridge;
-		action: (element: HTMLElement) => {
-			destroy: () => Promise<void>;
-		};
-	};
+	button: ActionComponent;
+	header: ActionComponent<number | string>;
+	panel: ActionComponent;
 };
 
 interface Options {

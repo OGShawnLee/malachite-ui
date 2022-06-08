@@ -6,7 +6,15 @@ import { findElement } from '$lib/utils';
 import { writable } from 'svelte/store';
 import { hasTagName } from '$lib/predicate';
 import { elementTagNames } from '$lib/components/render';
-import { generateActions, isValidComponentName } from '@test-utils';
+import {
+	ContextParent,
+	createContextParentRenderer,
+	generateActions,
+	isValidComponentName,
+	renderContextParentComponent
+} from '@test-utils';
+import { PopoverButton, PopoverOverlay, PopoverPanel } from '$lib/components';
+import { getContextKey } from '$lib/hooks';
 
 afterEach(() => cleanup());
 
@@ -411,6 +419,93 @@ describe('Slot Props', () => {
 
 			await fireEvent.click(button);
 			expect(holder).toHaveTextContent('true');
+		});
+	});
+});
+
+// PLACING THIS BEFORE THE OTHER TESTS CORRUPTS THEIR CONTEXT
+describe('Context', () => {
+	interface ContextKeys {
+		Open: any;
+		ForceFocus: any;
+		ShowOverlay: any;
+		button: any;
+		panel: any;
+		overlay: any;
+		close: any;
+	}
+
+	const [renderContextParent, errorMessages] = createContextParentRenderer<ContextKeys>(
+		ContextParent,
+		'popover'
+	);
+
+	describe('Unset Context', () => {
+		describe('Overlay', () => {
+			it('Should throw an error if rendered without a Popover Context', () => {
+				expect(() => render(PopoverOverlay)).toThrow();
+			});
+
+			it('Should try to fallback to a PopoverGroup Context', () => {
+				expect(() => render(PopoverOverlay)).toThrow(
+					`Unable to Find ${getContextKey('popover-group')} Context. Did you set it?`
+				);
+			});
+		});
+
+		describe.each([
+			['Button', PopoverButton],
+			['Panel', PopoverPanel]
+			// ['Overlay', PopoverOverlay]
+		])('%s', (name, Component) => {
+			it('Should throw an error if rendered without a Popover Context', () => {
+				expect(() => render(Component)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => render(Component)).toThrow(errorMessages.unset);
+			});
+		});
+	});
+
+	describe('Invalid Context', () => {
+		describe.each([
+			['Button', PopoverButton],
+			['Panel', PopoverPanel],
+			['Overlay', PopoverOverlay]
+		])('%s', (name, Component) => {
+			it('Should throw an error if rendered with an invalid Popover Context', () => {
+				expect(() => renderContextParent(Component, null)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => renderContextParent(Component, null)).toThrow(errorMessages.invalid);
+			});
+
+			it('Should validate the context value thoroughly', () => {
+				expect(() =>
+					renderContextParent(Component, {
+						Open: null,
+						ShowOverlay: null,
+						ForceFocus: null,
+						button: null,
+						panel: null,
+						overlay: null,
+						close: null
+					})
+				).toThrow(errorMessages.invalid);
+				expect(() =>
+					renderContextParent(Component, {
+						Open: { subscribe: () => null },
+						ShowOverlay: null,
+						ForceFocus: null,
+						button: null,
+						panel: null,
+						overlay: null,
+						close: () => null
+					})
+				).toThrow(errorMessages.invalid);
+			});
 		});
 	});
 });

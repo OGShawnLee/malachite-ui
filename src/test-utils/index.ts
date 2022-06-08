@@ -7,6 +7,12 @@ import { notifiable } from '$lib/stores';
 import { isAround, isHTMLElement } from '$lib/predicate';
 import { derived, writable } from 'svelte/store';
 
+export {
+	default as ContextParent,
+	createContextParentRenderer,
+	renderContextParentComponent
+} from './__context-parent.svelte';
+
 export function appendChild<T extends Node>(child: T, container: Node = document.body) {
 	return container.appendChild(child);
 }

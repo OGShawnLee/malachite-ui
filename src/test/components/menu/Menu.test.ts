@@ -1,12 +1,19 @@
 import '@testing-library/jest-dom';
 import * as samples from './samples';
 import type { SvelteComponent } from 'svelte';
-import { Menu } from '$lib';
+import { Menu, MenuButton, MenuItems } from '$lib';
 import { elementTagNames } from '$lib/components/render';
 import { hasTagName } from '$lib/predicate';
 import { act, fireEvent, render, waitFor } from '@testing-library/svelte';
-import { generateActions, isValidComponentName, waitAWhile } from '@test-utils';
+import {
+	ContextParent,
+	createContextParentRenderer,
+	generateActions,
+	isValidComponentName,
+	waitAWhile
+} from '@test-utils';
 import { writable } from 'svelte/store';
+import { Bridge } from '$lib/stores';
 
 function initComponent(Component: typeof SvelteComponent, props = {}) {
 	const result = render(Component, { props });
@@ -826,6 +833,69 @@ describe('Slot Props', () => {
 			await fireEvent.keyDown(panel, { code: 'Home' });
 			expect(items[0]).toHaveTextContent('true');
 			expect(isUniqueSelectedItem(items)).toBe(true);
+		});
+	});
+});
+
+describe('Context', () => {
+	interface ContextKeys {
+		Open: any;
+		button: any;
+		items: any;
+		initItem: any;
+		close: any;
+	}
+
+	const [init, messages] = createContextParentRenderer<ContextKeys>(ContextParent, 'menu');
+
+	describe('Unset Context', () => {
+		describe.each([
+			['Button', MenuButton],
+			['Items', MenuItems]
+		])('%s', (name, Component) => {
+			it('Should throw an error if rendered without a Menu Context', () => {
+				expect(() => render(Component)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => render(Component)).toThrow(messages.unset);
+			});
+		});
+	});
+
+	describe('Invalid Context', () => {
+		describe.each([
+			['Button', MenuButton],
+			['Items', MenuItems]
+		])('%s', (name, Component) => {
+			it('Should throw an error if rendered with an invalid Menu Context', () => {
+				expect(() => init(Component, null)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => init(Component, null)).toThrow(messages.invalid);
+			});
+
+			it('Should validate the context value thoroughly', () => {
+				expect(() =>
+					init(Component, {
+						Open: null,
+						button: null,
+						items: null,
+						initItem: null,
+						close: null
+					})
+				).toThrow(messages.invalid);
+				expect(() =>
+					init(Component, {
+						Open: { subscribe: 96 },
+						button: { Proxy: new Bridge(), action: () => null },
+						items: null,
+						initItem: 'hey',
+						close: () => null
+					})
+				).toThrow(messages.invalid);
+			});
 		});
 	});
 });

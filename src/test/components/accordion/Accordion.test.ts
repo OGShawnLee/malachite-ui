@@ -1,12 +1,18 @@
 import '@testing-library/jest-dom';
 import type { SvelteComponent } from 'svelte';
 import * as samples from './samples';
-import { Accordion } from '$lib';
+import { Accordion, AccordionButton, AccordionHeader, AccordionItem, AccordionPanel } from '$lib';
 import { elementTagNames } from '$lib/components/render';
 import { hasTagName } from '$lib/predicate';
-import { generateActions, isValidComponentName } from '@test-utils';
+import {
+	ContextParent,
+	createContextParentRenderer,
+	generateActions,
+	isValidComponentName
+} from '@test-utils';
 import { act, fireEvent, render } from '@testing-library/svelte';
 import { writable } from 'svelte/store';
+import { getContextKey } from '$lib/hooks';
 
 function initComponent(Component: typeof SvelteComponent, props = {}) {
 	const result = render(Component, { props });
@@ -609,6 +615,84 @@ describe('Slot Props', () => {
 				const closeButton = getByText(textContent);
 				await fireEvent.click(closeButton);
 				expect(panel).not.toBeInTheDocument();
+			});
+		});
+	});
+});
+
+describe('Context', () => {
+	describe('Unset Context', () => {
+		describe('Item', () => {
+			it('Should throw if rendered without an Accordion Context', () => {
+				expect(() => render(AccordionItem)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => render(AccordionItem)).toThrow(
+					`Unable to Find ${getContextKey('accordion')} Context. Did you set it?`
+				);
+			});
+		});
+
+		interface ContextKeys {
+			Open: any;
+			close: any;
+			button: any;
+			panel: any;
+			header: any;
+		}
+
+		const [init, message] = createContextParentRenderer<ContextKeys>(
+			ContextParent,
+			'accordion-item'
+		);
+
+		describe.each([
+			['Header', AccordionHeader],
+			['Button', AccordionButton],
+			['Panel', AccordionPanel]
+		])('%', (name, Component) => {
+			it('Should throw if rendered without an AccordionItem Context', () => {
+				expect(() => render(Component)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => render(Component)).toThrow(message.unset);
+			});
+		});
+
+		describe.each([
+			['Header', AccordionHeader],
+			['Button', AccordionButton],
+			['Panel', AccordionPanel]
+		])('%', (name, Component) => {
+			it('Should throw an error if rendered with an invalid Accordion Context', () => {
+				expect(() => init(Component, null)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => init(Component, null)).toThrow(message.invalid);
+			});
+
+			it('Should validate the context value thoroughly', () => {
+				expect(() =>
+					init(Component, {
+						Open: null,
+						close: null,
+						header: null,
+						button: null,
+						panel: null
+					})
+				).toThrow(message.invalid);
+				expect(() =>
+					init(Component, {
+						Open: { subscribe: () => 64 },
+						close: () => 360,
+						header: {},
+						button: {},
+						panel: {}
+					})
+				).toThrow(message.invalid);
 			});
 		});
 	});

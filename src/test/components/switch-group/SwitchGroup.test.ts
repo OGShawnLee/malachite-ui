@@ -1,11 +1,16 @@
 import '@testing-library/jest-dom';
 import type { SvelteComponent } from 'svelte';
 import { render } from '@testing-library/svelte';
-import { SwitchGroup } from '$lib/components';
+import { SwitchDescription, SwitchGroup, SwitchLabel } from '$lib/components';
 import { ActionComponent, Behaviour } from './samples';
 import { elementTagNames } from '$lib/components/render';
 import { hasTagName } from '$lib/predicate';
-import { fuseElementsName, generateActions } from '@test-utils';
+import {
+	ContextParent,
+	createContextParentRenderer,
+	fuseElementsName,
+	generateActions
+} from '@test-utils';
 
 function initComponent(Component: typeof SvelteComponent, props = {}) {
 	const result = render(Component, { props });
@@ -83,3 +88,66 @@ describe('Rendering', () => {
 });
 
 // TODO: TEST isChecked slot prop
+
+describe('Context', () => {
+	interface ContextKeys {
+		Checked: any;
+		initDescription: any;
+		initLabel: any;
+		InitDescription: any;
+		InitLabel: any;
+	}
+
+	const [init, messages] = createContextParentRenderer<ContextKeys>(ContextParent, 'switch-group');
+
+	describe('Unset Context', () => {
+		describe.each([
+			['Description', SwitchDescription],
+			['Label', SwitchLabel]
+		])('%s', (name, Component) => {
+			it('Should throw an error if not rendered with a SwichGroup Context', () => {
+				expect(() => render(Component)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => render(Component)).toThrow(messages.unset);
+			});
+		});
+	});
+
+	describe('Invalid Context', () => {
+		describe.each([
+			['Description', SwitchDescription],
+			['Label', SwitchLabel]
+		])('%s', (name, Component) => {
+			it('Should throw an error if rendered with an invalid SwitchGroup Context', () => {
+				expect(() => init(Component, null)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => init(Component, null)).toThrow(messages.invalid);
+			});
+
+			it('Should validate the context value thoroughly', () => {
+				expect(() =>
+					init(Component, {
+						Checked: null,
+						initDescription: null,
+						initLabel: null,
+						InitDescription: null,
+						InitLabel: null
+					})
+				).toThrow(messages.invalid);
+				expect(() =>
+					init(Component, {
+						Checked: { subscribe: null },
+						initDescription: () => 64,
+						initLabel: () => 360,
+						InitDescription: { subscribe: null },
+						InitLabel: { subscribe: null }
+					})
+				).toThrow(messages.invalid);
+			});
+		});
+	});
+});

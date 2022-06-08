@@ -1,11 +1,16 @@
 import '@testing-library/jest-dom';
 import type { SvelteComponent } from 'svelte';
 import * as samples from './samples';
-import { TabGroup } from '$lib/components';
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '$lib/components';
 import { act, fireEvent, render } from '@testing-library/svelte';
 import { hasTagName } from '$lib/predicate';
 import { elementTagNames } from '$lib/components/render';
-import { generateActions, isValidComponentName } from '@test-utils';
+import {
+	ContextParent,
+	createContextParentRenderer,
+	generateActions,
+	isValidComponentName
+} from '@test-utils';
 import { writable } from 'svelte/store';
 
 function initComponent(Component: typeof SvelteComponent, props = {}) {
@@ -811,6 +816,73 @@ describe('Slot Props', () => {
 			expect(panel).toHaveTextContent('Panel 1');
 			expect(panel).toHaveAttribute('aria-labelledby', tabs[0].id);
 			expect(isValidComponentName(panel, 'tabs', 'panel')).toBe(true);
+		});
+	});
+});
+
+describe('Context', () => {
+	interface ContextKeys {
+		Index: any;
+		initPanel: any;
+		initTab: any;
+		tabList: any;
+		tabPanels: any;
+	}
+
+	const [init, message] = createContextParentRenderer<ContextKeys>(ContextParent, 'tabs');
+
+	describe('Unset Context', () => {
+		describe.each([
+			['List', TabList],
+			['Tab', Tab],
+			['Panels', TabPanels],
+			['Panel', TabPanel]
+		])('%s', (name, Component) => {
+			it('Should throw an error if rendered without a Tabs Context', () => {
+				expect(() => render(Component)).toThrow();
+			});
+
+			it('Should throw a specific error', () => {
+				expect(() => render(Component)).toThrow(message.unset);
+			});
+		});
+	});
+
+	describe('Invalid Context', () => {
+		describe.each([
+			['List', TabList],
+			['Tab', Tab],
+			['Panels', TabPanels],
+			['Panel', TabPanel]
+		])('%s', (name, Component) => {
+			it('Should throw an error if rendered with an invalid Tabs Context', () => {
+				expect(() => init(Component, null)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => init(Component, null)).toThrow(message.invalid);
+			});
+
+			it('Should validate the context value thoroughly', () => {
+				expect(() =>
+					init(Component, {
+						Index: null,
+						initPanel: null,
+						initTab: null,
+						tabList: null,
+						tabPanels: null
+					})
+				).toThrow(message.invalid);
+				expect(() =>
+					init(Component, {
+						Index: { subscribe: () => 720 },
+						initPanel: () => null,
+						initTab: () => null,
+						tabList: {},
+						tabPanels: {}
+					})
+				).toThrow(message.invalid);
+			});
 		});
 	});
 });

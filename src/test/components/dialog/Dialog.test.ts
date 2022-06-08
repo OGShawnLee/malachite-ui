@@ -1,7 +1,10 @@
+import { DialogContent, DialogDescription, DialogOverlay, DialogTitle } from '$lib/components';
 import { elementTagNames } from '$lib/components/render';
 import { hasTagName } from '$lib/predicate';
 import { findElement } from '$lib/utils';
 import {
+	ContextParent,
+	createContextParentRenderer,
 	fuseElementsName,
 	generateActions,
 	getAllByComponentName,
@@ -12,6 +15,7 @@ import '@testing-library/jest-dom';
 import { act, cleanup, render, fireEvent } from '@testing-library/svelte';
 import type { SvelteComponent } from 'svelte';
 import * as samples from './samples';
+import { Bridge } from '$lib/stores';
 
 afterEach(() => cleanup());
 
@@ -294,6 +298,79 @@ describe('Rendering', () => {
 				expect(action).toHaveBeenCalledTimes(1);
 				expect(action).toBeCalledWith(element, param);
 			}
+		});
+	});
+});
+
+describe('Context', () => {
+	interface ContextKeys {
+		Open: any;
+		overlay: any;
+		dialog: any;
+		content: any;
+		initDescription: any;
+		initTitle: any;
+		close: any;
+	}
+
+	const [init, messages] = createContextParentRenderer<ContextKeys>(ContextParent, 'dialog');
+
+	describe('Unset Context', () => {
+		describe.each([
+			['Content', DialogContent],
+			['Description', DialogDescription],
+			['Overlay', DialogOverlay],
+			['Title', DialogTitle]
+		])('%s', (name, Component) => {
+			it('Should throw an error if rendered without a Dialog Context', () => {
+				expect(() => render(Component)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => render(Component)).toThrow(messages.unset);
+			});
+		});
+	});
+
+	describe('Invalid Context', () => {
+		describe.each([
+			['Content', DialogContent],
+			['Description', DialogDescription],
+			['Overlay', DialogOverlay],
+			['Title', DialogTitle]
+		])('%s', (name, Component) => {
+			it('Should throw an error if rendered with an invalid Disclosure Context', () => {
+				expect(() => init(Component, null)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => init(Component, null)).toThrow(messages.invalid);
+			});
+
+			it('Should validate the context value thoroughly', () => {
+				expect(() =>
+					init(Component, {
+						Open: null,
+						overlay: null,
+						dialog: null,
+						initDescription: null,
+						initTitle: null,
+						close: null,
+						content: null
+					})
+				).toThrow(messages.invalid);
+				expect(() =>
+					init(Component, {
+						Open: { subscribe: 96 },
+						overlay: { Proxy: new Bridge(), action: () => null },
+						dialog: null,
+						initDescription: 'hey',
+						initTitle: null,
+						close: () => null,
+						content: null
+					})
+				).toThrow(messages.invalid);
+			});
 		});
 	});
 });

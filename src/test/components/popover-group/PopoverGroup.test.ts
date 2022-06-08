@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom';
 import { Behaviour, Overlay } from './samples';
 import { elementTagNames } from '$lib/components/render';
-import { PopoverGroup } from '$lib/components';
+import { PopoverGroup, PopoverOverlay } from '$lib/components';
 import { act, fireEvent, render } from '@testing-library/svelte';
 import { hasTagName } from '$lib/predicate';
-import { generateActions } from '@test-utils';
+import { ContextParent, createContextParentRenderer, generateActions } from '@test-utils';
 import { useDOMTraversal } from '$lib/hooks';
 import { findElement } from '$lib/utils';
 import type { SvelteComponent } from 'svelte';
@@ -360,6 +360,51 @@ describe('Slot Props', () => {
 
 			await fireEvent.click(third);
 			expect(holder).toHaveTextContent('true');
+		});
+	});
+});
+
+describe('Context', () => {
+	describe('Unset Context', () => {
+		describe('Overlay', () => {
+			interface ContextKeys {
+				Open: any;
+				initClient: any;
+				overlay: any;
+			}
+			const [init, messages] = createContextParentRenderer<ContextKeys>(
+				ContextParent,
+				'popover-group'
+			);
+
+			it('Should throw an error if rendered without a PopoverGroup Context', () => {
+				expect(() => render(PopoverOverlay)).toThrow();
+			});
+
+			it('Should throw an specific error', () => {
+				expect(() => render(PopoverOverlay)).toThrow(messages.unset);
+			});
+
+			it('Should throw an error if given an invalid PopoverGroup Context', () => {
+				expect(() => init(PopoverOverlay, null)).toThrow();
+			});
+
+			it('Should throw an specific error if given an invalid PopoverGroup Context', () => {
+				expect(() => init(PopoverOverlay, null)).toThrow(messages.invalid);
+			});
+
+			it('Should validate the context thoroughly', () => {
+				expect(() => init(PopoverOverlay, { Open: null, initClient: null, overlay: null })).toThrow(
+					messages.invalid
+				);
+				expect(() =>
+					init(PopoverOverlay, {
+						Open: { subscribe: () => 64 },
+						initClient: () => 64,
+						overlay: null
+					})
+				).toThrow(messages.invalid);
+			});
 		});
 	});
 });
