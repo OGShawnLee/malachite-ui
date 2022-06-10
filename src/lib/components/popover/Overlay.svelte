@@ -6,11 +6,10 @@
   import { storable } from '$lib/stores';
   import { useClassNameResolver } from '$lib/hooks';
 
-  const PopoverContext = Popover.getContext(false);
   const {
     Open,
     overlay: { Proxy, action }
-  } = PopoverContext ? PopoverContext : GroupContext.getContext();
+  } = Popover.getContext(false) || GroupContext.getContext();
 
   const ShowOverlay = storable({
     Store: Popover.getContext(false)?.ShowOverlay,
