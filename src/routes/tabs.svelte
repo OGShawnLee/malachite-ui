@@ -9,7 +9,7 @@
   let [manual, toggleManual] = useToggle(false);
   let [vertical, toggleVertical] = useToggle(false);
 
-  let index = 69;
+  let index = 360;
 
   const className = useClassNameResolver<'isDisabled' | 'isSelected'>({
     base: 'px-6 py-2 font-medium focus:(ring-2 ring-black)',

@@ -440,7 +440,7 @@ describe('Props', () => {
 
 		describe('Invalid Index', () => {
 			it('Should automatically select the first tab if index is less than 0', async () => {
-				const { findAllByText, findByText } = render(Index, { props: { index: -69 } });
+				const { findAllByText, findByText } = render(Index, { props: { index: -360 } });
 
 				const tabs = await findAllByText(/Tab/);
 				const panel = await findByText('Panel 1');
@@ -450,7 +450,7 @@ describe('Props', () => {
 			});
 
 			it('Should automatically select the first non disabled tab if index is less than 0', async () => {
-				const { findByText } = render(Index, { props: { disabled: true, index: -69 } });
+				const { findByText } = render(Index, { props: { disabled: true, index: -360 } });
 				const invalidTab = await findByText('Tab 1');
 				expect(invalidTab.ariaSelected).toBe('false');
 
@@ -459,13 +459,13 @@ describe('Props', () => {
 			});
 
 			it('Should automatically select the last tab if index is overflowed', async () => {
-				const { findByText } = render(Index, { props: { index: 69 } });
+				const { findByText } = render(Index, { props: { index: 360 } });
 				const tab = await findByText('Tab 5');
 				expect(tab.ariaSelected).toBe('true');
 			});
 
 			it('Should automatically select the last non disabled tab if index is overflowed', async () => {
-				const { findByText } = render(Index, { props: { disabled: true, index: 69 } });
+				const { findByText } = render(Index, { props: { disabled: true, index: 360 } });
 				const invalidTab = await findByText('Tab 5');
 				expect(invalidTab.ariaSelected).toBe('false');
 

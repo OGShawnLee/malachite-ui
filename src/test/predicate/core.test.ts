@@ -171,7 +171,7 @@ describe('isInterface', () => {
 	it('Should pass the object property value to the predicate function', () => {
 		const { text, user_id } = {
 			text: "You're kinda slow for a human, aren't ya?",
-			user_id: 123699
+			user_id: 123339
 		};
 
 		const tweet = { text, user_id };
