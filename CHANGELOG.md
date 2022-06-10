@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.1](https://github.com/OGShawnLee/malachite-ui/compare/v0.7.0...v0.7.1) (2022-06-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **predicate:** return store predicate with generic any
+
+### Features
+
+* **component:** improve context validation ([91d14e4](https://github.com/OGShawnLee/malachite-ui/commit/91d14e40541fede7cbfb9b15f2dec8066a55d25b))
+* **predicate:** add isInterface predicate function ([15c6f83](https://github.com/OGShawnLee/malachite-ui/commit/15c6f839a2ca3aa1f04cad9f19ad2f1ba4891ec7))
+* **tabs:** dont wait until mount to render panel ([221e315](https://github.com/OGShawnLee/malachite-ui/commit/221e315ad5956b2601a32ddac60ae72623f8a289))
+
+
+### Bug Fixes
+
+* **accordion:** only set role heading if Header is not a heading element ([e557210](https://github.com/OGShawnLee/malachite-ui/commit/e5572103cc34e22ef5075763fb1deb158d88df3b))
+* **component:** expose use prop with correct type ([f8a8743](https://github.com/OGShawnLee/malachite-ui/commit/f8a874380e3bc0d26460e7431a7ffafb4dbc48bd))
+* **utils:** make sure setAttribute overwrite works in Svelte actions ([77c88d9](https://github.com/OGShawnLee/malachite-ui/commit/77c88d911ece27f3b0a14543a25757c39ab820da))
+
+
+* **predicate:** return store predicate with generic any ([8448604](https://github.com/OGShawnLee/malachite-ui/commit/8448604d38ddcf3556cf9c11d6bd91653096050b))
+
 ## [0.7.0](https://github.com/OGShawnLee/malachite-ui/compare/v0.6.2...v0.7.0) (2022-05-13)
 
 ### ⚠ BREAKING CHANGES
