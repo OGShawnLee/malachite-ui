@@ -1,64 +1,47 @@
-import type { Readable, Writable } from 'svelte/store';
-import type { ExtractContext, Nullable } from '$lib/types';
-import { Component } from '$lib/core';
+import type { Readable } from 'svelte/store';
+import type { ActionComponent, Store } from '$lib/types';
+import { defineActionComponent, initIndexGenerator } from '$lib/core';
 import { Bridge, Toggleable, usePreventInternalFocus } from '$lib/stores';
-import { makeReadable } from '$lib/utils';
-import { useContext } from '$lib/hooks';
-import { isActionComponent, isBoolean, isFunction, isInterface, isStore } from '$lib/predicate';
+import { generate, makeReadable } from '$lib/utils';
+import { useComponentNaming, useContext } from '$lib/hooks';
+import { isActionComponent, isFunction, isInterface, isStore } from '$lib/predicate';
 
-export default class Disclosure extends Component {
-	protected readonly Toggleable: Toggleable;
+interface Options {
+	Open: Store<boolean>;
+}
 
-	protected readonly Button: Bridge;
-	protected readonly Panel: Bridge;
+export interface Context {
+	Open: Readable<boolean>;
+	button: ActionComponent;
+	panel: ActionComponent;
+	close: Toggleable['close'];
+}
 
-	readonly Open: Readable<boolean>;
-	constructor({ MasterDisabled, Open }: Expand<Configuration>) {
-		super({ component: 'disclosure', index: Disclosure.generateIndex() });
-		this.Toggleable = new Toggleable({ Open: Open.Store, ...Open });
+const generateIndex = initIndexGenerator();
 
-		this.Button = new Bridge(({ Disabled }) => [
-			MasterDisabled.subscribe((isDisabled) => {
-				if (isBoolean(isDisabled)) Disabled.set(isDisabled);
-			})
-		]);
-		this.Panel = new Bridge(({ Disabled }) => {
-			MasterDisabled.subscribe((isDisabled) => {
-				if (isBoolean(isDisabled)) Disabled.set(isDisabled);
-			});
-		});
+export function createDisclosure({ Open: isOpen }: Options) {
+	const Open = new Toggleable({ Open: isOpen });
+	const [Button, Panel] = generate(2, () => new Bridge());
+	const { nameChild } = useComponentNaming({ component: 'disclosure', index: generateIndex() });
 
-		this.Open = makeReadable(this.Toggleable);
+	setContext({
+		Open: makeReadable(Open),
+		button: createButton(),
+		panel: createPanel(),
+		close: Open.close.bind(Open)
+	});
 
-		Context.setContext({
-			Open: this.Open,
-			button: this.button,
-			panel: this.panel,
-			close: this.close
-		});
-	}
-
-	get subscribe() {
-		return this.Toggleable.subscribe;
-	}
-
-	get sync() {
-		return this.Toggleable.sync;
-	}
-
-	get close() {
-		return this.Toggleable.close.bind(this.Toggleable);
-	}
-
-	get button() {
-		return this.defineActionComponent({
-			Bridge: this.Button,
-			onMount: this.nameChild('button'),
+	function createButton() {
+		return defineActionComponent({
+			Bridge: Button,
+			onMount: nameChild('button'),
 			destroy: ({ element }) => [
-				this.Toggleable.button(element, {
-					onChange: (isOpen) => (element.ariaExpanded = String(isOpen))
+				Open.button(element, {
+					onChange: (isOpen) => {
+						element.ariaExpanded = String(isOpen);
+					}
 				}),
-				this.Panel.Name.subscribe((id) => {
+				Panel.Name.subscribe((id) => {
 					if (id) element.setAttribute('aria-controls', id);
 					else element.removeAttribute('aria-controls');
 				})
@@ -66,21 +49,28 @@ export default class Disclosure extends Component {
 		});
 	}
 
-	get panel() {
-		return this.defineActionComponent({
-			Bridge: this.Panel,
-			onMount: this.nameChild('panel'),
+	function createPanel() {
+		return defineActionComponent({
+			Bridge: Panel,
+			onMount: nameChild('panel'),
 			destroy: ({ element }) =>
-				this.Toggleable.panel(element, {
+				Open.panel(element, {
 					plugins: [usePreventInternalFocus]
 				})
 		});
 	}
 
-	private static generateIndex = this.initIndexGenerator();
+	return {
+		Open: makeReadable(Open),
+		button: createButton(),
+		panel: createPanel(),
+		sync: Open.sync,
+		close: Open.close.bind(Open),
+		getContext: getContext
+	};
 }
 
-export const Context = useContext({
+const { setContext, getContext } = useContext({
 	component: 'disclosure',
 	predicate: (val): val is Context =>
 		isInterface<Context>(val, {
@@ -91,13 +81,4 @@ export const Context = useContext({
 		})
 });
 
-interface Configuration {
-	MasterDisabled: Readable<Nullable<boolean>>;
-	Open: {
-		Store: Writable<boolean> | boolean;
-		initialValue: boolean;
-		notifier: (isOpen: boolean) => void;
-	};
-}
-
-type Context = ExtractContext<Disclosure, 'Open' | 'button' | 'panel' | 'close'>;
+export { getContext };

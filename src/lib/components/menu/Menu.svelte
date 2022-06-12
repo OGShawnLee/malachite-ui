@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Menu from './state';
+  import { createMenu } from './state';
   import { Render } from '$lib/components';
   import type { Readable } from 'svelte/store';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
@@ -12,10 +12,10 @@
 
   const Horizontal = storable({ Store: horizontal, initialValue: false });
 
-  const { Open, Finite, ShouldOrder, Vertical, button, items } = new Menu({
-    Finite: finite,
-    ShouldOrder: order,
-    Vertical: true
+  const { Open, Finite, ShouldOrder, Vertical, button, panel } = createMenu({
+    Finite: storable({ Store: finite, initialValue: false }),
+    ShouldOrder: storable({ Store: order, initialValue: false }),
+    Vertical: storable({ Store: true, initialValue: true })
   });
 
   $: Finite.sync({ previous: $Finite, value: finite });
@@ -31,16 +31,16 @@
   export let element: HTMLElement | undefined = undefined;
   export let use: Expand<Forwarder.Actions> = [];
 
-  $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled: disabled ?? false, isOpen: $Open });
+  $: isDisabled = disabled ?? false;
+  $: finalClassName = useClassNameResolver(className)({ isDisabled, isOpen: $Open });
 </script>
 
 <Render {as} bind:element {disabled} class={finalClassName} {use} {...$$restProps}>
   {#if $Open}
-    <slot name="up-items" isDisabled={disabled ?? false} items={items.action} />
+    <slot name="up-items" {isDisabled} items={panel.action} />
   {/if}
-  <slot isOpen={$Open} isDisabled={disabled ?? false} button={button.action} items={items.action} />
+  <slot isOpen={$Open} {isDisabled} button={button.action} items={panel.action} />
   {#if $Open}
-    <slot name="items" isDisabled={disabled ?? false} items={items.action} />
+    <slot name="items" {isDisabled} items={panel.action} />
   {/if}
 </Render>

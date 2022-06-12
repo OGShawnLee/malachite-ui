@@ -1,19 +1,19 @@
 <script lang="ts">
-  import Popover from './state';
+  import { createPopover } from './state';
   import { Render } from '$lib/components';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import type { Readable } from 'svelte/store';
   import { useClassNameResolver } from '$lib/hooks';
+  import { storable } from '$lib/stores';
 
   export let forceFocus: Readable<boolean> | boolean = false;
 
-  const { Open, ForceFocus, ShowOverlay, close, button, overlay, panel } = new Popover({
-    ForceFocus: {
-      Store: forceFocus,
-      initialValue: false,
-      notifier: (newValue) => (forceFocus = newValue)
-    }
+  const ForceFocus = storable({
+    Store: forceFocus,
+    initialValue: false,
+    notifier: (newValue) => (forceFocus = newValue)
   });
+  const { Open, ShowOverlay, close, button, overlay, panel } = createPopover({ ForceFocus });
 
   $: ForceFocus.sync({ previous: $ForceFocus, value: forceFocus });
 

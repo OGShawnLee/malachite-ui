@@ -1,10 +1,10 @@
 <script lang="ts">
-  import Popover from './state';
+  import { getContext } from './state';
   import { Render } from '$lib/components';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { useClassNameResolver } from '$lib/hooks';
 
-  const { Open, panel, close } = Popover.getContext();
+  const { Open, panel, close } = getContext();
   const { Proxy, action } = panel;
 
   let className: ClassName<'isDisabled' | 'isOpen'> = undefined;

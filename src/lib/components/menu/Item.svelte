@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { Context } from './state';
+  import { getContext } from './state';
   import { Render } from '$lib/components';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { Bridge } from '$lib/stores';
   import { useClassNameResolver } from '$lib/hooks';
 
-  const { initItem, close } = Context.getContext();
+  const { initItem, close } = getContext();
   const { Proxy, action } = initItem(new Bridge());
   const { Selected } = Proxy;
 
@@ -18,10 +18,10 @@
   export let use: Expand<Forwarder.Actions> = [];
 
   let finalUse: Forwarder.Actions;
-  $: finalUse = [...use, [action]];
 
-  $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled: disabled ?? false, isSelected: $Selected });
+  $: finalUse = [...use, [action]];
+  $: isDisabled = disabled ?? false;
+  $: finalClassName = useClassNameResolver(className)({ isDisabled, isSelected: $Selected });
 </script>
 
 <Render
@@ -35,5 +35,5 @@
   on:click={close}
   on:click
 >
-  <slot isDisabled={disabled ?? false} isSelected={$Selected} item={action} />
+  <slot {isDisabled} isSelected={$Selected} item={action} />
 </Render>

@@ -33,6 +33,10 @@ export function isFunction(val: unknown): val is Function {
 	return typeof val === 'function' || val instanceof Function;
 }
 
+export function isIncluded<T>(element: unknown, elements: T[]): element is T {
+	return elements.includes(element as T);
+}
+
 export function isInterface<T>(
 	val: unknown,
 	validators: {

@@ -11,9 +11,9 @@ import {
 	usePreventInternalFocus
 } from '$lib/stores/toggleable';
 import {
+	includes,
 	isActionComponent,
 	isFunction,
-	isIncluded,
 	isInterface,
 	isNavigationKey,
 	isStore
@@ -27,7 +27,7 @@ interface Options {
 	Vertical: Store<Readable<boolean>>;
 }
 
-export interface Context {
+interface Context {
 	Open: Readable<boolean>;
 	button: ActionComponent;
 	panel: ActionComponent;
@@ -75,7 +75,7 @@ export function createMenu({ Finite, ShouldOrder, Vertical }: Options) {
 				}),
 				useListener(element, 'keydown', (event) => {
 					if (!isNavigationKey(event.code)) return;
-					if (isIncluded(event.code, 'ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft'))
+					if (includes(['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft'], event.code))
 						event.preventDefault();
 					switch (event.code) {
 						case 'ArrowDown':
@@ -197,7 +197,6 @@ export function createMenu({ Finite, ShouldOrder, Vertical }: Options) {
 	}
 
 	return {
-		Open: makeReadable(Open),
 		Finite: Finite,
 		ShouldOrder: ShouldOrder,
 		Vertical: Vertical,

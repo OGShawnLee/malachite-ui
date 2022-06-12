@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { Context } from './state';
+  import { getContext } from './state';
   import { Render } from '$lib/components';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { useClassNameResolver } from '$lib/hooks';
 
-  const { Open, button } = Context.getContext();
+  const { Open, button } = getContext();
   const { Proxy, action } = button;
 
   let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
@@ -16,10 +16,10 @@
   export let use: Expand<Forwarder.Actions> = [];
 
   let finalUse: Forwarder.Actions;
-  $: finalUse = [...use, [action]];
 
-  $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled: disabled ?? false, isOpen: $Open });
+  $: finalUse = [...use, [action]];
+  $: isDisabled = disabled ?? false;
+  $: finalClassName = useClassNameResolver(className)({ isDisabled, isOpen: $Open });
 </script>
 
 <Render
@@ -31,5 +31,5 @@
   {...$$restProps}
   use={finalUse}
 >
-  <slot isOpen={$Open} isDisabled={disabled ?? false} button={action} />
+  <slot isOpen={$Open} {isDisabled} button={action} />
 </Render>
