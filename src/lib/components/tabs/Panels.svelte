@@ -18,10 +18,17 @@
   $: finalUse = [...use, [action]];
 
   $: isDisabled = disabled ?? false;
-  $: resolve = useClassNameResolver(className);
-  $: finalClass = resolve({ isDisabled });
+  $: finalClassName = useClassNameResolver(className)({ isDisabled });
 </script>
 
-<Render {as} {Proxy} bind:element bind:disabled class={finalClass} use={finalUse} {...$$restProps}>
+<Render
+  {as}
+  {Proxy}
+  bind:element
+  bind:disabled
+  class={finalClassName}
+  use={finalUse}
+  {...$$restProps}
+>
   <slot {isDisabled} tabPanels={action} />
 </Render>

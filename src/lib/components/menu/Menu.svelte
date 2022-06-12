@@ -32,8 +32,7 @@
   export let use: Expand<Forwarder.Actions> = [];
 
   $: isDisabled = disabled ?? false;
-  $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled, isOpen: $Open });
+  $: finalClassName = useClassNameResolver(className)({ isDisabled, isOpen: $Open });
 </script>
 
 <Render {as} bind:element {disabled} class={finalClassName} {use} {...$$restProps}>

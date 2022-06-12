@@ -28,8 +28,7 @@
   $: finalUse = [...use, [action]];
 
   $: isDisabled = disabled ?? false;
-  $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled, isOpen: $Open });
+  $: finalClassName = useClassNameResolver(className)({ isDisabled, isOpen: $Open });
 </script>
 
 {#if $Open && $ShowOverlay}

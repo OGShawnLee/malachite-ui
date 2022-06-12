@@ -23,8 +23,7 @@
   $: finalUse = [...use, [action, passive]];
 
   $: isDisabled = disabled ?? false;
-  $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isChecked: $Checked, isDisabled });
+  $: finalClassName = useClassNameResolver(className)({ isChecked: $Checked, isDisabled });
 </script>
 
 <Render

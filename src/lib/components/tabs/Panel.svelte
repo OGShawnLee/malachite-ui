@@ -21,8 +21,7 @@
   $: finalUse = [...use, [action]];
 
   $: isDisabled = disabled ?? false;
-  $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled });
+  $: finalClassName = useClassNameResolver(className)({ isDisabled });
 </script>
 
 {#if $Index === index && !$Disabled}

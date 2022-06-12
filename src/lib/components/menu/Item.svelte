@@ -21,8 +21,7 @@
   $: finalUse = [...use, [action]];
 
   $: isDisabled = disabled ?? false;
-  $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled, isSelected: $Selected });
+  $: finalClassName = useClassNameResolver(className)({ isDisabled, isSelected: $Selected });
 </script>
 
 <Render
