@@ -1,32 +1,21 @@
 import type { Readable, Writable } from 'svelte/store';
-import type { ExtractContext, Nullable } from '$lib/types';
+import type { ExtractContext } from '$lib/types';
 import { Component } from '$lib/core';
 import { Bridge, Toggleable, usePreventInternalFocus } from '$lib/stores';
 import { makeReadable } from '$lib/utils';
 import { useContext } from '$lib/hooks';
-import { isActionComponent, isBoolean, isFunction, isInterface, isStore } from '$lib/predicate';
+import { isActionComponent, isFunction, isInterface, isStore } from '$lib/predicate';
 
 export default class Disclosure extends Component {
 	protected readonly Toggleable: Toggleable;
 
-	protected readonly Button: Bridge;
-	protected readonly Panel: Bridge;
+	protected readonly Button = new Bridge();
+	protected readonly Panel = new Bridge();
 
 	readonly Open: Readable<boolean>;
-	constructor({ MasterDisabled, Open }: Expand<Configuration>) {
+	constructor({ Open }: Expand<Configuration>) {
 		super({ component: 'disclosure', index: Disclosure.generateIndex() });
 		this.Toggleable = new Toggleable({ Open: Open.Store, ...Open });
-
-		this.Button = new Bridge(({ Disabled }) => [
-			MasterDisabled.subscribe((isDisabled) => {
-				if (isBoolean(isDisabled)) Disabled.set(isDisabled);
-			})
-		]);
-		this.Panel = new Bridge(({ Disabled }) => {
-			MasterDisabled.subscribe((isDisabled) => {
-				if (isBoolean(isDisabled)) Disabled.set(isDisabled);
-			});
-		});
 
 		this.Open = makeReadable(this.Toggleable);
 
@@ -92,7 +81,6 @@ export const Context = useContext({
 });
 
 interface Configuration {
-	MasterDisabled: Readable<Nullable<boolean>>;
 	Open: {
 		Store: Writable<boolean> | boolean;
 		initialValue: boolean;
