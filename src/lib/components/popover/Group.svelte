@@ -27,8 +27,9 @@
   export let disabled: Nullable<boolean> = undefined;
   export let use: Expand<Forwarder.Actions> = [];
 
+  $: isDisabled = disabled ?? false;
   $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled: disabled ?? false, isOpen: $Open });
+  $: finalClassName = resolve({ isDisabled, isOpen: $Open });
 </script>
 
 <Render {as} bind:element class={finalClassName} {use} {...$$restProps}>
@@ -39,7 +40,7 @@
     allClosed={$AllClosed}
     allOpen={$AllOpen}
     isOpen={$Open}
-    isDisabled={disabled}
+    {isDisabled}
     overlay={overlay.action}
   />
 </Render>

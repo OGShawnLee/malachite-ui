@@ -23,8 +23,9 @@
   export let disabled: Nullable<boolean> = undefined;
   export let use: Expand<Forwarder.Actions> = [];
 
+  $: isDisabled = disabled ?? false;
   $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled: disabled ?? false, isOpen: $Open });
+  $: finalClassName = resolve({ isDisabled, isOpen: $Open });
 </script>
 
 <Render {as} bind:element bind:disabled class={finalClassName} {use} {...$$restProps}>
@@ -33,8 +34,8 @@
   {/if}
 
   <slot
-    isDisabled={disabled}
     isOpen={$Open}
+    {isDisabled}
     button={button.action}
     header={header.action}
     panel={panel.action}

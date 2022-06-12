@@ -17,7 +17,7 @@ declare const __propDef: {
 	};
 	slots: {
 		'up-panel': {
-			isDisabled: Nullable<boolean>;
+			isDisabled: boolean;
 			panel: (element: HTMLElement) => {
 				destroy: () => Promise<void>;
 			};
@@ -25,7 +25,7 @@ declare const __propDef: {
 		};
 		default: {
 			isOpen: boolean;
-			isDisabled: Nullable<boolean>;
+			isDisabled: boolean;
 			button: (element: HTMLElement) => {
 				destroy: () => Promise<void>;
 			};
@@ -35,7 +35,7 @@ declare const __propDef: {
 			close: (ref?: HTMLElement | Event | undefined) => void;
 		};
 		panel: {
-			isDisabled: Nullable<boolean>;
+			isDisabled: boolean;
 			panel: (element: HTMLElement) => {
 				destroy: () => Promise<void>;
 			};

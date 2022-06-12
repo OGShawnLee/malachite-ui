@@ -14,15 +14,11 @@
   export let element: HTMLElement | undefined = undefined;
   export let use: Expand<Forwarder.Actions> = [];
 
+  $: isDisabled = disabled ?? false;
   $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isChecked: $Checked, isDisabled: disabled ?? false });
+  $: finalClassName = resolve({ isChecked: $Checked, isDisabled });
 </script>
 
 <Render {as} bind:element bind:disabled class={finalClassName} {use} {...$$restProps}>
-  <slot
-    isChecked={$Checked}
-    isDisabled={disabled}
-    label={label.action}
-    description={description.action}
-  />
+  <slot isChecked={$Checked} {isDisabled} label={label.action} description={description.action} />
 </Render>

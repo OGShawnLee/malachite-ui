@@ -26,18 +26,19 @@
   export let disabled: Nullable<boolean> = undefined;
   export let use: Expand<Forwarder.Actions> = [];
 
+  $: isDisabled = disabled ?? false;
   $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isOpen: $Open, isDisabled: disabled ?? false });
+  $: finalClassName = resolve({ isOpen: $Open, isDisabled });
 </script>
 
 <Render {as} class={finalClassName} bind:disabled bind:element {...$$restProps} {use}>
   {#if $Open}
-    <slot name="up-panel" isDisabled={disabled} panel={panel.action} {close} />
+    <slot name="up-panel" {isDisabled} panel={panel.action} {close} />
   {/if}
   <!-- we render the panel above the button -->
-  <slot isOpen={$Open} button={button.action} isDisabled={disabled} panel={panel.action} {close} />
+  <slot isOpen={$Open} button={button.action} {isDisabled} panel={panel.action} {close} />
   <!-- we render the panel below the button -->
   {#if $Open}
-    <slot name="panel" isDisabled={disabled} panel={panel.action} {close} />
+    <slot name="panel" {isDisabled} panel={panel.action} {close} />
   {/if}
 </Render>

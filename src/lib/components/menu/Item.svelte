@@ -20,8 +20,9 @@
   let finalUse: Forwarder.Actions;
   $: finalUse = [...use, [action]];
 
+  $: isDisabled = disabled ?? false;
   $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled: disabled ?? false, isSelected: $Selected });
+  $: finalClassName = resolve({ isDisabled, isSelected: $Selected });
 </script>
 
 <Render
@@ -35,5 +36,5 @@
   on:click={close}
   on:click
 >
-  <slot isDisabled={disabled ?? false} isSelected={$Selected} item={action} />
+  <slot {isDisabled} isSelected={$Selected} item={action} />
 </Render>

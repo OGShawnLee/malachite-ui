@@ -18,8 +18,9 @@
   let finalUse: Forwarder.Actions;
   $: finalUse = [...use, [action]];
 
+  $: isDisabled = disabled ?? false;
   $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled: disabled ?? false, isOpen: $Open });
+  $: finalClassName = resolve({ isDisabled, isOpen: $Open });
 </script>
 
 {#if $Open}
@@ -32,6 +33,6 @@
     {...$$restProps}
     use={finalUse}
   >
-    <slot isOpen={$Open} isDisabled={disabled ?? false} items={action} />
+    <slot isOpen={$Open} {isDisabled} items={action} />
   </Render>
 {/if}

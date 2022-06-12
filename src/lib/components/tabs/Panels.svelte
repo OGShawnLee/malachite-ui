@@ -17,10 +17,11 @@
   let finalUse: Forwarder.Actions;
   $: finalUse = [...use, [action]];
 
+  $: isDisabled = disabled ?? false;
   $: resolve = useClassNameResolver(className);
-  $: finalClass = resolve({ isDisabled: disabled ?? false });
+  $: finalClass = resolve({ isDisabled });
 </script>
 
 <Render {as} {Proxy} bind:element bind:disabled class={finalClass} use={finalUse} {...$$restProps}>
-  <slot isDisabled={disabled ?? false} tabPanels={action} />
+  <slot {isDisabled} tabPanels={action} />
 </Render>

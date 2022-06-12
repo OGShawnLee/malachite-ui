@@ -29,8 +29,9 @@
   let finalUse: Forwarder.Actions;
   $: finalUse = [...use, [action]];
 
+  $: isDisabled = disabled ?? false;
   $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isChecked: $Checked, isDisabled: disabled ?? false });
+  $: finalClassName = resolve({ isChecked: $Checked, isDisabled });
 </script>
 
 <Render
@@ -45,7 +46,7 @@
 >
   <slot
     isChecked={$Checked}
-    isDisabled={disabled}
+    {isDisabled}
     button={button.action}
     label={label.action}
     description={description.action}

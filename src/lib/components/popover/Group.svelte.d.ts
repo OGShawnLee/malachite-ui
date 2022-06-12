@@ -25,7 +25,7 @@ declare const __propDef: {
 			allClosed: boolean;
 			allOpen: boolean;
 			isOpen: boolean;
-			isDisabled: Nullable<boolean>;
+			isDisabled: boolean;
 			overlay: (element: HTMLElement) => {
 				destroy: () => Promise<void>;
 			};

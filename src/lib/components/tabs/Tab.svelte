@@ -8,7 +8,7 @@
   const Proxy = new Bridge();
   const tab = Context.getContext().initTab(Proxy).action;
 
-  const { Disabled, Selected } = Proxy;
+  const { Selected } = Proxy;
 
   let className: ClassName<'isDisabled' | 'isSelected'> = undefined;
 
@@ -21,8 +21,9 @@
   let finalUse: Forwarder.Actions;
   $: finalUse = [...use, [tab]];
 
+  $: isDisabled = disabled ?? false;
   $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled: $Disabled ?? false, isSelected: $Selected });
+  $: finalClassName = resolve({ isDisabled, isSelected: $Selected });
 </script>
 
 <Render
@@ -34,5 +35,5 @@
   use={finalUse}
   {...$$restProps}
 >
-  <slot isDisabled={$Disabled ?? false} isSelected={$Selected} {tab} />
+  <slot {isDisabled} isSelected={$Selected} {tab} />
 </Render>

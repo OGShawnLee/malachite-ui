@@ -25,8 +25,9 @@
   export let element: HTMLElement | undefined = undefined;
   export let use: Expand<Forwarder.Actions> = [];
 
+  $: isDisabled = disabled ?? false;
   $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled: disabled ?? false, isOpen: $Open });
+  $: finalClassName = resolve({ isDisabled, isOpen: $Open });
 </script>
 
 <Render {as} bind:element class={finalClassName} {...$$restProps} {use}>
@@ -38,7 +39,7 @@
   {/if}
   <slot
     isOpen={$Open}
-    isDisabled={disabled}
+    {isDisabled}
     overlay={overlay.action}
     button={button.action}
     panel={panel.action}

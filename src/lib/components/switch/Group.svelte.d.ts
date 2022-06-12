@@ -17,7 +17,7 @@ declare const __propDef: {
 	slots: {
 		default: {
 			isChecked: boolean;
-			isDisabled: Nullable<boolean>;
+			isDisabled: boolean;
 			label: (
 				element: HTMLElement,
 				passive?: boolean

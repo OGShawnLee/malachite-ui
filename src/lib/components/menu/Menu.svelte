@@ -31,16 +31,17 @@
   export let element: HTMLElement | undefined = undefined;
   export let use: Expand<Forwarder.Actions> = [];
 
+  $: isDisabled = disabled ?? false;
   $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled: disabled ?? false, isOpen: $Open });
+  $: finalClassName = resolve({ isDisabled, isOpen: $Open });
 </script>
 
 <Render {as} bind:element {disabled} class={finalClassName} {use} {...$$restProps}>
   {#if $Open}
-    <slot name="up-items" isDisabled={disabled ?? false} items={items.action} />
+    <slot name="up-items" {isDisabled} items={items.action} />
   {/if}
-  <slot isOpen={$Open} isDisabled={disabled ?? false} button={button.action} items={items.action} />
+  <slot isOpen={$Open} {isDisabled} button={button.action} items={items.action} />
   {#if $Open}
-    <slot name="items" isDisabled={disabled ?? false} items={items.action} />
+    <slot name="items" {isDisabled} items={items.action} />
   {/if}
 </Render>

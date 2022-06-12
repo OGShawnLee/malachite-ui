@@ -20,7 +20,7 @@ declare const __propDef: {
 	slots: {
 		default: {
 			isChecked: boolean;
-			isDisabled: Nullable<boolean>;
+			isDisabled: boolean;
 			button: (element: HTMLElement) => {
 				destroy: () => Promise<void>;
 			};

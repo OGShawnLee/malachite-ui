@@ -29,7 +29,7 @@ declare const __propDef: {
 		};
 		default: {
 			isOpen: boolean;
-			isDisabled: Nullable<boolean>;
+			isDisabled: boolean;
 			overlay: (element: HTMLElement) => {
 				destroy: () => Promise<void>;
 			};

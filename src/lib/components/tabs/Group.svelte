@@ -36,10 +36,11 @@
   export let element: HTMLElement | undefined = undefined;
   export let use: Expand<Forwarder.Actions> = [];
 
+  $: isDisabled = disabled ?? false;
   $: resolve = useClassNameResolver(className);
-  $: finalClassName = resolve({ isDisabled: disabled ?? false });
+  $: finalClassName = resolve({ isDisabled });
 </script>
 
 <Render {as} bind:element {disabled} class={finalClassName} {use} {...$$restProps}>
-  <slot isDisabled={disabled} tabList={tabList.action} tabPanels={tabPanels.action} />
+  <slot {isDisabled} tabList={tabList.action} tabPanels={tabPanels.action} />
 </Render>
