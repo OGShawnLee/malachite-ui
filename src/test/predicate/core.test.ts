@@ -103,6 +103,23 @@ describe('isFunction', () => {
 	});
 });
 
+describe('isIncluded', () => {
+	const { isIncluded } = core;
+	it('Should return true if the given element is included in the given array', () => {
+		expect(isIncluded(2, [1, 2, 3])).toBe(true);
+		expect(isIncluded('Second', ['First', 'Second', 3])).toBe(true);
+		expect(isIncluded('First', ['First', 'Second', 'Third'])).toBe(true);
+		expect(isIncluded(null, ['First', 'Second', 'Third', null])).toBe(true);
+	});
+
+	it('Should return false if the given element is not included in the given array', () => {
+		expect(isIncluded('James', [1, 2, 3])).toBe(false);
+		expect(isIncluded(false, ['First', 'Second', 3])).toBe(false);
+		expect(isIncluded(null, ['First', 'Second', 'Third'])).toBe(false);
+		expect(isIncluded(undefined, ['First', 'Second', 'Third', null])).toBe(false);
+	});
+});
+
 describe('isInterface', () => {
 	const { isArray, isBoolean, isFunction, isInterface, isNumber, isString } = core;
 
