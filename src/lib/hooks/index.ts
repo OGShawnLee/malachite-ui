@@ -1,5 +1,6 @@
 export * from './useClassNameResolver';
 export * from './useCleanup';
+export * from './useClickOutside';
 export * from './useCollector';
 export * from './useDataSync';
 export * from './useDOMTraversal';
