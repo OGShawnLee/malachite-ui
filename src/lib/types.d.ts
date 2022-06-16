@@ -38,8 +38,8 @@ export namespace Forwarder {
 }
 
 export namespace Navigable {
-	export interface HandlerCallbackContext<K = NavigationKey> {
-		code: K | 'Enter' | 'Space';
+	export interface HandlerCallbackContext {
+		code: NavigationKey;
 		event: KeyboardEvent;
 		ctrlKey: boolean;
 	}
