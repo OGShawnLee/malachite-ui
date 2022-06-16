@@ -4,6 +4,7 @@ export * from './useClickOutside';
 export * from './useCollector';
 export * from './useDataSync';
 export * from './useDOMTraversal';
+export * from './useFocusOutside';
 export * from './useListener';
 export * from './usePair';
 export * from './useValidator';
