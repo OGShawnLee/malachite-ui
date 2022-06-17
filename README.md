@@ -14,6 +14,7 @@
     - [Dialog](#dialog)
     - [Disclosure](#disclosure)
     - [Menu](#menu)
+    - [Navigable](#navigable)
     - [Popover](#popover)
     - [Switch](#switch)
     - [Tabs](#tabs)
@@ -184,6 +185,31 @@ Make sure to import components from `malachite-ui/components` to trigger tree-sh
     </menuitem>
   </MenuItems>
 </menu>
+```
+
+### Navigable
+
+```html
+<Navigable global vertical let:navigable>
+  <NavigableItem
+    class="{{ base:'item', disabled:{ on:'item--disabled', off: 'item--enabled' } }}"
+    let:item
+  >
+    First Item
+  </NavigableItem>
+  <NavigableItem
+    class="{{ base:'item', disabled:{ on:'item--disabled', off: 'item--enabled' } }}"
+    let:item
+  >
+    Second Item
+  </NavigableItem>
+  <NavigableItem
+    class="{{ base:'item', disabled:{ on:'item--disabled', off: 'item--enabled' } }}"
+    let:item
+  >
+    Third Item
+  </NavigableItem>
+</Navigable>
 ```
 
 ### Popover
