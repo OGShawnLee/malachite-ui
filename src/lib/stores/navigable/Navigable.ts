@@ -80,20 +80,31 @@ export class Navigable<T = {}> extends Navigation<T> {
 					set(this.findValidIndex({ direction: 'BACK' }));
 				}
 			},
-			init: () => [
-				Index.subscribe((currentIndex) => {
-					index = currentIndex;
-				}),
-				Bridge.Disabled.subscribe((isDisabled) => {
-					this.Ordered.update(element, (member) => {
-						return { ...member, isDisabled };
-					});
-					if (isDisabled && this.isSelected(element)) {
-						set(this.findValidIndex({ direction: 'BOUNCE', startAt: index }));
-					}
-				}),
-				useListener(element, 'click', () => this.set(index, focusOnSelection))
-			]
+			init: () => {
+				let initialTabIndex = element.tabIndex;
+				return [
+					Bridge.isUsingSlot &&
+						Bridge.Disabled.subscribe(async (isDisabled) => {
+							if (isDisabled) {
+								initialTabIndex = element.tabIndex;
+								element.removeAttribute('tabIndex');
+								await tick(), element.removeAttribute('tabIndex');
+							} else element.tabIndex = initialTabIndex;
+						}),
+					Index.subscribe((currentIndex) => {
+						index = currentIndex;
+					}),
+					Bridge.Disabled.subscribe((isDisabled) => {
+						this.Ordered.update(element, (member) => {
+							return { ...member, isDisabled };
+						});
+						if (isDisabled && this.isSelected(element)) {
+							set(this.findValidIndex({ direction: 'BOUNCE', startAt: index }));
+						}
+					}),
+					useListener(element, 'click', () => this.set(index, focusOnSelection))
+				];
+			}
 		});
 	}
 }

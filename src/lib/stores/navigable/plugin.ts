@@ -1,6 +1,13 @@
 import type { Navigable } from '$lib/stores';
 import { isDisabled, isHTMLElement, isWithin } from '$lib/predicate';
-import { useCleanup, useCollector, useListener, useWindowListener } from '$lib/hooks';
+import {
+	useCleanup,
+	useClickOutside,
+	useCollector,
+	useFocusOutside,
+	useListener,
+	useWindowListener
+} from '$lib/hooks';
 
 export function useActiveHover(this: Navigable, parent: HTMLElement) {
 	return useCleanup(
@@ -10,6 +17,40 @@ export function useActiveHover(this: Navigable, parent: HTMLElement) {
 			if (index > -1) this.interact(index, false);
 		}),
 		useListener(parent, 'mouseleave', () => this.Waiting.set(true))
+	);
+}
+
+export function useFocusSync(this: Navigable, panel: HTMLElement) {
+	const onPanelFocusWithin = () => {
+		const target = document.activeElement;
+		if (isHTMLElement(target)) {
+			const index = this.indexOf(target);
+			if (this.isSelected(index)) return;
+			this.set(index, false);
+		}
+	};
+
+	let isEventAdded = false;
+
+	function addEventListener() {
+		if (isEventAdded) return;
+		panel.addEventListener('focusin', onPanelFocusWithin);
+		isEventAdded = true;
+	}
+
+	function removeEventListener() {
+		panel.removeEventListener('focusin', onPanelFocusWithin);
+		isEventAdded = false;
+	}
+
+	if (isWithin(panel, document.activeElement)) addEventListener();
+
+	return useCleanup(
+		useWindowListener('focusin', () => {
+			if (isWithin(panel, document.activeElement)) addEventListener();
+			else removeEventListener();
+		}),
+		removeEventListener
 	);
 }
 
@@ -70,6 +111,20 @@ export function useKeyMatch(this: Navigable, panel: HTMLElement) {
 
 			keyEvent.isKeyPressed = false;
 			keyEvent.keys.clear();
+		})
+	);
+}
+
+/** Sets Index to 0 after clicking or focusing any element that is not a Navigable Item. */
+export function useResetOnItemOutside(this: Navigable) {
+	return useCleanup(
+		useClickOutside(this.primitive.elements, () => {
+			this.Waiting.set(true);
+			this.Index.set(0);
+		}),
+		useFocusOutside(this.primitive.elements, () => {
+			this.Waiting.set(true);
+			this.Index.set(0);
 		})
 	);
 }

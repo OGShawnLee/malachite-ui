@@ -61,6 +61,14 @@ export default class Core<T> extends Initialiser<T> {
 		return this.useListenMember('Selected', () => {});
 	}
 
+	at(index: number) {
+		return this.primitive.elements.at(index);
+	}
+
+	hasFocusWithin() {
+		return this.isWithin(document.activeElement);
+	}
+
 	indexOf(element: HTMLElement) {
 		return this.primitive.elements.indexOf(element);
 	}
