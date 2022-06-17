@@ -1,12 +1,13 @@
 import '@testing-library/jest-dom';
 import Render, { elementTagNames } from '$lib/components/render';
-import { BindElement, BindValue } from './samples';
-import { act, cleanup, render } from '@testing-library/svelte';
+import * as samples from './samples';
+import { act, cleanup, fireEvent, render } from '@testing-library/svelte';
 import { hasTagName } from '$lib/predicate';
 import { generateActions } from '@test-utils';
 
 afterEach(() => cleanup());
 
+const { BindElement, Events } = samples;
 describe('attributes', () => {
 	it('Should be possible to forward attributes', async () => {
 		const attributes: [string, number | string][] = [
@@ -100,5 +101,84 @@ describe('Action Forwarding', () => {
 		for (const [action, index] of actions) {
 			expect(action).toBeCalledWith(element, index);
 		}
+	});
+});
+
+const {} = samples;
+describe('Events', () => {
+	function initComponent(props: {
+		handleBlur: (event: FocusEvent) => void;
+		handleClick?: (event: MouseEvent) => void;
+		handleFocus: (event: FocusEvent) => void;
+	}) {
+		const result = render(Events, { props });
+		return { ...result, element: result.getByText('Render') };
+	}
+
+	describe('Blur', () => {
+		it('Should be able of forwarding a blur listener', async () => {
+			const handleBlur = vi.fn(() => {});
+			// @ts-ignore
+			const { element } = initComponent({ handleBlur });
+			await act(() => element.focus());
+			await act(() => element.blur());
+			expect(handleBlur).toBeCalledTimes(1);
+
+			await act(() => element.focus());
+			await act(() => element.blur());
+			expect(handleBlur).toBeCalledTimes(2);
+		});
+
+		it('Should pass the FocusEvent', async () => {
+			const handleBlur = vi.fn<[FocusEvent]>(() => {});
+			// @ts-ignore
+			const { element } = initComponent({ handleBlur });
+			await act(() => element.focus());
+			await act(() => element.blur());
+			expect(handleBlur.mock.calls[0][0]).toBeInstanceOf(FocusEvent);
+		});
+	});
+
+	describe('Click', () => {
+		it('Should be able of forwarding a click listener', async () => {
+			const handleClick = vi.fn(() => {});
+			// @ts-ignore
+			const { element } = initComponent({ handleClick });
+			await fireEvent.click(element);
+			expect(handleClick).toBeCalledTimes(1);
+			await fireEvent.click(element);
+			expect(handleClick).toBeCalledTimes(2);
+		});
+
+		it('Should pass the MouseEvent', async () => {
+			const handleClick = vi.fn<[MouseEvent]>(() => {});
+			// @ts-ignore
+			const { element } = initComponent({ handleClick });
+			await fireEvent.click(element);
+			expect(handleClick.mock.calls[0][0]).toBeInstanceOf(MouseEvent);
+		});
+	});
+
+	describe('Focus', () => {
+		it('Should be able of forwarding a focus listener', async () => {
+			const handleFocus = vi.fn(() => {});
+			// @ts-ignore
+			const { element } = initComponent({ handleFocus });
+			await act(() => element.focus());
+			expect(handleFocus).toBeCalledTimes(1);
+
+			await act(() => element.blur());
+
+			await act(() => element.focus());
+			expect(handleFocus).toBeCalledTimes(2);
+		});
+
+		it('Should pass the FocusEvent', async () => {
+			const handleFocus = vi.fn<[FocusEvent]>(() => {});
+			// @ts-ignore
+			const { element } = initComponent({ handleFocus });
+			await act(() => element.focus());
+			expect(handleFocus.mock.calls[0][0]).toBeInstanceOf(FocusEvent);
+		});
 	});
 });
