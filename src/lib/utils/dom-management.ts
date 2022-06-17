@@ -24,16 +24,19 @@ export async function setAttribute(
 	options: {
 		overwrite?: boolean;
 		predicate?: (node: HTMLElement) => unknown;
+		tickCheck?: boolean;
 	} = {}
 ) {
-	const { predicate, overwrite } = options;
+	const { predicate, overwrite, tickCheck = true } = options;
 	const shouldSetAttribute = predicate?.(node) ?? true;
 	if (shouldSetAttribute) {
 		if (overwrite || !node.hasAttribute(attribute)) {
 			node.setAttribute(attribute, value);
-			await tick();
-			if (node.getAttribute(attribute) === value) return;
-			node.setAttribute(attribute, value);
+			if (tickCheck) {
+				await tick();
+				if (node.getAttribute(attribute) === value) return;
+				node.setAttribute(attribute, value);
+			}
 		}
 	}
 }
