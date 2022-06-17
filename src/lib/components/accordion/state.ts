@@ -50,23 +50,23 @@ export default class Accordion extends Component {
 		return this.defineActionComponent({
 			onMount: this.name,
 			destroy: ({ element }) => [
-				this.Navigable.initNavigation(element, {
-					handler() {
-						return Navigable.initNavigationHandler(element, ({ event, code, ctrlKey }) => {
-							if (!this.isWithin(document.activeElement)) return;
-							switch (code) {
-								case 'ArrowDown':
-									event.preventDefault();
-									return this.handleNextKey(code, ctrlKey);
-								case 'ArrowUp':
-									event.preventDefault();
-									return this.handleBackKey(code, ctrlKey);
-								case 'End':
-									return this.goLast();
-								case 'Home':
-									return this.goFirst();
-							}
-						});
+				this.Navigable.initNavigation(element),
+				this.Navigable.initNavigationHandler({
+					parent: element,
+					callback({ event, code, ctrlKey }) {
+						if (!this.isWithin(document.activeElement)) return;
+						switch (code) {
+							case 'ArrowDown':
+								event.preventDefault();
+								return this.handleNextKey(code, ctrlKey);
+							case 'ArrowUp':
+								event.preventDefault();
+								return this.handleBackKey(code, ctrlKey);
+							case 'End':
+								return this.goLast();
+							case 'Home':
+								return this.goFirst();
+						}
 					}
 				})
 			]

@@ -1,8 +1,9 @@
 import Finder from './Finder';
-import type { Navigable } from '$lib/types';
+import type { Navigable, Ref } from '$lib/types';
 import type { Readable, Updater } from 'svelte/store';
-import { useListener } from '$lib/hooks';
+import { useCleanup, useListener, useWindowListener } from '$lib/hooks';
 import { isFunction, isNavigationKey, isNullish, isServer, isStore } from '$lib/predicate';
+import { ref } from '$lib/utils';
 
 export default class Navigation<T> extends Finder<T> {
 	constructor(Options: Navigable.Options<T>) {
@@ -148,13 +149,65 @@ export default class Navigation<T> extends Finder<T> {
 		}
 	}
 
-	static initNavigationHandler(
-		parent: HTMLElement,
-		callback: (context: Expand<Navigable.HandlerCallbackContext>) => void
-	) {
-		return useListener(parent, 'keydown', (event) => {
-			if (!isNavigationKey(event.code)) return;
-			callback({ event, code: event.code, ctrlKey: event.ctrlKey });
-		});
+	initNavigationHandler(configuration: {
+		parent: HTMLElement;
+		isWindowNavigation?: Ref<boolean>;
+		callback:
+			| ((
+					this: Navigation<unknown>,
+					context: Expand<Navigable.HandlerCallbackContext> & { isWindowNavigation: boolean }
+			  ) => void)
+			| {
+					local: (
+						this: Navigation<unknown>,
+						context: Expand<Navigable.HandlerCallbackContext>
+					) => void;
+					window: (
+						this: Navigation<unknown>,
+						context: Expand<Navigable.HandlerCallbackContext>
+					) => void;
+			  };
+	}) {
+		const { callback, isWindowNavigation = ref(false), parent } = configuration;
+
+		if (isFunction(callback)) {
+			const finalCallback = callback.bind(this);
+			return useCleanup(
+				isWindowNavigation.listen(),
+				useListener(parent, 'keydown', (event) => {
+					if (isWindowNavigation.value || !isNavigationKey(event.code)) return;
+					finalCallback({
+						event,
+						code: event.code,
+						ctrlKey: event.ctrlKey,
+						isWindowNavigation: isWindowNavigation.value
+					});
+				}),
+				useWindowListener('keydown', (event) => {
+					if (!isWindowNavigation.value || !isNavigationKey(event.code)) return;
+					finalCallback({
+						event,
+						code: event.code,
+						ctrlKey: event.ctrlKey,
+						isWindowNavigation: isWindowNavigation.value
+					});
+				})
+			);
+		}
+
+		const { window: windowCallback, local: localCallback } = callback;
+		const wCallback = windowCallback.bind(this);
+		const lCallback = localCallback.bind(this);
+		return useCleanup(
+			isWindowNavigation.listen(),
+			useWindowListener('keydown', (event) => {
+				if (!isWindowNavigation.value || !isNavigationKey(event.code)) return;
+				wCallback({ event, code: event.code, ctrlKey: event.ctrlKey });
+			}),
+			useListener(parent, 'keydown', (event) => {
+				if (isWindowNavigation.value || !isNavigationKey(event.code)) return;
+				lCallback({ event, code: event.code, ctrlKey: event.ctrlKey });
+			})
+		);
 	}
 }

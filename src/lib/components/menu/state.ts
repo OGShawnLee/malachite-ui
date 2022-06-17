@@ -138,28 +138,29 @@ export default class Menu extends Component {
 						this.Waiting.set(true);
 						this.hardSet(0, false);
 						this.startAt = 'AUTO';
-					},
-					handler() {
-						return Navigable.initNavigationHandler(element, ({ event, code, ctrlKey }) => {
-							switch (code) {
-								case 'ArrowDown':
-								case 'ArrowRight':
-									event.preventDefault();
-									return this.handleNextKey(code, ctrlKey);
-								case 'ArrowLeft':
-								case 'ArrowUp':
-									event.preventDefault();
-									return this.handleBackKey(code, ctrlKey);
-								case 'End':
-									return this.goLast();
-								case 'Home':
-									return this.goFirst();
-								case 'Enter':
-								case 'Space':
-									event?.preventDefault();
-									this.activeElement?.click();
-							}
-						});
+					}
+				}),
+				this.Navigable.initNavigationHandler({
+					parent: element,
+					callback({ event, code, ctrlKey }) {
+						switch (code) {
+							case 'ArrowDown':
+							case 'ArrowRight':
+								event.preventDefault();
+								return this.handleNextKey(code, ctrlKey);
+							case 'ArrowLeft':
+							case 'ArrowUp':
+								event.preventDefault();
+								return this.handleBackKey(code, ctrlKey);
+							case 'End':
+								return this.goLast();
+							case 'Home':
+								return this.goFirst();
+							case 'Enter':
+							case 'Space':
+								event?.preventDefault();
+								this.activeElement?.click();
+						}
 					}
 				}),
 				this.Navigable.Active.subscribe((active) => {

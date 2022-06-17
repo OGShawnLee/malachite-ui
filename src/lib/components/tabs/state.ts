@@ -5,7 +5,7 @@ import { Bridge, Hashable, Ordered, Navigable } from '$lib/stores';
 import { useManualSync } from '$lib/stores/addons';
 import { derived, writable } from 'svelte/store';
 import { useCollector, useContext, usePair } from '$lib/hooks';
-import { makeReadable } from '$lib/utils';
+import { makeReadable, setAttribute } from '$lib/utils';
 import { isActionComponent, isFunction, isInterface, isObject, isStore } from '$lib/predicate';
 import { onDestroy } from 'svelte';
 
@@ -54,37 +54,38 @@ export default class Tabs extends Component {
 					element.ariaOrientation = isVertical ? 'vertical' : 'horizontal';
 				}),
 				this.Navigable.initNavigation(element, {
-					plugins: [useManualSync],
-					handler() {
-						return Navigable.initNavigationHandler(element, ({ event, code, ctrlKey }) => {
-							switch (code) {
-								case 'ArrowDown':
-								case 'ArrowRight':
-									event.preventDefault();
-									return this.handleNextKey(code, ctrlKey);
-								case 'ArrowLeft':
-								case 'ArrowUp':
-									event.preventDefault();
-									return this.handleBackKey(code, ctrlKey);
-								case 'End':
-									return this.goLast();
-								case 'Home':
-									return this.goFirst();
-							}
-						});
+					plugins: [useManualSync]
+				}),
+				this.Navigable.initNavigationHandler({
+					parent: element,
+					callback({ event, code, ctrlKey }) {
+						switch (code) {
+							case 'ArrowDown':
+							case 'ArrowRight':
+								event.preventDefault();
+								return this.handleNextKey(code, ctrlKey);
+							case 'ArrowLeft':
+							case 'ArrowUp':
+								event.preventDefault();
+								return this.handleBackKey(code, ctrlKey);
+							case 'End':
+								return this.goLast();
+							case 'Home':
+								return this.goFirst();
+						}
 					}
 				}),
 				this.Navigable.listenSelected(({ selected, previous }) => {
 					if (selected) {
 						const [element] = selected;
 						element.ariaSelected = 'true';
-						element.tabIndex = 0;
+						setAttribute(element, ['tabIndex', '0'], { overwrite: true });
 					}
 
 					if (previous) {
 						const [element] = previous;
 						element.ariaSelected = 'false';
-						element.tabIndex = -1;
+						setAttribute(element, ['tabIndex', '-1'], { overwrite: true });
 					}
 				})
 			]
