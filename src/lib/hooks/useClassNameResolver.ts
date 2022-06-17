@@ -7,7 +7,7 @@ import type {
 	SwitchClassName
 } from '$lib/types';
 import { isEmpty, isFunction, isNullish, isObject, isString } from '$lib/predicate';
-import { makeUnique } from '$lib/utils';
+import { clearString, makeUnique } from '$lib/utils';
 
 export function useClassNameResolver<S extends ComponentStates>(
 	className?: Nullable<ClassName<S>>
@@ -77,7 +77,7 @@ export function useClassNameResolver<S extends ComponentStates>(
 function clearClassName(className: Nullable<string>) {
 	if (isNullish(className)) return;
 
-	className = className.trim().replace(/\s\s+/g, ' ');
+	className = clearString(className);
 	return isEmpty(className) ? null : makeUnique(className.split(' ')).join(' ');
 }
 
@@ -96,8 +96,7 @@ function processClassList(classList: Nullable<string>[]) {
 
 	for (let str of classList) {
 		if (isString(str) && !isEmpty(str)) {
-			str = str.trim().replace(/\s\s+/g, ' ');
-			className += ` ${str}`;
+			className += ` ${clearString(str)}`;
 		}
 	}
 
