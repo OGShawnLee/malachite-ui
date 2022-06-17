@@ -2,6 +2,7 @@ export * from './useClassNameResolver';
 export * from './useCleanup';
 export * from './useClickOutside';
 export * from './useCollector';
+export * from './useComponentNaming';
 export * from './useDataSync';
 export * from './useDOMTraversal';
 export * from './useFocusOutside';
