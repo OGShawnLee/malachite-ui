@@ -119,6 +119,10 @@ export interface Ref<T> {
 
 export type RenderElementTagName = keyof HTMLElementTagNameMap | 'slot';
 
+export interface ReadableWrapper<T> extends Readable<T> {
+	sync: SyncFunction<T>;
+}
+
 export type Store<S> = [S] extends [Readable<infer V>]
 	? {
 			sync(this: void, configuration: { previous: V; value: Readable<V> | V }): void;
@@ -126,6 +130,17 @@ export type Store<S> = [S] extends [Readable<infer V>]
 	: {
 			sync(this: void, configuration: { previous: S; value: Readable<S> | S }): void;
 	  } & Writable<S>;
+
+export type StoreValue<Union> = Union extends Readable<infer Value> ? Value : Union;
+
+declare type SyncFunction<T> = (
+	this: void,
+	configuration: { previous: T; current: T | Readable<T> }
+) => void;
+
+export interface WritableWrapper<T> extends Writable<T> {
+	sync: SyncFunction<T>;
+}
 
 // * -> useClassNameResolver
 
