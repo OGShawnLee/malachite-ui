@@ -1,4 +1,4 @@
-import type { Writable, Readable, Unsubscriber } from 'svelte/store';
+import type { Writable, Readable, Unsubscriber, Subscriber } from 'svelte/store';
 import type { Action } from 'svelte/action';
 import type { Bridge, Ordered } from '$lib/stores';
 
@@ -25,6 +25,8 @@ export type Collectable =
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
 export type ExtractContext<C, K extends keyof C> = OmitAllThisParameter<Pick<C, K>>;
+
+export type ExtractContextKeys<T> = { [P in keyof T]: any };
 
 export namespace Forwarder {
 	export type Actions = [action: Action, parameter?: any][];
@@ -109,6 +111,11 @@ export type OmitAllThisParameter<T> = {
 export type Optional<T> = {
 	[P in keyof T]?: T[P];
 };
+
+export interface Ref<T> {
+	readonly value: T;
+	listen(onChange?: Subscriber<T>): Unsubscriber;
+}
 
 export type RenderElementTagName = keyof HTMLElementTagNameMap | 'slot';
 
