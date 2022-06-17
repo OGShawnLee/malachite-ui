@@ -35,6 +35,8 @@
   tabIndex={finalTabIndex}
   {...$$restProps}
   on:click
+  on:focus
+  on:blur
 >
   <slot {isDisabled} item={action} />
 </Render>

@@ -314,6 +314,58 @@ describe('Behaviour', () => {
 	});
 });
 
+const { Events } = samples;
+describe('Events', () => {
+	function initComponent(props: {
+		handleBlur: (event: FocusEvent) => void;
+		handleClick?: (event: MouseEvent) => void;
+		handleFocus: (event: FocusEvent) => void;
+	}) {
+		const result = render(Events, { props });
+		return { ...result, element: result.getByText('Item') };
+	}
+
+	it('Should be able of forwarding a blur listener', async () => {
+		const handleBlur = vi.fn<[FocusEvent]>(() => {});
+		// @ts-ignore
+		const { element } = initComponent({ handleBlur });
+		await act(() => element.focus());
+		await act(() => element.blur());
+		expect(handleBlur).toBeCalledTimes(1);
+
+		await act(() => element.focus());
+		await act(() => element.blur());
+		expect(handleBlur).toBeCalledTimes(2);
+		expect(handleBlur.mock.calls[0][0]).toBeInstanceOf(FocusEvent);
+	});
+
+	it('Should be able of forwarding a click listener', async () => {
+		const handleClick = vi.fn<[MouseEvent]>(() => {});
+		// @ts-ignore
+		const { element } = initComponent({ handleClick });
+		await fireEvent.click(element);
+		expect(handleClick).toBeCalledTimes(1);
+
+		await fireEvent.click(element);
+		expect(handleClick).toBeCalledTimes(2);
+		expect(handleClick.mock.calls[0][0]).toBeInstanceOf(MouseEvent);
+	});
+
+	it('Should be able of forwarding a focus listener', async () => {
+		const handleFocus = vi.fn<[FocusEvent]>(() => {});
+		// @ts-ignore
+		const { element } = initComponent({ handleFocus });
+		await act(() => element.focus());
+		expect(handleFocus).toBeCalledTimes(1);
+
+		await act(() => element.blur());
+
+		await act(() => element.focus());
+		expect(handleFocus).toBeCalledTimes(2);
+		expect(handleFocus.mock.calls[0][0]).toBeInstanceOf(FocusEvent);
+	});
+});
+
 describe('Props', () => {
 	describe('Global', () => {
 		it('Should allow the navigation to be triggered without having to focus the Navigable element', async () => {
