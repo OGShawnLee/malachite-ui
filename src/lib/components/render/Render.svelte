@@ -41,7 +41,9 @@
     {disabled}
     use:forwardActions={use}
     {...$$restProps}
+    on:blur
     on:click
+    on:focus
   >
     <slot />
   </svelte:element>
