@@ -31,16 +31,19 @@ export function isHTMLElement(val: unknown): val is HTMLElement {
 }
 
 export function isNavigationKey(code: string): code is NavigationKey {
-	return [
-		'ArrowUp',
-		'ArrowRight',
-		'ArrowLeft',
-		'ArrowDown',
-		'End',
-		'Enter',
-		'Home',
-		'Space'
-	].includes(code);
+	return (
+		code in
+		{
+			ArrowUp: true,
+			ArrowRight: true,
+			ArrowLeft: true,
+			ArrowDown: true,
+			End: true,
+			Enter: true,
+			Home: true,
+			Space: true
+		}
+	);
 }
 
 export function isNotDisabled(val: Nullable<EventTarget | HTMLElement>) {
