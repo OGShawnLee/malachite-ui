@@ -139,7 +139,12 @@
         >
           Toggle
         </button>
-        <h2 class="text-3xl font-bold">Navigation with Disabled Items</h2>
+        <div>
+          <h2 class="text-3xl font-bold">Navigation with Disabled Items</h2>
+          <p class="text-sm font-medium opacity-50">
+            Disabled elements should be skipped and not trigger click events and
+          </p>
+        </div>
       </header>
       <MenuButton
         class={{
@@ -162,6 +167,7 @@
             disabled: 'opacity-50 ring-neutral-200'
           }}
           disabled={$disabled}
+          on:click={handleClick}
         >
           Activate
         </MenuItem>
@@ -170,6 +176,7 @@
             base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
             selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
           }}
+          on:click={handleClick}
         >
           Edit
         </MenuItem>
@@ -180,6 +187,7 @@
             disabled: 'opacity-50 ring-neutral-200'
           }}
           disabled={$disabled}
+          on:click={handleClick}
         >
           Delete
         </MenuItem>
@@ -188,6 +196,7 @@
             base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
             selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
           }}
+          on:click={handleClick}
         >
           Share
         </MenuItem>
@@ -198,6 +207,7 @@
             disabled: 'opacity-50 ring-neutral-200'
           }}
           disabled={$disabled}
+          on:click={handleClick}
         >
           Tweet
         </MenuItem>

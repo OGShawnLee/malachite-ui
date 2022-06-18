@@ -32,7 +32,6 @@
   class={finalClassName}
   use={finalUse}
   {...$$restProps}
-  on:click={close}
   on:click
 >
   <slot {isDisabled} isSelected={$Selected} item={action} />

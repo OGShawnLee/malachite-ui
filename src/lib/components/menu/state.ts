@@ -14,6 +14,7 @@ import { useContext, useListener } from '$lib/hooks';
 import { makeReadable } from '$lib/utils';
 import {
 	isActionComponent,
+	isDisabled,
 	isFunction,
 	isInterface,
 	isNavigationKey,
@@ -206,6 +207,13 @@ export default class Menu extends Component {
 					}),
 					Index.subscribe((index) => {
 						Item.name = this.nameChild({ name: 'item', index });
+					}),
+					useListener(element, 'click', (event) => {
+						if (event.defaultPrevented) return;
+						if (isDisabled(element)) {
+							event.stopImmediatePropagation();
+							event.preventDefault();
+						} else this.close(event);
 					})
 				];
 			}

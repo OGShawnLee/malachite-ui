@@ -35,7 +35,23 @@ function initComponent(Component: typeof SvelteComponent, props = {}) {
 	return { ...result, button, getPanel, getAllItems, open };
 }
 
-const { Behaviour, DisabledNavigation } = samples;
+function initItem(props: {
+	disabled?: boolean;
+	target?: 'ACTION' | 'COMPONENT';
+	handleClick?: (event: MouseEvent) => void;
+}) {
+	const result = render(Item, { props });
+	const button = result.getByText('Toggle');
+
+	async function open() {
+		await fireEvent.click(button);
+		return result.getByText('Item');
+	}
+
+	return { ...result, button, open };
+}
+
+const { Behaviour, DisabledNavigation, Item } = samples;
 describe('Behaviour', () => {
 	it('Should be closed by default', () => {
 		const { getPanel } = initComponent(Behaviour);
@@ -218,6 +234,29 @@ describe('Behaviour', () => {
 			const { open } = initComponent(Behaviour);
 			const panel = await open();
 			expect(panel).toHaveFocus();
+		});
+	});
+
+	describe('Item', () => {
+		describe.each(['Action Component', 'Component'])('%s', (mode) => {
+			const target = mode === 'Action Component' ? 'ACTION' : 'COMPONENT';
+			it('Should close the Panel upon click', async () => {
+				const { button, open } = initItem({ target });
+				const item = await open();
+
+				await fireEvent.click(item);
+				expect(item).not.toBeInTheDocument();
+				expect(button.ariaExpanded).toBe('false');
+			});
+
+			it('Should not close the Panel upon click if the Item is disabled', async () => {
+				const { button, open } = initItem({ disabled: true, target });
+				const item = await open();
+
+				await fireEvent.click(item);
+				expect(item).toBeInTheDocument();
+				expect(button.ariaExpanded).toBe('true');
+			});
 		});
 	});
 
@@ -464,6 +503,31 @@ describe('Behaviour', () => {
 		expect(panel).not.toBeInTheDocument();
 		expect(button.ariaExpanded).toBe('false');
 		expect(button).not.toHaveAttribute('aria-controls');
+	});
+});
+
+describe('Events', () => {
+	describe('Item', () => {
+		describe('Click', () => {
+			it('Should be able of forwarding a click listener', async () => {
+				const handleClick = vi.fn<[MouseEvent]>(() => {});
+				const { open } = initItem({ handleClick });
+				const item = await open();
+
+				await fireEvent.click(item);
+				expect(handleClick).toBeCalled();
+				expect(handleClick.mock.calls[0][0]).toBeInstanceOf(MouseEvent);
+			});
+
+			it('Should not be called if the Item is disabled', async () => {
+				const handleClick = vi.fn<[MouseEvent]>(() => {});
+				const { open } = initItem({ disabled: true, handleClick });
+				const item = await open();
+
+				await fireEvent.click(item);
+				expect(handleClick).not.toBeCalled();
+			});
+		});
 	});
 });
 
