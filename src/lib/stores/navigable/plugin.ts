@@ -8,6 +8,7 @@ import {
 	useListener,
 	useWindowListener
 } from '$lib/hooks';
+import { tick } from 'svelte';
 
 export function useActiveHover(this: Navigable, parent: HTMLElement) {
 	return useCleanup(
@@ -21,8 +22,9 @@ export function useActiveHover(this: Navigable, parent: HTMLElement) {
 }
 
 export function useFocusSync(this: Navigable, panel: HTMLElement) {
-	const onPanelFocusWithin = () => {
+	const onPanelFocusWithin = async () => {
 		const target = document.activeElement;
+		await tick();
 		if (isHTMLElement(target)) {
 			const index = this.indexOf(target);
 			if (this.isSelected(index)) return;
