@@ -1,148 +1,207 @@
 <script lang="ts">
   import { Menu, MenuButton, MenuItem, MenuItems } from '$lib';
-  import { useClassNameResolver } from '$lib/hooks';
   import { useToggle } from '@test-utils';
-  import { fade } from 'svelte/transition';
+  import { fade, slide } from 'svelte/transition';
 
-  const [horizontal, toggleHorizontal] = useToggle(false);
-  const [finite, toggleFinite] = useToggle(true);
+  const [finite, toggleFinite] = useToggle();
+  const [horizontal, toggleHorizontal] = useToggle(true);
+  const [disabled, toggleDisabled] = useToggle(true);
 
-  let primitiveHorizontal = false;
-  function togglePrimitiveHorizontal() {
-    primitiveHorizontal = !primitiveHorizontal;
+  function handleClick(this: HTMLElement) {
+    alert(this.textContent);
   }
-
-  function doSuff(this: HTMLElement) {
-    console.log(this.textContent);
-  }
-
-  const className = useClassNameResolver<'isDisabled' | 'isSelected'>({
-    base: 'px-6 py-2 cursor-pointer',
-    disabled: 'opacity-40',
-    selected: 'bg-cyan-400'
-  });
 </script>
 
-<button class="px-6 py-2 font-medium" on:click={toggleHorizontal}>
-  Toggle Horizontal {$horizontal}
-</button>
-<button class="px-6 py-2 font-medium" on:click={toggleFinite}>
-  Toggle Finite {$finite}
-</button>
+<svelte:head>
+  <title>Malachite UI | Menu</title>
+</svelte:head>
 
-<Menu as="div" class="flex flex-col gap-6" {horizontal} {finite}>
-  <MenuButton class={{ base: 'px-6 py-2 font-medium', open: 'bg-cyan-200' }}>Toggle</MenuButton>
-  <MenuItems class="flex flex-col gap-3">
-    <MenuItem class={className} on:click={doSuff}>Activate</MenuItem>
-    <MenuItem class={className} disabled on:click={doSuff}>Delete</MenuItem>
-    <MenuItem class={className} on:click={doSuff}>Edit</MenuItem>
-    <MenuItem class={className} disabled on:click={doSuff}>Nuke</MenuItem>
-  </MenuItems>
-</Menu>
+<main class="md:max-w-4xl xl:max-w-6xl mx-auto py-12 | grid gap-12">
+  <h1 class="text-6xl font-bold">Menu</h1>
 
-<button class="px-6 py-2 font-medium" on:click={togglePrimitiveHorizontal}>
-  Toggle Horizontal {primitiveHorizontal}
-</button>
-<Menu as="div" class="flex flex-col gap-6" horizontal={primitiveHorizontal} let:items>
-  <MenuButton
-    class={{ base: 'px-6 py-2 font-medium', open: { on: 'bg-cyan-200', off: 'bg-gray-300' } }}
-  >
-    Toggle
-  </MenuButton>
-  <div slot="items" class="flex flex-col gap-3" use:items transition:fade>
-    <MenuItem class={className} disabled let:isSelected>
-      Activate {isSelected}
-    </MenuItem>
-    <MenuItem
-      class={({ isSelected }) => `px-6 py-2 font-medium ${isSelected ? 'bg-red-400' : ''}`}
-      let:isSelected
-    >
-      Delete {isSelected}
-    </MenuItem>
-    <MenuItem
-      class={({ isSelected }) => `px-6 py-2 font-medium ${isSelected ? 'bg-cyan-400' : ''}`}
-      let:isSelected
-    >
-      Edit {isSelected}
-    </MenuItem>
-    <MenuItem class={className} disabled let:isSelected>
-      Nuke {isSelected}
-    </MenuItem>
+  <div class="grid gap-24">
+    <Menu class="grid gap-10" as="section" {finite}>
+      <header class="flex items-center gap-8">
+        <button
+          class="px-6 py-2 | rounded-md ring-2 {$finite
+            ? 'ring-green-400'
+            : 'ring-neutral-400'} font-medium"
+          on:click={toggleFinite}
+          aria-label="Toggle Finite Navigation"
+        >
+          Toggle
+        </button>
+        <h2 class="text-3xl font-bold">Finite Navigation</h2>
+      </header>
+      <MenuButton
+        class={{
+          base: 'max-w-[fit-content] px-6 py-2 | rounded-md font-medium ring-2',
+          open: { on: 'ring-green-400', off: 'ring-neutral-200' }
+        }}
+      >
+        Toggle
+      </MenuButton>
+      <MenuItems class="max-w-sm | flex flex-col gap-3 | outline-none">
+        <MenuItem
+          class={{
+            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
+            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
+          }}
+          on:click={handleClick}
+        >
+          Activate
+        </MenuItem>
+        <MenuItem
+          class={{
+            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
+            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
+          }}
+          on:click={handleClick}
+        >
+          Edit
+        </MenuItem>
+        <MenuItem
+          class={{
+            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
+            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
+          }}
+          on:click={handleClick}
+        >
+          Share
+        </MenuItem>
+      </MenuItems>
+    </Menu>
+    <Menu class="grid gap-10" as="section" {horizontal} let:isOpen let:items>
+      <header class="flex items-center gap-8">
+        <button
+          class="px-6 py-2 | rounded-md ring-2 {$horizontal
+            ? 'ring-green-400'
+            : 'ring-neutral-400'} font-medium"
+          on:click={toggleHorizontal}
+          aria-label="Toggle Finite Navigation"
+        >
+          Toggle
+        </button>
+        <h2 class="text-3xl font-bold">Horizontal Navigation</h2>
+      </header>
+      <div class="flex items-start gap-10" class:flex-col={!$horizontal}>
+        <MenuButton
+          class={{
+            base: 'max-w-[fit-content] px-6 py-2 | rounded-md font-medium ring-2',
+            open: { on: 'ring-green-400', off: 'ring-neutral-200' }
+          }}
+        >
+          Toggle
+        </MenuButton>
+        {#if isOpen}
+          <ul
+            class="min-w-sm | flex gap-3 | outline-none"
+            class:flex-col={!$horizontal}
+            use:items
+            transition:fade
+          >
+            <MenuItem
+              class={{
+                base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
+                selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
+              }}
+            >
+              Activate
+            </MenuItem>
+            <MenuItem
+              class={{
+                base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
+                selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
+              }}
+            >
+              Edit
+            </MenuItem>
+            <MenuItem
+              class={{
+                base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
+                selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
+              }}
+            >
+              Share
+            </MenuItem>
+          </ul>
+        {/if}
+      </div>
+    </Menu>
+    <Menu class="grid gap-10" as="section" let:items>
+      <header class="flex items-center gap-8">
+        <button
+          class="px-6 py-2 | rounded-md ring-2 {$disabled
+            ? 'ring-green-400'
+            : 'ring-neutral-400'} font-medium"
+          on:click={toggleDisabled}
+          aria-label="Toggle Finite Navigation"
+        >
+          Toggle
+        </button>
+        <h2 class="text-3xl font-bold">Navigation with Disabled Items</h2>
+      </header>
+      <MenuButton
+        class={{
+          base: 'max-w-[fit-content] px-6 py-2 | rounded-md font-medium ring-2',
+          open: { on: 'ring-green-400', off: 'ring-neutral-200' }
+        }}
+      >
+        Toggle
+      </MenuButton>
+      <ul
+        class="max-w-sm | flex flex-col gap-3 | outline-none"
+        slot="items"
+        use:items
+        transition:slide
+      >
+        <MenuItem
+          class={{
+            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
+            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' },
+            disabled: 'opacity-50 ring-neutral-200'
+          }}
+          disabled={$disabled}
+        >
+          Activate
+        </MenuItem>
+        <MenuItem
+          class={{
+            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
+            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
+          }}
+        >
+          Edit
+        </MenuItem>
+        <MenuItem
+          class={{
+            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
+            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' },
+            disabled: 'opacity-50 ring-neutral-200'
+          }}
+          disabled={$disabled}
+        >
+          Delete
+        </MenuItem>
+        <MenuItem
+          class={{
+            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
+            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
+          }}
+        >
+          Share
+        </MenuItem>
+        <MenuItem
+          class={{
+            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
+            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' },
+            disabled: 'opacity-50 ring-neutral-200'
+          }}
+          disabled={$disabled}
+        >
+          Tweet
+        </MenuItem>
+      </ul>
+    </Menu>
   </div>
-</Menu>
-
-<Menu as="div" class="flex gap-6" horizontal let:button>
-  <button class="px-6 py-2 font-medium" use:button>Toggle</button>
-  <MenuItems class="flex gap-3">
-    <MenuItem class="px-6 py-2 font-medium opacity-40" disabled let:isSelected>
-      Activate {isSelected}
-    </MenuItem>
-    <MenuItem class="px-6 py-2 font-medium" let:isSelected>
-      Delete {isSelected}
-    </MenuItem>
-    <MenuItem class="px-6 py-2 font-medium" let:isSelected>
-      Edit {isSelected}
-    </MenuItem>
-    <MenuItem class="px-6 py-2 font-medium opacity-40" disabled let:isSelected>
-      Nuke {isSelected}
-    </MenuItem>
-  </MenuItems>
-</Menu>
-
-<Menu as="div" class="flex flex-col gap-6">
-  <MenuButton class="px-6 py-2 font-medium">Toggle</MenuButton>
-  <MenuItems class="flex flex-col gap-3">
-    <MenuItem as="button" class="px-6 py-2 font-medium">Activate</MenuItem>
-    <MenuItem as="button" class="px-6 py-2 font-medium">Delete</MenuItem>
-    <MenuItem as="button" class="px-6 py-2 font-medium">Update</MenuItem>
-  </MenuItems>
-</Menu>
-
-<Menu as="div" class="flex flex-col gap-6" finite>
-  <MenuButton class="px-6 py-2 font-medium">Toggle</MenuButton>
-  <MenuItems class="flex flex-col gap-3">
-    <MenuItem as="button" class="px-6 py-2 font-medium" disabled>Activate</MenuItem>
-    <MenuItem as="button" class="px-6 py-2 font-medium" let:isSelected>
-      Edit {isSelected}
-    </MenuItem>
-    <MenuItem as="button" class="px-6 py-2 font-medium" let:isSelected>
-      Delete {isSelected}
-    </MenuItem>
-    <MenuItem as="button" class="px-6 py-2 font-medium" disabled>Update</MenuItem>
-  </MenuItems>
-</Menu>
-
-<Menu>
-  <MenuButton class="px-6 py-2 font-medium">Toggle</MenuButton>
-  <MenuItems data-testid="menu-panel">
-    <MenuItem disabled let:isSelected>
-      A Item <span> {isSelected} </span>
-    </MenuItem>
-    <MenuItem let:isSelected>
-      B Item <span> {isSelected} </span>
-    </MenuItem>
-    <MenuItem disabled let:isSelected>
-      C Item <span> {isSelected} </span>
-    </MenuItem>
-    <MenuItem disabled let:isSelected>
-      D Item <span> {isSelected} </span>
-    </MenuItem>
-    <MenuItem let:isSelected>
-      E Item <span> {isSelected} </span>
-    </MenuItem>
-    <MenuItem let:isSelected>
-      F Item <span> {isSelected} </span>
-    </MenuItem>
-    <MenuItem disabled let:isSelected>
-      G Item <span> {isSelected} </span>
-    </MenuItem>
-  </MenuItems>
-</Menu>
-
-<div class="h-[1000px]" />
-
-<style>
-  :global(button:focus) {
-    background-color: hsl(0, 0%, 90%);
-  }
-</style>
+</main>

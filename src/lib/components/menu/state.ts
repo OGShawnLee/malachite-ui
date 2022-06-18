@@ -1,4 +1,4 @@
-import type { Expand, ExtractContext, Navigable as Nav, Store } from '$lib/types';
+import type { Expand, ExtractContext, Navigable as Nav, Nullable, Ref, Store } from '$lib/types';
 import type { Readable } from 'svelte/store';
 import { Bridge, Navigable, Ordered, storable, Toggleable } from '$lib/stores';
 import {
@@ -153,8 +153,10 @@ export default class Menu extends Component {
 								event.preventDefault();
 								return this.handleBackKey(code, ctrlKey);
 							case 'End':
+								event.preventDefault();
 								return this.goLast();
 							case 'Home':
+								event.preventDefault();
 								return this.goFirst();
 							case 'Enter':
 							case 'Space':

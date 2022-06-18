@@ -63,8 +63,10 @@ export default class Accordion extends Component {
 								event.preventDefault();
 								return this.handleBackKey(code, ctrlKey);
 							case 'End':
+								event.preventDefault();
 								return this.goLast();
 							case 'Home':
+								event.preventDefault();
 								return this.goFirst();
 						}
 					}
