@@ -82,21 +82,24 @@ export default class Menu extends Component {
 				}),
 				useListener(element, 'keydown', (event) => {
 					if (!isNavigationKey(event.code)) return;
-					if (['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft']) event.preventDefault();
 					switch (event.code) {
 						case 'ArrowDown':
+							event.preventDefault();
 							if (!this.isVertical) return;
 							this.Navigable.startAt = event.ctrlKey ? 'LAST' : 'FIRST';
 							return this.Toggleable.open();
 						case 'ArrowRight':
+							event.preventDefault();
 							if (this.isVertical) return;
 							this.Navigable.startAt = event.ctrlKey ? 'LAST' : 'FIRST';
 							return this.Toggleable.open();
 						case 'ArrowUp':
+							event.preventDefault();
 							if (!this.isVertical) return;
 							this.Navigable.startAt = event.ctrlKey ? 'FIRST' : 'LAST';
 							return this.Toggleable.open();
 						case 'ArrowLeft':
+							event.preventDefault();
 							if (this.isVertical) return;
 							this.Navigable.startAt = event.ctrlKey ? 'FIRST' : 'LAST';
 							return this.Toggleable.open();
