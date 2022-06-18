@@ -156,6 +156,18 @@ describe('Behaviour', () => {
 				});
 
 				if (global) {
+					it(`Should not get stuck after pressing ${nextKey} twice if focus was on an external element`, async () => {
+						const { items, external } = initComponent(Behaviour, { global, vertical });
+						await act(() => external.button.focus());
+						expect(external.button).toHaveFocus();
+
+						await fireEvent.keyDown(document, { code: nextKey });
+						expect(items[0]).toHaveFocus();
+
+						await fireEvent.keyDown(document, { code: nextKey });
+						expect(items[1]).toHaveFocus();
+					});
+
 					it(`Should focus the last Item upon pressing ctrlKey + ${nextKey}`, async () => {
 						const { items } = initComponent(Behaviour, { global, vertical });
 

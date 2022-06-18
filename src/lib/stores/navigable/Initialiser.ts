@@ -29,7 +29,8 @@ export default class Initialiser<T> {
 		isVertical: false,
 		isWaiting: false,
 		manualIndex: 0,
-		selected: undefined
+		selected: undefined,
+		shouldWait: false
 	};
 
 	shouldFocus = true;
@@ -99,6 +100,10 @@ export default class Initialiser<T> {
 
 	get selectedElement() {
 		return this.primitive.selected?.[0];
+	}
+
+	get shouldWait() {
+		return this.primitive.shouldWait;
 	}
 
 	get length() {

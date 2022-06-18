@@ -77,6 +77,7 @@ export namespace Navigable {
 		isWaiting: boolean;
 		manualIndex: number;
 		selected: [HTMLElement, T & Member] | undefined;
+		shouldWait: boolean;
 	}
 
 	export type StartAt = 'AUTO' | 'FIRST' | 'LAST' | number;

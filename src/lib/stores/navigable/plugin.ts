@@ -121,11 +121,11 @@ export function useKeyMatch(this: Navigable, panel: HTMLElement) {
 export function useResetOnItemOutside(this: Navigable) {
 	return useCleanup(
 		useClickOutside(this.primitive.elements, () => {
-			this.Waiting.set(true);
+			if (this.shouldWait) this.Waiting.set(true);
 			this.Index.set(0);
 		}),
 		useFocusOutside(this.primitive.elements, () => {
-			this.Waiting.set(true);
+			if (this.shouldWait) this.Waiting.set(true);
 			this.Index.set(0);
 		})
 	);

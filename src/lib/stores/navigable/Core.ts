@@ -21,7 +21,8 @@ export default class Core<T> extends Initialiser<T> {
 				}),
 				sync(this.Vertical, 'isVertical'),
 				sync(this.Waiting, 'isWaiting'),
-				sync(this.Finite, 'isFinite')
+				sync(this.Finite, 'isFinite'),
+				sync(this.ShouldWait, 'shouldWait')
 			],
 			init: () => {
 				beforeIndexSelection?.bind(this)();
