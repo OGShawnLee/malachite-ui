@@ -152,7 +152,7 @@ export type ClassNameObject<S extends ComponentStates = ComponentStates> = Nulla
 	active: string | SwitchClassName;
 	base: string | FunctionClassName<S> | ClassNameObject<S>;
 	checked: string | SwitchClassName;
-	disabled: string;
+	disabled: string | SwitchClassName;
 	dual: string; // isActive && isSelected || isActive && isChecked || isChecked && isSelected
 	triple: string; // isActive && isChecked && isSelected
 	open: string | SwitchClassName;

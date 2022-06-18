@@ -31,9 +31,9 @@ export function useClassNameResolver<S extends ComponentStates>(
 			const classList = [base];
 
 			if (isDisabled) {
-				classList.push(clearClassName(disabled));
+				classList.push(handleSwitchClassName(disabled, isDisabled));
 				return processClassList(classList);
-			}
+			} else if (isObject(disabled)) classList.push(disabled.off);
 
 			classList.push(handleSwitchClassName(open, isOpen));
 

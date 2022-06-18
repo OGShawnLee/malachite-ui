@@ -291,6 +291,22 @@ describe('isDisabled', () => {
 	it('Should not be added if state is not disabled', () => {
 		expect(resolve(state)).toBe('button closed inactive unchecked unselected');
 	});
+
+	describe('Type -> SwithClassName', () => {
+		const resolve = useClassNameResolver<'isDisabled' | 'isOpen'>({
+			base: 'button',
+			disabled: { on: 'disabled', off: 'enabled' },
+			open: { on: 'open', off: 'closed' }
+		});
+
+		it('Should add the disabled (on) className', () => {
+			expect(resolve({ isDisabled: true, isOpen: false })).toBe('button disabled');
+		});
+
+		it('Should add the disabled (off) className', () => {
+			expect(resolve({ isDisabled: false, isOpen: false })).toBe('button enabled closed');
+		});
+	});
 });
 
 describe('isOpen', () => {
