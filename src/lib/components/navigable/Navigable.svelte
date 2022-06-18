@@ -6,14 +6,17 @@
   import { useClassNameResolver } from '$lib/hooks';
   import { createStoreWrapper } from '$lib/utils';
 
+  export let finite: Readable<boolean> | boolean = false;
   export let vertical: Readable<boolean> | boolean = false;
   export let global: Readable<boolean> | boolean = false;
 
-  const { Global, Vertical, self } = createNavigable({
-    Global: createStoreWrapper({ Store: global, initialValue: false }),
-    Vertical: createStoreWrapper({ Store: vertical, initialValue: false })
+  const { Finite, Global, Vertical, self } = createNavigable({
+    Finite: createStoreWrapper({ Store: finite, initialValue: false }),
+    Vertical: createStoreWrapper({ Store: vertical, initialValue: false }),
+    Global: createStoreWrapper({ Store: global, initialValue: false })
   });
 
+  $: Finite.sync({ previous: $Finite, current: finite });
   $: Vertical.sync({ previous: $Vertical, current: vertical });
   $: Global.sync({ previous: $Global, current: global });
 

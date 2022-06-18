@@ -190,21 +190,21 @@ Make sure to import components from `malachite-ui/components` to trigger tree-sh
 ### Navigable
 
 ```html
-<Navigable global vertical let:navigable>
+<Navigable finite global vertical let:navigable>
   <NavigableItem
-    class="{{ base:'item', disabled:{ on:'item--disabled', off: 'item--enabled' } }}"
+    class="{{ base:'item', disabled:{ on:'item--disabled', off:'item--enabled' } }}"
     let:item
   >
     First Item
   </NavigableItem>
   <NavigableItem
-    class="{{ base:'item', disabled:{ on:'item--disabled', off: 'item--enabled' } }}"
+    class="{{ base:'item', disabled:{ on:'item--disabled', off:'item--enabled' } }}"
     let:item
   >
     Second Item
   </NavigableItem>
   <NavigableItem
-    class="{{ base:'item', disabled:{ on:'item--disabled', off: 'item--enabled' } }}"
+    class="{{ base:'item', disabled:{ on:'item--disabled', off:'item--enabled' } }}"
     let:item
   >
     Third Item

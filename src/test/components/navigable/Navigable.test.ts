@@ -18,6 +18,7 @@ import type { Nullable } from '$lib/types';
 function initComponent(
 	Component: typeof SvelteComponent,
 	props: {
+		finite?: Readable<boolean> | boolean;
 		global?: Readable<boolean> | boolean;
 		vertical?: Readable<boolean> | boolean;
 	} = {}
@@ -138,6 +139,20 @@ describe('Behaviour', () => {
 
 					await fireEvent.keyDown(target, { code: 'Home' });
 					expect(items[1]).toHaveFocus();
+				});
+
+				it('Should be infinite', async () => {
+					const { root, items } = initComponent(Behaviour, { global, vertical });
+					const target = global ? document : root;
+
+					await fireEvent.keyDown(target, { code: nextKey });
+					expect(items[0]).toHaveFocus();
+
+					await fireEvent.keyDown(target, { code: previousKey });
+					expect(items[3]).toHaveFocus();
+
+					await fireEvent.keyDown(target, { code: nextKey });
+					expect(items[0]).toHaveFocus();
 				});
 
 				if (global) {
@@ -367,6 +382,102 @@ describe('Events', () => {
 });
 
 describe('Props', () => {
+	describe('Finite', () => {
+		it('Should make the navigation finite', async () => {
+			const { root, items } = initComponent(Behaviour, { finite: true });
+
+			await fireEvent.keyDown(root, { code: 'ArrowRight' });
+			expect(items[0]).toHaveFocus();
+
+			await fireEvent.keyDown(root, { code: 'ArrowLeft' });
+			expect(items[0]).toHaveFocus();
+
+			await fireEvent.keyDown(root, { code: 'End' });
+			expect(items[3]).toHaveFocus();
+
+			await fireEvent.keyDown(root, { code: 'ArrowRight' });
+			expect(items[3]).toHaveFocus();
+		});
+
+		it('Should be false by default', async () => {
+			const { root, items } = initComponent(Behaviour);
+
+			await fireEvent.keyDown(root, { code: 'ArrowRight' });
+			expect(items[0]).toHaveFocus();
+
+			await fireEvent.keyDown(root, { code: 'ArrowLeft' });
+			expect(items[3]).toHaveFocus();
+
+			await fireEvent.keyDown(root, { code: 'ArrowRight' });
+			expect(items[0]).toHaveFocus();
+		});
+
+		it('Should be reactive', async () => {
+			const { component, root, items } = initComponent(Behaviour, { finite: true });
+
+			await fireEvent.keyDown(root, { code: 'ArrowRight' });
+			expect(items[0]).toHaveFocus();
+
+			await fireEvent.keyDown(root, { code: 'ArrowLeft' });
+			expect(items[0]).toHaveFocus();
+
+			await fireEvent.keyDown(root, { code: 'End' });
+			expect(items[3]).toHaveFocus();
+
+			await fireEvent.keyDown(root, { code: 'ArrowRight' });
+			expect(items[3]).toHaveFocus();
+
+			await act(() => component.$set({ finite: false }));
+
+			await fireEvent.keyDown(root, { code: 'ArrowRight' });
+			expect(items[0]).toHaveFocus();
+
+			await fireEvent.keyDown(root, { code: 'ArrowLeft' });
+			expect(items[3]).toHaveFocus();
+		});
+
+		it('Should work with a store', async () => {
+			const finite = writable(false);
+			const { root, items } = initComponent(Behaviour, { finite });
+
+			await fireEvent.keyDown(root, { code: 'ArrowRight' });
+			expect(items[0]).toHaveFocus();
+
+			await fireEvent.keyDown(root, { code: 'ArrowLeft' });
+			expect(items[3]).toHaveFocus();
+
+			await fireEvent.keyDown(root, { code: 'ArrowRight' });
+			expect(items[0]).toHaveFocus();
+
+			await act(() => finite.set(true));
+
+			await fireEvent.keyDown(root, { code: 'ArrowLeft' });
+			expect(items[0]).toHaveFocus();
+
+			await fireEvent.keyDown(root, { code: 'End' });
+			expect(items[3]).toHaveFocus();
+
+			await fireEvent.keyDown(root, { code: 'ArrowRight' });
+			expect(items[3]).toHaveFocus();
+		});
+
+		it('Should work propertly with Global and Vertical navigation', async () => {
+			const { items } = initComponent(Behaviour, { finite: true, global: true, vertical: true });
+
+			await fireEvent.keyDown(document, { code: 'ArrowDown' });
+			expect(items[0]).toHaveFocus();
+
+			await fireEvent.keyDown(document, { code: 'ArrowUp' });
+			expect(items[0]).toHaveFocus();
+
+			await fireEvent.keyDown(document, { code: 'ArrowDown', ctrlKey: true });
+			expect(items[3]).toHaveFocus();
+
+			await fireEvent.keyDown(document, { code: 'ArrowDown' });
+			expect(items[3]).toHaveFocus();
+		});
+	});
+
 	describe('Global', () => {
 		it('Should allow the navigation to be triggered without having to focus the Navigable element', async () => {
 			const { items } = initComponent(Behaviour, { global: true });

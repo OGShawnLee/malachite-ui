@@ -14,6 +14,7 @@ import { ref, setAttribute } from '$lib/utils';
 import { useFocusSync, useResetOnItemOutside } from '$lib/stores/addons';
 
 interface Configuration {
+	Finite: ReadableWrapper<boolean>;
 	Vertical: ReadableWrapper<boolean>;
 	Global: ReadableWrapper<boolean>;
 }
@@ -26,14 +27,14 @@ export type ContextKeys = ExtractContextKeys<Context>;
 
 const generateIndex = initIndexGenerator();
 
-export function createNavigable({ Global, Vertical }: Expand<Configuration>) {
+export function createNavigable({ Finite, Global, Vertical }: Expand<Configuration>) {
 	const { baseName, nameChild } = useComponentNaming({ name: 'navigable', index: generateIndex() });
 	const Items = new Ordered<Nav.Member>();
-	const Navigation = new Navigable({ Ordered: Items, Vertical, Index: 0 });
+	const Navigation = new Navigable({ Ordered: Items, Finite, Vertical, Index: 0 });
 
 	setContext({ initItem });
 
-	function focustFirstValidItem() {
+	function focusFirstValidItem() {
 		const index = Navigation.findIndexFromStart();
 		return index > -1 && Navigation.at(index)?.focus();
 	}
@@ -53,13 +54,13 @@ export function createNavigable({ Global, Vertical }: Expand<Configuration>) {
 							case 'ArrowDown':
 								event.preventDefault();
 								if (this.isVertical && !ctrlKey && !this.hasFocusWithin())
-									return focustFirstValidItem();
+									return focusFirstValidItem();
 
 								return this.handleNextKey(code, ctrlKey);
 							case 'ArrowRight':
 								event.preventDefault();
 								if (!this.isVertical && !ctrlKey && !this.hasFocusWithin())
-									return focustFirstValidItem();
+									return focusFirstValidItem();
 
 								return this.handleNextKey(code, ctrlKey);
 							case 'ArrowLeft':
@@ -105,7 +106,7 @@ export function createNavigable({ Global, Vertical }: Expand<Configuration>) {
 		});
 	}
 
-	return { Global, Vertical, self: createSelf(), initItem };
+	return { Finite, Global, Vertical, self: createSelf(), initItem };
 }
 
 const { getContext, setContext } = useContext({

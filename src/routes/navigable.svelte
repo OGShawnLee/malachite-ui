@@ -1,62 +1,168 @@
 <script>
   import { Navigable, NavigableItem } from '$lib/components';
+  import { useToggle } from '@test-utils';
 
-  let global = false;
-  let disabled = true;
-  let tabIndex = 0;
+  const [finite, toggleFinite] = useToggle();
+  const [global, toggleGlobal] = useToggle();
+  const [vertical, toggleVertical] = useToggle();
+  const [disabled, toggleDisabled] = useToggle(true);
 </script>
 
-<button> Previous </button>
-<button on:click={() => (global = !global)}> Toggle Global Navigation {global} </button>
+<main class="md:max-w-4xl xl:max-w-6xl mx-auto py-12 | grid gap-12">
+  <h1 class="text-6xl font-bold">Navigable</h1>
 
-<section class="p-8">
-  <h2>Disabled - TabIndex</h2>
-
-  <button on:click={() => (disabled = !disabled)}> Toggle Disabled </button>
-
-  <input type="number" bind:value={tabIndex} />
-
-  <Navigable>
-    <NavigableItem class="focus:font-bold">Item 1</NavigableItem>
-    <NavigableItem class="focus:font-bold" as="slot" {disabled} let:item>
-      <div
-        class={disabled ? 'focus:font-bold text-red-400' : 'focus:font-bold text-green-400'}
-        use:item
-      >
-        Item 2 - {disabled}
+  <div class="grid gap-24">
+    <Navigable class="grid gap-10" as="section" {finite}>
+      <header class="flex items-center gap-8">
+        <button
+          class="px-6 py-2 | rounded-md ring-2 {$finite
+            ? 'ring-green-400'
+            : 'ring-neutral-400'} font-medium"
+          on:click={toggleFinite}
+          aria-label="Toggle Finite Navigation"
+        >
+          Toggle
+        </button>
+        <h2 class="text-3xl font-bold">Finite Navigation</h2>
+      </header>
+      <div class="flex gap-3">
+        <NavigableItem
+          class="px-6 py-2 | rounded-md ring-2 ring-neutral-200 font-medium focus:ring-rose-600"
+        >
+          First Item
+        </NavigableItem>
+        <NavigableItem
+          class="px-6 py-2 | rounded-md ring-2 ring-neutral-200 font-medium focus:ring-rose-600"
+        >
+          Second Item
+        </NavigableItem>
+        <NavigableItem
+          class="px-6 py-2 | rounded-md ring-2 ring-neutral-200 font-medium focus:ring-rose-600"
+        >
+          Third Item
+        </NavigableItem>
       </div>
-    </NavigableItem>
-    <NavigableItem class="focus:font-bold">Item 3</NavigableItem>
-  </Navigable>
-</section>
-
-<Navigable class="p-8 bg-cyan-100" vertical {global}>
-  <p>Container</p>
-
-  <NavigableItem class={{ base: 'font-bold focus:text-sky-800' }}>First Item</NavigableItem>
-  <NavigableItem class={{ base: 'font-bold focus:text-sky-800' }}>Second Item</NavigableItem>
-  <NavigableItem
-    as="button"
-    class={{ base: 'font-bold focus:text-sky-800', disabled: 'opacity-50' }}
-    disabled
-  >
-    Third Item
-  </NavigableItem>
-  <NavigableItem class={{ base: 'font-bold focus:text-sky-800', disabled: 'opacity-50' }} disabled>
-    Fourth Item
-  </NavigableItem>
-  <NavigableItem as="slot" let:item>
-    <div class="font-bold focus:text-sky-800 opacity-50" disabled use:item>Action Item</div>
-  </NavigableItem>
-  <NavigableItem as="slot" let:item>
-    <div class="font-bold focus:text-sky-800 opacity-50" disabled={true} use:item>Action Item</div>
-  </NavigableItem>
-  <NavigableItem class={{ base: 'font-bold focus:text-sky-800' }}>Forth Item</NavigableItem>
-</Navigable>
-
-<button> External </button>
-
-<div class="h-180">
-  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Perspiciatis autem quasi repellat amet
-  quo voluptates voluptas! Ducimus dolore ad repellendus.
-</div>
+    </Navigable>
+    <Navigable class="grid gap-10" as="section" {global}>
+      <header class="flex items-center gap-8">
+        <button
+          class="px-6 py-2 | rounded-md ring-2 {$global
+            ? 'ring-green-400'
+            : 'ring-neutral-400'} font-medium"
+          on:click={toggleGlobal}
+          aria-label="Toggle Vertical Navigation"
+        >
+          Toggle
+        </button>
+        <div>
+          <h2 class="text-3xl font-bold">Global Navigation</h2>
+          <p class="text-sm font-medium opacity-50">
+            Only one global navigation should be active at once
+          </p>
+        </div>
+      </header>
+      <div class="flex gap-3">
+        <NavigableItem
+          class="px-6 py-2 | rounded-md ring-2 ring-neutral-200 font-medium focus:ring-rose-600"
+        >
+          First Item
+        </NavigableItem>
+        <NavigableItem
+          class="px-6 py-2 | rounded-md ring-2 ring-neutral-200 font-medium focus:ring-rose-600"
+        >
+          Second Item
+        </NavigableItem>
+        <NavigableItem
+          class="px-6 py-2 | rounded-md ring-2 ring-neutral-200 font-medium focus:ring-rose-600"
+        >
+          Third Item
+        </NavigableItem>
+      </div>
+    </Navigable>
+    <Navigable class="grid gap-10" as="section" {vertical}>
+      <header class="flex items-center gap-8">
+        <button
+          class="px-6 py-2 | rounded-md ring-2 {$vertical
+            ? 'ring-green-400'
+            : 'ring-neutral-400'} font-medium"
+          on:click={toggleVertical}
+          aria-label="Toggle Vertical Navigation"
+        >
+          Toggle
+        </button>
+        <h2 class="text-3xl font-bold">Vertical Navigation</h2>
+      </header>
+      <div class="flex gap-3">
+        <NavigableItem
+          class="px-6 py-2 | rounded-md ring-2 ring-neutral-200 font-medium focus:ring-rose-600"
+        >
+          First Item
+        </NavigableItem>
+        <NavigableItem
+          class="px-6 py-2 | rounded-md ring-2 ring-neutral-200 font-medium focus:ring-rose-600"
+        >
+          Second Item
+        </NavigableItem>
+        <NavigableItem
+          class="px-6 py-2 | rounded-md ring-2 ring-neutral-200 font-medium focus:ring-rose-600"
+        >
+          Third Item
+        </NavigableItem>
+      </div>
+    </Navigable>
+    <Navigable class="grid gap-10" as="section">
+      <header class="flex items-center gap-8">
+        <button
+          class="px-6 py-2 | rounded-md ring-2 {$disabled
+            ? 'ring-green-400'
+            : 'ring-neutral-400'} font-medium"
+          on:click={toggleDisabled}
+          aria-label="Toggle Vertical Navigation"
+        >
+          Toggle
+        </button>
+        <div>
+          <h2 class="text-3xl font-bold">Navigation with Disabled Items</h2>
+          <p class="text-sm font-medium opacity-50">
+            Disabled Items should lose their focusable state
+          </p>
+        </div>
+      </header>
+      <div class="flex gap-3">
+        <NavigableItem
+          class={{
+            base: 'px-6 py-2 rounded-md ring-2 font-medium focus:ring-rose-600',
+            disabled: { on: 'opacity-50', off: 'ring-neutral-200' }
+          }}
+          disabled={$disabled}
+        >
+          First Item
+        </NavigableItem>
+        <NavigableItem
+          class="px-6 py-2 | rounded-md ring-2 ring-neutral-200 font-medium focus:ring-rose-600"
+        >
+          Second Item
+        </NavigableItem>
+        <NavigableItem
+          class="px-6 py-2 | rounded-md ring-2 ring-neutral-200 font-medium focus:ring-rose-600"
+        >
+          Third Item
+        </NavigableItem>
+        <NavigableItem
+          class="px-6 py-2 | rounded-md ring-2 ring-neutral-200 font-medium focus:ring-rose-600"
+        >
+          Fourth Item
+        </NavigableItem>
+        <NavigableItem
+          class={{
+            base: 'px-6 py-2 | rounded-md ring-2 font-medium focus:ring-rose-600',
+            disabled: { on: 'opacity-50', off: 'ring-neutral-200' }
+          }}
+          disabled={$disabled}
+        >
+          Fifth Item
+        </NavigableItem>
+      </div>
+    </Navigable>
+  </div>
+</main>

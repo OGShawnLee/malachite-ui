@@ -4,13 +4,14 @@
 
   export let vertical: boolean | Readable<boolean> | undefined = undefined;
   export let global: boolean | Readable<boolean> | undefined = undefined;
+  export let finite: boolean | Readable<boolean> | undefined = undefined;
 </script>
 
 <div>External Container</div>
 
 <button> External Button </button>
 
-<Navigable {global} {vertical} data-testid="root">
+<Navigable {finite} {global} {vertical} data-testid="root">
   <NavigableItem>Item 1</NavigableItem>
   <NavigableItem>Item 2</NavigableItem>
   <NavigableItem>Item 3</NavigableItem>
