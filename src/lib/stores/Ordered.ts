@@ -1,3 +1,4 @@
+import type { Expand } from '$lib/types'
 import type { Readable, Writable } from 'svelte/store';
 import { useCollector, useDOMTraversal, useValidator } from '$lib/hooks';
 import { isHTMLElement } from '$lib/predicate';

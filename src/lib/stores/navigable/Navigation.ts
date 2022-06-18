@@ -1,5 +1,5 @@
 import Finder from './Finder';
-import type { Navigable, Ref } from '$lib/types';
+import type { Expand, Navigable, Ref } from '$lib/types';
 import type { Readable, Updater } from 'svelte/store';
 import { useCleanup, useListener, useWindowListener } from '$lib/hooks';
 import { isFunction, isNavigationKey, isNullish, isServer, isStore } from '$lib/predicate';

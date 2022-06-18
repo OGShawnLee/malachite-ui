@@ -1,4 +1,4 @@
-import type { Store } from '$lib/types';
+import type { Expand, Store } from '$lib/types';
 import type { Readable, Unsubscriber, Writable } from 'svelte/store';
 import { focusFirstElement, makeUnique, setAttribute } from '$lib/utils';
 import { hasTagName, isFocusable, isHTMLElement, isNullish, isWithin } from '$lib/predicate';
