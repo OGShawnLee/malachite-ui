@@ -141,6 +141,57 @@ describe('behaviour', () => {
 	});
 });
 
+const { BindOpen } = samples;
+describe('Binding', () => {
+	async function initBinding(props: { open?: boolean } = {}) {
+		const result = render(BindOpen, { props });
+		const button = result.getByText('Button');
+		const bindHolder = await result.findByTestId('open-bind-holder');
+
+		async function open() {
+			await fireEvent.click(button);
+			return await result.findByText('Panel');
+		}
+
+		function getPanel() {
+			return result.findByText('Panel');
+		}
+
+		return { ...result, bindHolder, button, open, getPanel };
+	}
+
+	it('Should set the bound variable to false by default', async () => {
+		const { bindHolder } = await initBinding();
+		expect(bindHolder).toHaveTextContent('false');
+	});
+
+	it('Should update the bound variable with each state change', async () => {
+		const { bindHolder, button, open } = await initBinding();
+		expect(bindHolder).toHaveTextContent('false');
+
+		const panel = await open();
+		expect(panel).toHaveTextContent('Panel');
+		expect(bindHolder).toHaveTextContent('true');
+
+		await fireEvent.click(button);
+		expect(bindHolder).toHaveTextContent('false');
+
+		await fireEvent.click(button);
+		expect(bindHolder).toHaveTextContent('true');
+	});
+
+	it('Should be a two-way data binding', async () => {
+		const { component, bindHolder, getPanel } = await initBinding({ open: true });
+		expect(bindHolder).toHaveTextContent('true');
+		const panel = await getPanel();
+		expect(panel).toBeInTheDocument();
+
+		await act(() => component.$set({ open: false }));
+		expect(panel).not.toBeInTheDocument();
+		expect(bindHolder).toHaveTextContent('false');
+	});
+});
+
 describe('Props', () => {
 	describe('open', () => {
 		it('Should be false by default', () => {
