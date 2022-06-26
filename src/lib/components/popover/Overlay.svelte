@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Popover from './state';
+  import { getContext } from './state';
   import { GroupContext } from './Group.state';
   import { Render } from '$lib/components';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
@@ -9,10 +9,10 @@
   const {
     Open,
     overlay: { Proxy, action }
-  } = Popover.getContext(false) || GroupContext.getContext();
+  } = getContext(false) || GroupContext.getContext();
 
   const ShowOverlay = storable({
-    Store: Popover.getContext(false)?.ShowOverlay,
+    Store: getContext(false)?.ShowOverlay,
     initialValue: true
   });
 

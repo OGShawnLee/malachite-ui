@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Popover from './state';
+  import { createPopover } from './state';
   import { Render } from '$lib/components';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import type { Readable } from 'svelte/store';
@@ -7,15 +7,11 @@
 
   export let forceFocus: Readable<boolean> | boolean = false;
 
-  const { Open, ForceFocus, ShowOverlay, close, button, overlay, panel } = new Popover({
-    ForceFocus: {
-      Store: forceFocus,
-      initialValue: false,
-      notifier: (newValue) => (forceFocus = newValue)
-    }
+  const { Open, ForceFocus, ShowOverlay, close, button, overlay, panel } = createPopover({
+    ForceFocus: forceFocus
   });
 
-  $: ForceFocus.sync({ previous: $ForceFocus, value: forceFocus });
+  $: ForceFocus.sync({ previous: $ForceFocus, current: forceFocus });
 
   let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
 

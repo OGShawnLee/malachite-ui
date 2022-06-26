@@ -1,142 +1,122 @@
-import type Group from './Group.state';
-import type { ExtractContext } from '$lib/types';
-import type { Store } from '$lib/types';
-import { type Readable, type Updater, readable } from 'svelte/store';
+import type { ActionComponent, ExtractContextKeys } from '$lib/types';
+import type { Readable } from 'svelte/store';
 import { GroupContext } from './Group.state';
-import { Component, defineActionComponent, initIndexGenerator } from '$lib/core';
-import { Bridge, storable, Toggleable } from '$lib/stores';
+import { defineActionComponent, initIndexGenerator } from '$lib/core';
+import { Bridge, Toggleable } from '$lib/stores';
 import {
 	handleClickOutside,
 	handleEscapeKey,
 	handleFocusLeave,
 	usePreventInternalFocus
 } from '$lib/stores/toggleable';
-import { makeReadable } from '$lib/utils';
-import { useContext, useListener } from '$lib/hooks';
+import { createStoreWrapper, generate, makeReadable } from '$lib/utils';
+import { useComponentNaming, useContext, useListener } from '$lib/hooks';
 import { isActionComponent, isFunction, isInterface, isStore } from '$lib/predicate';
+import { readable } from 'svelte/store';
 
-export default class Popover extends Component {
-	protected readonly Toggleable: Toggleable;
+interface Configuration {
+	ForceFocus: Readable<boolean> | boolean;
+}
 
-	protected readonly Button = new Bridge();
-	protected readonly Panel = new Bridge();
-	protected readonly Overlay = new Bridge();
+interface Context {
+	Open: Readable<boolean>;
+	ShowOverlay: Readable<boolean>;
+	button: ActionComponent;
+	overlay: ActionComponent;
+	panel: ActionComponent;
+	close: Toggleable['close'];
+}
 
-	readonly Open: Readable<boolean>;
-	readonly ShowOverlay = readable(true, (set) => {
-		if (this.groupClient) {
-			return this.groupClient.Mode.subscribe((mode) => {
-				set(mode === 'UNIQUE');
-			});
-		}
-	});
-	readonly ForceFocus: Store<Readable<boolean>>;
-	readonly groupClient: ReturnType<Group['initClient']> | undefined;
+export type ContextKeys = ExtractContextKeys<Context>;
 
-	constructor({ ForceFocus }: Options) {
-		super({ component: 'popover', index: Popover.generateIndex() });
-		this.ForceFocus = storable(ForceFocus);
-		this.Toggleable = new Toggleable({ ForceFocus: this.ForceFocus });
-		this.Open = makeReadable(this.Toggleable);
+const generateIndex = initIndexGenerator();
 
-		this.groupClient = GroupContext.getContext(false)?.initClient(this.Toggleable);
+export function createPopover({ ForceFocus: uForceFocus }: Configuration) {
+	const ForceFocus = createStoreWrapper({ Store: uForceFocus, initialValue: false });
+	const Open = new Toggleable({ ForceFocus });
+	const ShowOverlay = readable(true, (set) =>
+		groupClient?.Mode.subscribe((mode) => set(mode === 'UNIQUE'))
+	);
+	const { nameChild } = useComponentNaming({ name: 'popover', index: generateIndex() });
+	const [Button, Overlay, Panel] = generate(3, () => new Bridge());
 
-		Popover.Context.setContext({
-			Open: this.Open,
-			ForceFocus: this.ForceFocus,
-			ShowOverlay: this.ShowOverlay,
-			button: this.button,
-			overlay: this.overlay,
-			panel: this.panel,
-			close: this.close
-		});
-	}
+	const groupClient = GroupContext.getContext(false)?.initClient(Open);
 
-	get subscribe() {
-		return this.Open.subscribe;
-	}
-
-	get close() {
-		return this.Toggleable.close.bind(this.Toggleable);
-	}
-
-	get button() {
-		return this.defineActionComponent({
-			Bridge: this.Button,
-			onMount: this.nameChild('button'),
+	function createButton() {
+		return defineActionComponent({
+			Bridge: Button,
+			onMount: nameChild('button'),
 			destroy: ({ element }) => [
-				this.Toggleable.button(element, {
-					onChange: (isOpen) => {
+				Open.button(element, {
+					onChange(isOpen) {
 						element.ariaExpanded = String(isOpen);
 					}
 				}),
-				this.Panel.Name.subscribe((id) => {
+				Panel.Name.subscribe((id) => {
 					if (id) element.setAttribute('aria-controls', id);
 					else element.removeAttribute('aria-controls');
 				}),
-				this.groupClient?.button(element)
+				groupClient?.button(element)
 			]
 		});
 	}
 
-	get overlay() {
-		return this.defineActionComponent({
-			Bridge: this.Overlay,
-			onMount: this.nameChild('overlay'),
+	function createOverlay() {
+		return defineActionComponent({
+			Bridge: Overlay,
+			onMount: nameChild('overlay'),
 			destroy: ({ element }) =>
 				useListener(element, 'click', (event) => {
-					if (event.target === element) this.Toggleable.close();
+					if (event.target === element) Open.close();
 				})
 		});
 	}
 
-	get panel() {
-		return this.defineActionComponent({
-			Bridge: this.Panel,
-			onMount: this.nameChild('panel'),
+	function createPanel() {
+		return defineActionComponent({
+			Bridge: Panel,
+			onMount: nameChild('panel'),
 			destroy: ({ element }) => [
-				this.Toggleable.panel(element, {
+				Open.panel(element, {
 					plugins: [usePreventInternalFocus],
-					handlers: this.groupClient ? [] : [handleClickOutside, handleEscapeKey, handleFocusLeave]
+					handlers: groupClient ? [] : [handleClickOutside, handleEscapeKey, handleFocusLeave]
 				}),
-				this.groupClient?.panel(element)
+				groupClient?.panel(element)
 			]
 		});
 	}
 
-	private static Context = useContext({
-		component: 'popover',
-		predicate: (val): val is Context =>
-			isInterface<Context>(val, {
-				Open: isStore,
-				ForceFocus(val): val is Store<Readable<boolean>> {
-					return isInterface<Store<Readable<boolean>>>(val, {
-						subscribe: isFunction,
-						sync: isFunction
-					});
-				},
-				ShowOverlay: isStore,
-				button: isActionComponent,
-				panel: isActionComponent,
-				overlay: isActionComponent,
-				close: isFunction
-			})
+	setContext({
+		Open: makeReadable(Open),
+		ShowOverlay: ShowOverlay,
+		button: createButton(),
+		panel: createPanel(),
+		overlay: createOverlay(),
+		close: Open.close.bind(Open)
 	});
 
-	static getContext = this.Context.getContext;
-
-	private static generateIndex = this.initIndexGenerator();
-}
-
-interface Options {
-	ForceFocus: {
-		Store: Readable<boolean> | boolean;
-		initialValue: boolean;
-		notifier: Updater<boolean>;
+	return {
+		Open: makeReadable(Open),
+		ForceFocus: ForceFocus,
+		ShowOverlay: ShowOverlay,
+		button: createButton(),
+		panel: createPanel(),
+		overlay: createOverlay(),
+		close: Open.close.bind(Open)
 	};
 }
 
-type Context = ExtractContext<
-	Popover,
-	'Open' | 'ForceFocus' | 'ShowOverlay' | 'button' | 'panel' | 'overlay' | 'close'
->;
+const { getContext, setContext } = useContext({
+	component: 'popover',
+	predicate: (val): val is Context =>
+		isInterface<Context>(val, {
+			Open: isStore,
+			ShowOverlay: isStore,
+			button: isActionComponent,
+			overlay: isActionComponent,
+			panel: isActionComponent,
+			close: isFunction
+		})
+});
+
+export { getContext };

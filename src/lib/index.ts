@@ -8,6 +8,13 @@ export {
 } from './components/disclosure';
 export * from './components/menu';
 export { Navigable, NavigableItem, createNavigable } from './components/navigable';
-export * from './components/popover';
+export {
+	Popover,
+	PopoverButton,
+	PopoverGroup,
+	PopoverOverlay,
+	PopoverPanel,
+	createPopover
+} from './components/popover';
 export * from './components/switch';
 export * from './components/tabs';
