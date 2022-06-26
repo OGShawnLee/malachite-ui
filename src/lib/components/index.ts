@@ -1,6 +1,6 @@
 export * from './accordion';
 export * from './dialog';
-export * from './disclosure';
+export { Disclosure, DisclosureButton, DisclosurePanel, createDisclosure } from './disclosure';
 export { Navigable, NavigableItem, createNavigable } from './navigable';
 export * from './menu';
 export * from './popover';

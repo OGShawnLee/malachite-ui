@@ -1,22 +1,23 @@
 <script lang="ts">
-  import Disclosure from './state';
+  import { createDisclosure } from './state';
   import { Render } from '$lib/components';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import type { Writable } from 'svelte/store';
   import { isNotStore } from '$lib/predicate';
   import { useClassNameResolver } from '$lib/hooks';
+  import { createStoreWrapper } from '$lib/utils';
 
   export let open: Writable<boolean> | boolean = false;
 
-  const { Open, button, panel, close, sync } = new Disclosure({
-    Open: {
+  const { Open, button, panel, close } = createDisclosure({
+    Open: createStoreWrapper({
       Store: open,
       initialValue: false,
       notifier: (isOpen) => isNotStore(open) && (open = isOpen)
-    }
+    })
   });
 
-  $: sync({ previous: $Open, value: open });
+  $: Open.sync({ previous: $Open, current: open });
 
   let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
 
@@ -35,7 +36,7 @@
     <slot name="up-panel" {isDisabled} panel={panel.action} {close} />
   {/if}
   <!-- we render the panel above the button -->
-  <slot isOpen={$Open} button={button.action} {isDisabled} panel={panel.action} {close} />
+  <slot isOpen={$Open} {isDisabled} button={button.action} panel={panel.action} {close} />
   <!-- we render the panel below the button -->
   {#if $Open}
     <slot name="panel" {isDisabled} panel={panel.action} {close} />
