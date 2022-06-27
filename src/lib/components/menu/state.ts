@@ -1,17 +1,16 @@
-import type { Expand, ExtractContext, Navigable as Nav, Nullable, Ref, Store } from '$lib/types';
 import type { Readable } from 'svelte/store';
-import { Bridge, Navigable, Ordered, storable, Toggleable } from '$lib/stores';
+import type { ActionComponent, Navigable as Nav } from '$lib/types';
+import { defineActionComponent, initIndexGenerator } from '$lib/core';
+import { useComponentNaming, useContext, useListener } from '$lib/hooks';
+import { Bridge, Navigable, Ordered, Toggleable } from '$lib/stores';
+import { useActiveHover, useKeyMatch } from '$lib/stores/addons';
 import {
 	handleClickOutside,
 	handleEscapeKey,
 	handleFocusLeave,
 	usePreventInternalFocus
 } from '$lib/stores/toggleable';
-import { useActiveHover, useKeyMatch } from '$lib/stores/addons';
-import { Component } from '$lib/core';
-import { writable } from 'svelte/store';
-import { useContext, useListener } from '$lib/hooks';
-import { makeReadable } from '$lib/utils';
+import { createStoreWrapper, generate, makeReadable, ref } from '$lib/utils';
 import {
 	isActionComponent,
 	isDisabled,
@@ -20,64 +19,56 @@ import {
 	isNavigationKey,
 	isStore
 } from '$lib/predicate';
+import { writable } from 'svelte/store';
 
-export default class Menu extends Component {
-	protected readonly Toggleable: Toggleable;
-	protected readonly Navigable: Navigable;
-	protected readonly Items: Ordered<Nav.Member>;
+interface Configuration {
+	Finite: boolean | Readable<boolean>;
+	ShouldOrder: boolean | Readable<boolean>;
+	Vertical: boolean | Readable<boolean>;
+}
 
-	readonly Open: Readable<boolean>;
-	protected readonly Button = new Bridge();
-	protected readonly Panel = new Bridge();
+interface Context {
+	Open: Readable<boolean>;
+	button: ActionComponent;
+	items: ActionComponent;
+	initItem: (Item: Bridge) => ActionComponent;
+	close: OmitThisParameter<Toggleable['close']>;
+}
 
-	readonly Finite: Store<Readable<boolean>>;
-	readonly Vertical: Store<Readable<boolean>>;
-	readonly ShouldOrder: Store<Readable<boolean>>;
+const generateIndex = initIndexGenerator();
 
-	protected isVertical = false;
+export function createMenu({
+	Finite: uFinite,
+	ShouldOrder: uOrder,
+	Vertical: uVertical
+}: Configuration) {
+	const Open = new Toggleable();
+	const Finite = createStoreWrapper({ Store: uFinite, initialValue: false });
+	const Vertical = createStoreWrapper({ Store: uVertical, initialValue: true });
+	const Order = createStoreWrapper({ Store: uOrder, initialValue: false });
+	const Items = new Ordered<Nav.Member>(Order);
+	const Navigation = new Navigable({
+		Finite: Finite,
+		Ordered: Items,
+		Vertical: Vertical,
+		ShouldWait: true,
+		shouldFocus: false
+	});
+	const [Button, Panel] = generate(2, () => new Bridge());
+	const { nameChild } = useComponentNaming({ name: 'menu', index: generateIndex() });
 
-	constructor({ Finite, Vertical, ShouldOrder }: Expand<Options>) {
-		super({ component: 'menu', index: Menu.generateIndex() });
-
-		this.Finite = storable({ Store: Finite, initialValue: false });
-		this.ShouldOrder = storable({ Store: ShouldOrder, initialValue: false });
-		this.Vertical = storable({ Store: Vertical, initialValue: true });
-
-		this.Toggleable = new Toggleable();
-		this.Items = new Ordered(this.ShouldOrder);
-		this.Navigable = new Navigable({
-			Finite: this.Finite,
-			Ordered: this.Items,
-			ShouldWait: true,
-			Vertical: this.Vertical,
-			shouldFocus: false
-		});
-
-		this.Open = makeReadable(this.Toggleable);
-
-		Context.setContext({
-			Open: this.Open,
-			button: this.button,
-			initItem: this.initItem.bind(this),
-			items: this.items,
-			close: this.close
-		});
-	}
-
-	get close() {
-		return this.Toggleable.close.bind(this.Toggleable);
-	}
-
-	get button() {
-		return this.defineActionComponent({
-			Bridge: this.Button,
+	function createButton() {
+		const isVertical = ref(true, Vertical);
+		return defineActionComponent({
+			Bridge: Button,
 			onMount: ({ element }) => {
 				element.ariaHasPopup = 'true';
-				return this.nameChild('button');
+				return nameChild('button');
 			},
 			destroy: ({ element }) => [
-				this.Toggleable.button(element, {
-					onChange: (isOpen) => {
+				isVertical.listen(),
+				Open.button(element, {
+					onChange(isOpen) {
 						element.ariaExpanded = String(isOpen);
 					}
 				}),
@@ -86,34 +77,31 @@ export default class Menu extends Component {
 					switch (event.code) {
 						case 'ArrowDown':
 							event.preventDefault();
-							if (!this.isVertical) return;
-							this.Navigable.startAt = event.ctrlKey ? 'LAST' : 'FIRST';
-							return this.Toggleable.open();
+							if (!isVertical.value) return;
+							Navigation.startAt = event.ctrlKey ? 'LAST' : 'FIRST';
+							return Open.open();
 						case 'ArrowRight':
 							event.preventDefault();
-							if (this.isVertical) return;
-							this.Navigable.startAt = event.ctrlKey ? 'LAST' : 'FIRST';
-							return this.Toggleable.open();
+							if (isVertical.value) return;
+							Navigation.startAt = event.ctrlKey ? 'LAST' : 'FIRST';
+							return Open.open();
 						case 'ArrowUp':
 							event.preventDefault();
-							if (!this.isVertical) return;
-							this.Navigable.startAt = event.ctrlKey ? 'FIRST' : 'LAST';
-							return this.Toggleable.open();
+							if (!isVertical.value) return;
+							Navigation.startAt = event.ctrlKey ? 'FIRST' : 'LAST';
+							return Open.open();
 						case 'ArrowLeft':
 							event.preventDefault();
-							if (this.isVertical) return;
-							this.Navigable.startAt = event.ctrlKey ? 'FIRST' : 'LAST';
-							return this.Toggleable.open();
+							if (isVertical.value) return;
+							Navigation.startAt = event.ctrlKey ? 'FIRST' : 'LAST';
+							return Open.open();
 						case 'Enter':
 						case 'Space':
-							this.Navigable.startAt = 'FIRST';
-							return this.Toggleable.isClosed && this.Toggleable.open();
+							Navigation.startAt = 'FIRST';
+							return Open.isClosed && Open.open();
 					}
 				}),
-				this.Vertical.subscribe((isVertical) => {
-					this.isVertical = isVertical;
-				}),
-				this.Panel.Name.subscribe((id) => {
+				Panel.Name.subscribe((id) => {
 					if (id) element.setAttribute('aria-controls', id);
 					else element.removeAttribute('aria-controls');
 				})
@@ -121,21 +109,21 @@ export default class Menu extends Component {
 		});
 	}
 
-	get items() {
-		return this.defineActionComponent({
-			Bridge: this.Panel,
+	function createItems() {
+		return defineActionComponent({
+			Bridge: Panel,
 			onMount: ({ element }) => {
 				element.setAttribute('role', 'menu');
-				return this.nameChild('items');
+				return nameChild('items');
 			},
 			destroy: ({ element }) => [
-				this.Toggleable.panel(element, {
+				Open.panel(element, {
 					isFocusable: true,
 					plugins: [usePreventInternalFocus],
 					handlers: [handleClickOutside, handleEscapeKey, handleFocusLeave],
 					onOpen: () => element.focus()
 				}),
-				this.Navigable.initNavigation(element, {
+				Navigation.initNavigation(element, {
 					plugins: [useActiveHover, useKeyMatch],
 					preventTabbing: true,
 					onClose() {
@@ -144,7 +132,7 @@ export default class Menu extends Component {
 						this.startAt = 'AUTO';
 					}
 				}),
-				this.Navigable.initNavigationHandler({
+				Navigation.initNavigationHandler({
 					parent: element,
 					callback({ event, code, ctrlKey }) {
 						switch (code) {
@@ -169,18 +157,18 @@ export default class Menu extends Component {
 						}
 					}
 				}),
-				this.Navigable.Active.subscribe((active) => {
+				Navigation.Active.subscribe((active) => {
 					if (!active || (active[0] && !active[0].id))
 						return element.removeAttribute('aria-activedescendant');
 
 					const [{ id }] = active;
 					element.setAttribute('aria-activedescendant', id);
 				}),
-				this.Navigable.listenSelected(),
-				this.Navigable.Vertical.subscribe((isVertical) => {
+				Navigation.listenSelected(),
+				Navigation.Vertical.subscribe((isVertical) => {
 					element.ariaOrientation = isVertical ? 'vertical' : 'horizontal';
 				}),
-				this.Button.Name.subscribe((id) => {
+				Button.Name.subscribe((id) => {
 					if (id) element.setAttribute('aria-labelledby', id);
 					else element.removeAttribute('aria-labelledby');
 				})
@@ -188,48 +176,58 @@ export default class Menu extends Component {
 		});
 	}
 
-	initItem(Item: Bridge) {
-		return this.defineActionComponent({
+	function initItem(Item: Bridge) {
+		return defineActionComponent({
 			Bridge: Item,
 			onMount: ({ element }) => {
 				element.tabIndex = -1;
 				element.setAttribute('role', 'menuitem');
-				const index = this.Items.size;
-				return this.nameChild({ name: 'item', index });
+				return nameChild('item', Items.size);
 			},
 			destroy: ({ element }) => {
-				const Index = writable(this.Items.size);
+				const Index = writable(Items.size);
 				return [
-					this.Navigable.initItem(element, {
+					Navigation.initItem(element, {
 						Bridge: Item,
 						Value: { Index },
 						focusOnSelection: false
 					}),
 					Index.subscribe((index) => {
-						Item.name = this.nameChild({ name: 'item', index });
+						Item.name = nameChild('item', index);
 					}),
 					useListener(element, 'click', (event) => {
 						if (event.defaultPrevented) return;
 						if (isDisabled(element)) {
 							event.stopImmediatePropagation();
 							event.preventDefault();
-						} else this.close(event);
+						} else Open.close(event);
 					})
 				];
 			}
 		});
 	}
 
-	private static generateIndex = this.initIndexGenerator();
+	setContext({
+		Open: makeReadable(Open),
+		button: createButton(),
+		items: createItems(),
+		initItem: initItem,
+		close: Open.close.bind(Open)
+	});
+
+	return {
+		Open: makeReadable(Open),
+		Finite: Finite,
+		Vertical: Vertical,
+		ShouldOrder: Order,
+		button: createButton(),
+		items: createItems(),
+		initItem: initItem,
+		close: Open.close.bind(Open)
+	};
 }
 
-interface Options {
-	ShouldOrder: Readable<boolean> | boolean;
-	Vertical: Readable<boolean> | boolean;
-	Finite: Readable<boolean> | boolean;
-}
-
-export const Context = useContext({
+const { getContext, setContext } = useContext({
 	component: 'menu',
 	predicate: (val): val is Context =>
 		isInterface<Context>(val, {
@@ -241,4 +239,4 @@ export const Context = useContext({
 		})
 });
 
-type Context = ExtractContext<Menu, 'Open' | 'button' | 'initItem' | 'items' | 'close'>;
+export { getContext };

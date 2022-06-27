@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { Context } from './state';
+  import { getContext } from './state';
   import { Render } from '$lib/components';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { Bridge } from '$lib/stores';
   import { useClassNameResolver } from '$lib/hooks';
 
-  const { initItem, close } = Context.getContext();
+  const { initItem } = getContext();
   const { Proxy, action } = initItem(new Bridge());
   const { Selected } = Proxy;
 

@@ -1,27 +1,27 @@
 <script lang="ts">
-  import Menu from './state';
+  import { createMenu } from './state';
   import { Render } from '$lib/components';
   import type { Readable } from 'svelte/store';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { storable } from '$lib/stores';
   import { useClassNameResolver } from '$lib/hooks';
+  import { createStoreWrapper } from '$lib/utils';
 
   export let order: Readable<boolean> | boolean = false;
   export let horizontal: Readable<boolean> | boolean = false;
   export let finite: Readable<boolean> | boolean = false;
 
-  const Horizontal = storable({ Store: horizontal, initialValue: false });
+  const Horizontal = createStoreWrapper({ Store: horizontal, initialValue: false });
 
-  const { Open, Finite, ShouldOrder, Vertical, button, items } = new Menu({
+  const { Open, Finite, ShouldOrder, Vertical, button, items } = createMenu({
     Finite: finite,
     ShouldOrder: order,
     Vertical: true
   });
 
-  $: Finite.sync({ previous: $Finite, value: finite });
-  $: Horizontal.sync({ previous: $Horizontal, value: horizontal });
-  $: Vertical.sync({ previous: $Vertical, value: !$Horizontal });
-  $: ShouldOrder.sync({ previous: $ShouldOrder, value: order });
+  $: Finite.sync({ previous: $Finite, current: finite });
+  $: Horizontal.sync({ previous: $Horizontal, current: horizontal });
+  $: Vertical.sync({ previous: $Vertical, current: !$Horizontal });
+  $: ShouldOrder.sync({ previous: $ShouldOrder, current: order });
 
   let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
 
