@@ -10,7 +10,7 @@
 
 <Navigable data-testid="root">
   {#if target === 'ACTION'}
-  <!-- * Disabled must be set on the component and then forwarded -->
+    <!-- * Disabled must be set on the component and then forwarded -->
     <NavigableItem as="slot" {disabled} let:item>
       <div {tabIndex} on:click={handleClick} use:item>Item</div>
     </NavigableItem>
