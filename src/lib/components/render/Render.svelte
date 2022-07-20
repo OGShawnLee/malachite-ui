@@ -3,6 +3,7 @@
   import { forwardActions } from '$lib/core';
   import { Bridge } from '$lib/stores';
   import { onMount } from 'svelte';
+  import { isVoidTagName } from '$lib/predicate';
 
   let className: Nullable<string> = undefined;
 
@@ -16,10 +17,12 @@
 
   const { Disabled } = Proxy;
 
+  $: isVoidElement = isVoidTagName(as);
   $: isUsingSlot = as === 'slot';
   $: if (isUsingSlot && element) {
     if (className) element.className = className;
   }
+
   onMount(() =>
     Disabled.subscribe((isDisabled) => {
       if (isDisabled !== disabled) disabled = isDisabled;
@@ -33,6 +36,18 @@
 
 {#if as === 'slot'}
   <slot />
+{:else if isVoidElement}
+  <svelte:element
+    this={as}
+    bind:this={element}
+    class={className}
+    {disabled}
+    use:forwardActions={use}
+    {...$$restProps}
+    on:blur
+    on:click
+    on:focus
+  />
 {:else}
   <svelte:element
     this={as}
