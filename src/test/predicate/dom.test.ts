@@ -92,6 +92,33 @@ describe('isHTMLElement', () => {
 	});
 });
 
+describe('isVoidTagName', () => {
+	const { VOID_TAGS, isVoidTagName } = dom;
+	const tagNames = ['a', 'article', 'dialog', 'div', 'main', 'section'];
+
+	it('Should return true if the given tagName is a void element', () => {
+		for (const key in VOID_TAGS) {
+			expect(isVoidTagName(key)).toBe(true);
+		}
+	});
+
+	it('Should return false if the given tagName is not a void element', () => {
+		for (const tagName of tagNames) {
+			expect(dom.isVoidTagName(tagName)).toBe(false);
+		}
+	});
+
+	it('Should handle uppercase tagNames', () => {
+		for (const tagName of tagNames) {
+			expect(isVoidTagName(tagName.toUpperCase())).toBe(false);
+		}
+
+		for (const tagName in VOID_TAGS) {
+			expect(isVoidTagName(tagName.toUpperCase())).toBe(true);
+		}
+	});
+});
+
 describe('isWithin', () => {
 	const { isWithin } = dom;
 	it('Should return true if the parent contains the given element', () => {

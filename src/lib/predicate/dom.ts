@@ -1,6 +1,27 @@
 import type { NavigationKey, Nullable } from '$lib/types';
 import { isNullish } from '$lib/predicate';
 
+// area, base, br, col, command, embed, hr, img, input, keygen, link, meta, param, source, track, wbr
+
+export const VOID_TAGS = {
+	area: true,
+	base: true,
+	br: true,
+	col: true,
+	command: true,
+	embed: true,
+	hr: true,
+	img: true,
+	input: true,
+	keygen: true,
+	link: true,
+	meta: true,
+	param: true,
+	source: true,
+	track: true,
+	wbr: true
+};
+
 // hasTagName
 export function hasTagName<T extends keyof HTMLElementTagNameMap>(
 	element: Element,
@@ -48,6 +69,10 @@ export function isNavigationKey(code: string): code is NavigationKey {
 
 export function isNotDisabled(val: Nullable<EventTarget | HTMLElement>) {
 	return isHTMLElement(val) && !isDisabled(val);
+}
+
+export function isVoidTagName(tag: string) {
+	return tag.toLowerCase() in VOID_TAGS;
 }
 
 export function isWithin(
