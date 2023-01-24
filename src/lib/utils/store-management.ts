@@ -1,6 +1,6 @@
 import type { ReadableWrapper, Ref, SyncFunction, WritableWrapper } from '$lib/types';
 import type { Readable, StartStopNotifier, Writable } from 'svelte/store';
-import { derived, readable, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import { isStore, isWritable } from '$lib/predicate';
 import { notifiable } from '$lib/stores';
 
@@ -51,15 +51,24 @@ export function makeReadable<T>(Store: Readable<T>) {
 	return isWritable(Store) ? (derived(Store, (value) => value) as Readable<T>) : Store;
 }
 
-export function ref<T>(initialValue: T, Store = readable(initialValue)): Ref<T> {
+export function ref<T>(initialValue: T, start?: StartStopNotifier<T>): Ref<T> {
+	const store = writable(initialValue, start);
 	return {
+		subscribe: store.subscribe,
 		get value() {
 			return initialValue;
 		},
-		listen(onChange) {
-			return onChange
-				? Store.subscribe((value) => onChange((initialValue = value)))
-				: Store.subscribe((value) => (initialValue = value));
+		set value(value: T) {
+			initialValue = value;
+			store.set(initialValue);
+		},
+		set(value: T) {
+			initialValue = value;
+			store.set(initialValue);
+		},
+		update(callback: (currentValue: T) => T) {
+			initialValue = callback(initialValue);
+			store.set(initialValue);
 		}
 	};
 }

@@ -113,9 +113,8 @@ export type Optional<T> = {
 	[P in keyof T]?: T[P];
 };
 
-export interface Ref<T> {
-	readonly value: T;
-	listen(onChange?: Subscriber<T>): Unsubscriber;
+interface Ref<T> extends Writable<T> {
+	value: T;
 }
 
 export type RenderElementTagName = keyof HTMLElementTagNameMap | 'slot';
