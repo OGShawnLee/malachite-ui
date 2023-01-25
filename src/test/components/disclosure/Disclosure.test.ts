@@ -10,7 +10,6 @@ import {
 	createContextParentRenderer,
 	generateActions,
 	isValidComponentName,
-	useToggle
 } from '@test-utils';
 
 function initComponent(Component: typeof SvelteComponent, props = {}) {
@@ -217,23 +216,6 @@ describe('Props', () => {
 			expect(button.ariaExpanded).toBe('false');
 			expect(button).not.toHaveAttribute('aria-controls');
 			expect(panel).not.toBeInTheDocument();
-		});
-
-		it('Should work with a store', async () => {
-			const [open, toggle] = useToggle(true);
-			const { button, getByTestId } = initComponent(Behaviour, { open });
-			const panel = getByTestId('disclosure-panel');
-			expect(button.ariaExpanded).toBe('true');
-			expect(button).toHaveAttribute('aria-controls', panel.id);
-
-			await act(() => toggle());
-			expect(button.ariaExpanded).toBe('false');
-			expect(button).not.toHaveAttribute('aria-controls');
-			expect(panel).not.toBeInTheDocument();
-
-			await act(() => toggle());
-			expect(button.ariaExpanded).toBe('true');
-			expect(button).toHaveAttribute('aria-controls', panel.id);
 		});
 	});
 });

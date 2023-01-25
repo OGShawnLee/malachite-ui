@@ -1,12 +1,11 @@
 import { SvelteComponentTyped } from 'svelte';
-import type { Readable } from 'svelte/store';
 import type { ClassName, Nullable, RenderElementTagName } from '$lib/types';
 
 declare const __propDef: {
 	props: {
 		[x: string]: any;
-		finite?: boolean | Readable<boolean> | undefined;
-		order?: boolean | Readable<boolean> | undefined;
+		finite?: boolean;
+		order?: boolean;
 		class?: ClassName<'isOpen' | 'isDisabled'>;
 		as?: RenderElementTagName | undefined;
 		disabled?: Nullable<boolean>;

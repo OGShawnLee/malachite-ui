@@ -173,7 +173,6 @@ export default class Navigation<T> extends Finder<T> {
 		if (isFunction(callback)) {
 			const finalCallback = callback.bind(this);
 			return useCleanup(
-				isWindowNavigation.listen(),
 				useListener(parent, 'keydown', (event) => {
 					if (isWindowNavigation.value || !isNavigationKey(event.code)) return;
 					finalCallback({
@@ -199,7 +198,6 @@ export default class Navigation<T> extends Finder<T> {
 		const wCallback = windowCallback.bind(this);
 		const lCallback = localCallback.bind(this);
 		return useCleanup(
-			isWindowNavigation.listen(),
 			useWindowListener('keydown', (event) => {
 				if (!isWindowNavigation.value || !isNavigationKey(event.code)) return;
 				wCallback({ event, code: event.code, ctrlKey: event.ctrlKey });

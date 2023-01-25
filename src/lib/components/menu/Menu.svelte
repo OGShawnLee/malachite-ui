@@ -1,14 +1,13 @@
 <script lang="ts">
   import { createMenu } from './state';
   import { Render } from '$lib/components';
-  import type { Readable } from 'svelte/store';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { useClassNameResolver } from '$lib/hooks';
   import { createStoreWrapper } from '$lib/utils';
 
-  export let order: Readable<boolean> | boolean = false;
-  export let horizontal: Readable<boolean> | boolean = false;
-  export let finite: Readable<boolean> | boolean = false;
+  export let order = false;
+  export let horizontal  = false;
+  export let finite = false;
 
   const Horizontal = createStoreWrapper({ Store: horizontal, initialValue: false });
 

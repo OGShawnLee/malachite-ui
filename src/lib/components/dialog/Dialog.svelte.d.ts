@@ -1,12 +1,11 @@
 import { SvelteComponentTyped } from 'svelte';
 import type { Nullable, RenderElementTagName } from '$lib/types';
-import type { Readable, Writable } from 'svelte/store';
 
 declare const __propDef: {
 	props: {
 		[x: string]: any;
-		open?: boolean | Writable<boolean> | undefined;
-		initialFocus?: Readable<Nullable<HTMLElement>> | Nullable<HTMLElement>;
+		open?: boolean;
+		initialFocus?: Nullable<HTMLElement>;
 		class?: Nullable<string>;
 		as?: RenderElementTagName | undefined;
 		element?: HTMLElement | undefined;

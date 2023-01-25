@@ -9,7 +9,7 @@
   } from '$lib/components';
   import { useRange } from '@test-utils';
 
-  export let expanded: Readable<boolean> | boolean = false;
+  export let expanded =  false;
 
   const range = useRange(3);
 </script>

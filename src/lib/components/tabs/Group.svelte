@@ -1,16 +1,15 @@
 <script lang="ts">
   import Tabs from './state';
   import { Render } from '$lib/components';
-  import type { Readable } from 'svelte/store';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { storable } from '$lib/stores';
   import { isNotStore } from '$lib/predicate';
   import { useClassNameResolver } from '$lib/hooks';
 
   export let index = 0;
-  export let manual: Readable<boolean> | boolean = false;
-  export let vertical: Readable<boolean> | boolean = false;
-  export let order: Readable<boolean> | boolean = false;
+  export let manual = false;
+  export let vertical = false;
+  export let order = false;
 
   const { Index, Manual, ShouldOrder, Vertical, tabList, tabPanels, sync } = new Tabs({
     Index: storable({

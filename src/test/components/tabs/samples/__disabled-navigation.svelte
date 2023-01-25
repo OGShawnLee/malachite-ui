@@ -1,10 +1,9 @@
 <script lang="ts">
-  import type { Readable } from 'svelte/store';
   import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '$lib/components';
 
   export let index: number | undefined = undefined;
-  export let manual: Readable<boolean> | boolean | undefined = undefined;
-  export let vertical: Readable<boolean> | boolean | undefined = undefined;
+  export let manual: boolean | undefined = undefined;
+  export let vertical: boolean | undefined = undefined;
 
   export let disabledEdges = false;
 </script>

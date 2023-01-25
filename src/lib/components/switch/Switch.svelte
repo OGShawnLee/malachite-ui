@@ -1,12 +1,11 @@
 <script lang="ts">
   import Switch from './state';
   import { Render } from '$lib/components';
-  import type { Writable } from 'svelte/store';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { isNotStore } from '$lib/predicate';
   import { useClassNameResolver } from '$lib/hooks';
 
-  export let checked: Writable<boolean> | boolean = false;
+  export let checked = false;
 
   const { Checked, button, label, description, sync } = new Switch({
     Store: checked,

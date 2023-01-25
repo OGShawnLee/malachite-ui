@@ -8,7 +8,7 @@
     AccordionPanel
   } from '$lib/components';
 
-  export let finite: Readable<boolean> | boolean | undefined = undefined;
+  export let finite: boolean | undefined = undefined;
 </script>
 
 <Accordion data-testid="accordion" {finite}>

@@ -370,22 +370,6 @@ describe('Props', () => {
 			expect(button.ariaChecked).toBe('false');
 			expect(holder).toHaveTextContent('false');
 		});
-
-		it('Should work with a store', async () => {
-			const [checked, toggle] = useToggle(false);
-			const { button, getHolder } = initComponent(Behaviour, { checked });
-			const holder = getHolder();
-			expect(button.ariaChecked).toBe('false');
-			expect(holder).toHaveTextContent('false');
-
-			await act(() => toggle());
-			expect(button.ariaChecked).toBe('true');
-			expect(holder).toHaveTextContent('true');
-
-			await act(() => toggle());
-			expect(button.ariaChecked).toBe('false');
-			expect(holder).toHaveTextContent('false');
-		});
 	});
 
 	describe('Label', () => {

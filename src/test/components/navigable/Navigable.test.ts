@@ -3,7 +3,6 @@ import * as samples from './samples';
 import type { SvelteComponent } from 'svelte';
 import type { Readable } from 'svelte/store';
 import { type ContextKeys, NavigableItem } from '$lib/components/navigable';
-import { writable } from 'svelte/store';
 import { act, fireEvent, render, waitFor } from '@testing-library/svelte';
 import { elementTagNames } from '$lib/components/render';
 import { hasTagName } from '$lib/predicate';
@@ -448,31 +447,6 @@ describe('Props', () => {
 			expect(items[3]).toHaveFocus();
 		});
 
-		it('Should work with a store', async () => {
-			const finite = writable(false);
-			const { root, items } = initComponent(Behaviour, { finite });
-
-			await fireEvent.keyDown(root, { code: 'ArrowRight' });
-			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowLeft' });
-			expect(items[3]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowRight' });
-			expect(items[0]).toHaveFocus();
-
-			await act(() => finite.set(true));
-
-			await fireEvent.keyDown(root, { code: 'ArrowLeft' });
-			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'End' });
-			expect(items[3]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowRight' });
-			expect(items[3]).toHaveFocus();
-		});
-
 		it('Should work propertly with Global and Vertical navigation', async () => {
 			const { items } = initComponent(Behaviour, { finite: true, global: true, vertical: true });
 
@@ -540,25 +514,6 @@ describe('Props', () => {
 			await fireEvent.keyDown(document, { code: 'ArrowLeft', ctrlKey: true });
 			expect(items[0]).toHaveFocus();
 		});
-
-		it('Should work with a store', async () => {
-			const global = writable(true);
-			const { items } = initComponent(Behaviour, { global });
-
-			await fireEvent.keyDown(document, { code: 'ArrowRight' });
-			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(document, { code: 'ArrowRight' });
-			expect(items[1]).toHaveFocus();
-
-			await act(() => global.set(false));
-
-			await fireEvent.keyDown(document, { code: 'ArrowRight' });
-			expect(items[1]).toHaveFocus();
-
-			await fireEvent.keyDown(document, { code: 'ArrowLeft' });
-			expect(items[1]).toHaveFocus();
-		});
 	});
 
 	describe('Vertical', () => {
@@ -598,25 +553,6 @@ describe('Props', () => {
 			expect(items[3]).not.toHaveFocus();
 
 			await act(() => component.$set({ vertical: true }));
-
-			await fireEvent.keyDown(root, { code: 'ArrowDown' });
-			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowUp' });
-			expect(items[3]).toHaveFocus();
-		});
-
-		it('Should work with a store', async () => {
-			const vertical = writable(false);
-			const { root, items } = initComponent(Behaviour, { vertical });
-
-			await fireEvent.keyDown(root, { code: 'ArrowDown' });
-			expect(items[0]).not.toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowUp' });
-			expect(items[3]).not.toHaveFocus();
-
-			await act(() => vertical.set(true));
 
 			await fireEvent.keyDown(root, { code: 'ArrowDown' });
 			expect(items[0]).toHaveFocus();

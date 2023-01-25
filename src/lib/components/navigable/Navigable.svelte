@@ -1,14 +1,13 @@
 <script lang="ts">
   import { createNavigable } from './state';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import type { Readable } from 'svelte/store';
   import { Render } from '$lib/components';
   import { useClassNameResolver } from '$lib/hooks';
   import { createStoreWrapper } from '$lib/utils';
 
-  export let finite: Readable<boolean> | boolean = false;
-  export let vertical: Readable<boolean> | boolean = false;
-  export let global: Readable<boolean> | boolean = false;
+  export let finite = false;
+  export let vertical = false;
+  export let global = false;
 
   const { Finite, Global, Vertical, self } = createNavigable({
     Finite: createStoreWrapper({ Store: finite, initialValue: false }),

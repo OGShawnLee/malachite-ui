@@ -8,7 +8,7 @@
     AccordionPanel
   } from '$lib/components';
 
-  export let finite: Readable<boolean> | boolean | undefined = undefined;
+  export let finite: boolean | undefined = undefined;
   export let open: boolean | undefined = undefined;
   export let showPanel = true;
   export let disabled = false;

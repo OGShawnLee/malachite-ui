@@ -2,12 +2,11 @@
   import Group from './Group.state';
   import { Render } from '$lib/components';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import type { Readable } from 'svelte/store';
   import { storable } from '$lib/stores';
   import { onMount } from 'svelte';
   import { useClassNameResolver } from '$lib/hooks';
 
-  export let expanded: Readable<boolean> | boolean = false;
+  export let expanded = false;
 
   const Expanded = storable({ Store: expanded, initialValue: false });
   $: Expanded.sync({ previous: $Expanded, value: expanded });

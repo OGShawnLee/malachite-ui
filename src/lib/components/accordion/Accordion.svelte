@@ -2,12 +2,11 @@
   import Accordion from './state';
   import { Render } from '$lib/components';
   import { storable } from '$lib/stores';
-  import type { Readable } from 'svelte/store';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
   import { useClassNameResolver } from '$lib/hooks';
 
-  export let finite: Readable<boolean> | boolean = false;
-  export let order: Readable<boolean> | boolean = false;
+  export let finite = false;
+  export let order = false;
 
   const { Open, Finite, ShouldOrder, accordion } = new Accordion({
     Finite: storable({ Store: finite, initialValue: false }),

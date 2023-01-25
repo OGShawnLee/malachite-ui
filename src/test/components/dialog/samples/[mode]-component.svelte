@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Readable, Writable } from 'svelte/store';
   import {
     Dialog,
     DialogContent,
@@ -11,8 +10,8 @@
 
   export let Titles = useRange(1);
   export let Descriptions = useRange(1);
-  export let open: Writable<boolean> | undefined = undefined;
-  export let initialFocus: Readable<HTMLElement> | HTMLElement | undefined = undefined;
+  export let open: boolean | undefined = undefined;
+  export let initialFocus: HTMLElement | undefined = undefined;
   export let showInitialFocus = false;
 
   function toggle() {

@@ -3,7 +3,6 @@ import * as samples from './samples';
 import type { SvelteComponent } from 'svelte';
 import { act, cleanup, fireEvent, render } from '@testing-library/svelte';
 import { findElement } from '$lib/utils';
-import { writable } from 'svelte/store';
 import { hasTagName } from '$lib/predicate';
 import { elementTagNames } from '$lib/components/render';
 import {
@@ -244,18 +243,6 @@ describe('Props', () => {
 
 			await fireEvent.click(button);
 			component.$set({ forceFocus: false });
-			await fireEvent.click(button);
-			expect(targetButton).not.toHaveFocus();
-		});
-
-		it('Should work with a store', async () => {
-			const forceFocus = writable(true);
-			const { button, getByText } = await initOpenPopover(ForceFocus, { forceFocus });
-			const targetButton = getByText('Close Me');
-			expect(targetButton).toHaveFocus();
-
-			await fireEvent.click(button);
-			forceFocus.set(false);
 			await fireEvent.click(button);
 			expect(targetButton).not.toHaveFocus();
 		});

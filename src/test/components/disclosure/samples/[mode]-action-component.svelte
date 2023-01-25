@@ -1,8 +1,7 @@
 <script lang="ts">
-  import type { Writable } from 'svelte/store';
   import { Disclosure } from '$lib/components';
 
-  export let open: Writable<boolean> | boolean | undefined = undefined;
+  export let open: boolean | undefined = undefined;
 </script>
 
 <Disclosure {open} data-testid="disclosure-root" let:button let:panel let:close>

@@ -1,8 +1,7 @@
 <script lang="ts">
-  import type { Readable } from 'svelte/store';
   import { Popover, PopoverButton, PopoverOverlay, PopoverPanel } from '$lib/components';
 
-  export let forceFocus: Readable<boolean> | boolean = true;
+  export let forceFocus = true;
 </script>
 
 <Popover {forceFocus} data-testid="popover-root">

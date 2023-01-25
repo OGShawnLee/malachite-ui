@@ -11,7 +11,6 @@ import {
 	generateActions,
 	isValidComponentName
 } from '@test-utils';
-import { writable } from 'svelte/store';
 
 function initComponent(Component: typeof SvelteComponent, props = {}) {
 	const result = render(Component, { props });
@@ -545,27 +544,6 @@ describe('Props', () => {
 			await fireEvent.keyDown(tabList, { code: 'ArrowRight' });
 			expect(tabs[2].ariaSelected).toBe('true');
 		});
-
-		it('Should work with a store', async () => {
-			const manual = writable(false);
-			const { tabList, tabs } = initComponent(Behaviour, { manual });
-
-			await fireEvent.keyDown(tabList, { code: 'ArrowLeft' });
-			expect(tabs[2].ariaSelected).toBe('true');
-
-			await fireEvent.keyDown(tabList, { code: 'ArrowLeft' });
-			expect(tabs[1].ariaSelected).toBe('true');
-
-			await act(() => manual.set(true));
-
-			await fireEvent.keyDown(tabList, { code: 'ArrowLeft' });
-			expect(tabs[1].ariaSelected).toBe('true');
-			expect(tabs[0]).toHaveFocus();
-
-			await fireEvent.keyDown(tabList, { code: 'ArrowLeft' });
-			expect(tabs[1].ariaSelected).toBe('true');
-			expect(tabs[2]).toHaveFocus();
-		});
 	});
 
 	describe('Vertical', () => {
@@ -614,19 +592,6 @@ describe('Props', () => {
 
 			await fireEvent.keyDown(tabList, { code: 'ArrowDown' });
 			expect(tabs[1].ariaSelected).toBe('true');
-		});
-
-		it('Should work with a store', async () => {
-			const vertical = writable(false);
-			const { tabList, tabs } = initComponent(Behaviour, { vertical });
-
-			await fireEvent.keyDown(tabList, { code: 'ArrowRight', ctrlKey: true });
-			expect(tabs[2].ariaSelected).toBe('true');
-
-			await act(() => vertical.set(true));
-
-			await fireEvent.keyDown(tabList, { code: 'ArrowUp', ctrlKey: true });
-			expect(tabs[0].ariaSelected).toBe('true');
 		});
 	});
 });

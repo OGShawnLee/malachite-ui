@@ -2,12 +2,11 @@
   import { createDisclosure } from './state';
   import { Render } from '$lib/components';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import type { Writable } from 'svelte/store';
   import { isNotStore } from '$lib/predicate';
   import { useClassNameResolver } from '$lib/hooks';
   import { createStoreWrapper } from '$lib/utils';
 
-  export let open: Writable<boolean> | boolean = false;
+  export let open = false;
 
   const { Open, button, panel, close } = createDisclosure({
     Open: createStoreWrapper({

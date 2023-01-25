@@ -2,10 +2,9 @@
   import { createPopover } from './state';
   import { Render } from '$lib/components';
   import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import type { Readable } from 'svelte/store';
   import { useClassNameResolver } from '$lib/hooks';
 
-  export let forceFocus: Readable<boolean> | boolean = false;
+  export let forceFocus = false;
 
   const { Open, ForceFocus, ShowOverlay, close, button, overlay, panel } = createPopover({
     ForceFocus: forceFocus

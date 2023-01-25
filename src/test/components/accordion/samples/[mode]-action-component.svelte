@@ -1,8 +1,7 @@
 <script lang="ts">
-  import type { Readable } from 'svelte/store';
   import { Accordion, AccordionItem } from '$lib/components';
 
-  export let finite: Readable<boolean> | boolean | undefined = undefined;
+  export let finite: boolean | undefined = undefined;
   export let open: boolean | undefined = undefined;
 </script>
 

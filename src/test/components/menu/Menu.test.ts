@@ -12,7 +12,6 @@ import {
 	isValidComponentName,
 	waitAWhile
 } from '@test-utils';
-import { writable } from 'svelte/store';
 import { Bridge } from '$lib/stores';
 
 function initComponent(Component: typeof SvelteComponent, props = {}) {
@@ -614,29 +613,6 @@ describe('Props', () => {
 			expect(panel).toHaveAttribute('aria-activedescendant', items[0].id);
 		});
 
-		it.each([
-			['Vertical', 'ArrowDown', 'ArrowUp'],
-			['Horizontal', 'ArrowRight', 'ArrowLeft']
-		])('Should work with a store - %s', async (orientation, nextKey, previousKey) => {
-			const horizontal = orientation === 'Horizontal';
-			const finite = writable(false);
-			const { getAllItems, open } = initComponent(Behaviour, { finite, horizontal });
-			const panel = await open();
-			const items = getAllItems();
-
-			await waitAWhile(25);
-
-			await fireEvent.keyDown(panel, { code: 'Home' });
-			await fireEvent.keyDown(panel, { code: previousKey });
-			expect(panel).toHaveAttribute('aria-activedescendant', items[3].id);
-
-			await act(() => finite.set(true));
-			await fireEvent.keyDown(panel, { code: 'End' });
-			await fireEvent.keyDown(panel, { code: nextKey });
-			expect(panel).toHaveAttribute('aria-activedescendant', items[3].id);
-		});
-	});
-
 	describe('Horizontal', () => {
 		it('Should only allow to Navigate with ArrowRight - ArrowLeft', async () => {
 			const { open, getAllItems } = initComponent(Behaviour, { horizontal: true });
@@ -692,26 +668,6 @@ describe('Props', () => {
 			expect(panel).toHaveAttribute('aria-activedescendant', items[0].id);
 
 			await act(() => component.$set({ horizontal: true }));
-
-			await fireEvent.keyDown(panel, { code: 'ArrowRight' });
-			expect(panel).toHaveAttribute('aria-activedescendant', items[1].id);
-		});
-
-		it('Should work with a store', async () => {
-			const horizontal = writable(false);
-			const { open, getAllItems } = initComponent(Behaviour, { horizontal });
-			const panel = await open();
-			const items = getAllItems();
-
-			await waitAWhile(25);
-
-			await fireEvent.keyDown(panel, { code: 'ArrowRight' });
-			expect(panel).not.toHaveAttribute('aria-activedescendant');
-
-			await fireEvent.keyDown(panel, { code: 'ArrowDown' });
-			expect(panel).toHaveAttribute('aria-activedescendant', items[0].id);
-
-			await act(() => horizontal.set(true));
 
 			await fireEvent.keyDown(panel, { code: 'ArrowRight' });
 			expect(panel).toHaveAttribute('aria-activedescendant', items[1].id);

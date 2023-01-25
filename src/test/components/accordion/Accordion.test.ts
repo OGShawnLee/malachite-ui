@@ -11,7 +11,6 @@ import {
 	isValidComponentName
 } from '@test-utils';
 import { act, fireEvent, render } from '@testing-library/svelte';
-import { writable } from 'svelte/store';
 import { getContextKey } from '$lib/hooks';
 
 function initComponent(Component: typeof SvelteComponent, props = {}) {
@@ -499,27 +498,6 @@ describe('Props', () => {
 
 			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
 			expect(buttons[0]).toHaveFocus();
-		});
-
-		it('Should work with an store', async () => {
-			const finite = writable(false);
-			const { accordion, buttons } = initComponent(Behaviour, { finite });
-			await act(() => buttons[0].focus());
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
-			expect(buttons[2]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-			expect(buttons[0]).toHaveFocus();
-
-			await act(() => finite.set(true));
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
-			expect(buttons[0]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'End' });
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-			expect(buttons[2]).toHaveFocus();
 		});
 	});
 
