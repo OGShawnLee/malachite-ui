@@ -71,6 +71,11 @@ export function isNotDisabled(val: Nullable<EventTarget | HTMLElement>) {
 	return isHTMLElement(val) && !isDisabled(val);
 }
 
+export function isValidHTMLElementID(id: string) {
+	const regex = /^[A-Za-z]+[\w\-\:\.]*$/;
+	return regex.test(id);
+}
+
 export function isVoidElement(tag: string) {
 	return tag.toLowerCase() in VOID_TAGS;
 }

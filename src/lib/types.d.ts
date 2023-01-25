@@ -111,11 +111,20 @@ export type Optional<T> = {
 	[P in keyof T]?: T[P];
 };
 
-interface Ref<T> extends Writable<T> {
+export type RenderElementTagName = keyof HTMLElementTagNameMap | 'slot';
+
+export interface Ref<T> extends Writable<T> {
 	value: T;
 }
 
-export type RenderElementTagName = keyof HTMLElementTagNameMap | 'slot';
+declare type Refs =
+	| ReadableRef<any>
+	| [ReadableRef<any>, ...Array<ReadableRef<any>>]
+	| Array<ReadableRef<any>>;
+
+export interface ReadableRef<T> extends Readable<T> {
+	readonly value: T;
+}
 
 export interface ReadableWrapper<T> extends Readable<T> {
 	sync: SyncFunction<T>;
@@ -130,6 +139,12 @@ export type Store<S> = [S] extends [Readable<infer V>]
 	  } & Writable<S>;
 
 export type StoreValue<Union> = Union extends Readable<infer Value> ? Value : Union;
+
+declare type StoresValues<T> = T extends Readable<infer U>
+	? U
+	: {
+			[K in keyof T]: T[K] extends Readable<infer U> ? U : never;
+	  };
 
 declare type SyncFunction<T> = (
 	this: void,

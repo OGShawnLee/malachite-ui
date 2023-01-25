@@ -1,3 +1,3 @@
 export * from './Component';
-export { Bridge } from './Bridge';
+export { default as ElementBinder } from './ElementBinder';
 export { forward } from './ActionForwarder';

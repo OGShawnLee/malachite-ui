@@ -6,6 +6,7 @@ export {
 	isHTMLElement,
 	isNavigationKey,
 	isNotDisabled,
+	isValidHTMLElementID,
 	isVoidElement,
 	isWithin
 } from './dom';

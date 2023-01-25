@@ -1,8 +1,17 @@
-import type { ReadableWrapper, Ref, SyncFunction, WritableWrapper } from '$lib/types';
+import type {
+	ReadableRef,
+	ReadableWrapper,
+	Ref,
+	Refs,
+	StoresValues,
+	SyncFunction,
+	WritableWrapper
+} from '$lib/types';
 import type { Readable, StartStopNotifier, Writable } from 'svelte/store';
 import { derived, writable } from 'svelte/store';
-import { isStore, isWritable } from '$lib/predicate';
+import { isReadableRef, isStore, isWritable } from '$lib/predicate';
 import { notifiable } from '$lib/stores';
+import { onDestroy } from 'svelte';
 
 export function createStoreWrapper<T>(configuration: {
 	Store?: Writable<T> | T;
@@ -45,6 +54,40 @@ export function createStoreWrapper<T>(configuration: {
 	};
 
 	return { ...FinalStore, sync };
+}
+
+export function createReadableRef<T>(ref: Ref<T>): ReadableRef<T> {
+	return {
+		subscribe: ref.subscribe,
+		get value() {
+			return ref.value;
+		}
+	};
+}
+
+export function createDerivedRef<R extends Refs, T>(
+	ref: R,
+	fn: (ref: StoresValues<R>) => T,
+	watch = true
+): ReadableRef<T> {
+	const store = derived(ref, fn);
+	let value = fn(getRefValue(ref));
+	if (watch) {
+		const free = store.subscribe((val) => (value = val));
+		onDestroy(free);
+	}
+	return {
+		subscribe: store.subscribe,
+		get value() {
+			if (watch) return value;
+			return fn(getRefValue(ref));
+		}
+	};
+}
+
+function getRefValue<R extends Refs>(refs: R): StoresValues<R> {
+	if (isReadableRef(refs)) return refs.value;
+	return refs.map((ref) => ref.value) as StoresValues<R>;
 }
 
 export function makeReadable<T>(Store: Readable<T>) {
