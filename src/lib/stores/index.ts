@@ -6,4 +6,4 @@ export * from './navigable';
 export * from './notifiable';
 export * from './Ordered';
 export * from './storable';
-export * from './toggleable';
+export * from './Toggleable';
