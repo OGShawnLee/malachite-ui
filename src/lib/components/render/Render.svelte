@@ -1,64 +1,95 @@
 <script lang="ts">
-  import type { Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { forwardActions } from '$lib/core';
-  import { Bridge } from '$lib/stores';
-  import { onMount } from 'svelte';
-  import { isVoidTagName } from '$lib/predicate';
+  import type { Action, ComponentTagName, Nullable } from '$lib/types';
+  import { ElementBinder, forward } from '$lib/core';
+  import { isVoidElement } from '$lib/predicate';
 
-  let className: Nullable<string> = undefined;
+  let className: string | undefined = undefined;
 
-  export { className as class };
-  export let as: RenderElementTagName = 'slot';
+  export let actions: Action[] = [];
+  export let as: ComponentTagName;
+  export let binder = new ElementBinder();
   export let disabled: Nullable<boolean> = undefined;
-  export let element: HTMLElement | null = null;
-  export let use: Expand<Forwarder.Actions> = [];
+  export let element: HTMLElement | undefined = undefined;
+  export let id: string | undefined = undefined;
+  export let value: any = undefined;
+  export { className as class };
 
-  export let Proxy: Bridge = new Bridge();
+  const { finalName } = binder;
 
-  const { Disabled } = Proxy;
-
-  $: isVoidElement = isVoidTagName(as);
-  $: isUsingSlot = as === 'slot';
-  $: if (isUsingSlot && element) {
-    if (className) element.className = className;
+  $: binder.id.value = id;
+  $: binder.disabled.value = disabled;
+  $: isUsingFragment = as === 'fragment';
+  $: binder.isUsingFragment.value = isUsingFragment;
+  $: if (isUsingFragment && element && className) {
+    element.className = className;
   }
 
-  onMount(() =>
-    Disabled.subscribe((isDisabled) => {
-      if (isDisabled !== disabled) disabled = isDisabled;
-    })
-  );
-
-  $: Proxy.isUsingSlot = isUsingSlot;
-  Proxy.onChange = (el) => (element = el);
-  $: Proxy.sync({ disabled });
+  function onInput(event: InputEvent) {
+    value = (event.currentTarget as HTMLInputElement)?.value;
+  }
 </script>
 
-{#if as === 'slot'}
+{#if isUsingFragment}
   <slot />
-{:else if isVoidElement}
+{:else if isVoidElement(as)}
   <svelte:element
     this={as}
     bind:this={element}
     class={className}
+    id={$finalName}
     {disabled}
-    use:forwardActions={use}
-    {...$$restProps}
+    {value}
+    use:forward={actions}
     on:blur
+    on:change
     on:click
+    on:contextmenu
+    on:dblclick
     on:focus
+    on:focusin
+    on:focusout
+    on:input
+    on:input={onInput}
+    on:keydown
+    on:keypress
+    on:keyup
+    on:mousedown
+    on:mouseenter
+    on:mouseleave
+    on:mousemove
+    on:mouseout
+    on:mouseover
+    on:mouseup
+    on:mousewheel
+    {...$$restProps}
   />
 {:else}
   <svelte:element
     this={as}
     bind:this={element}
     class={className}
+    id={$finalName}
     {disabled}
-    use:forwardActions={use}
-    {...$$restProps}
+    use:forward={actions}
     on:blur
     on:click
+    on:contextmenu
+    on:dblclick
     on:focus
+    on:focusin
+    on:focusout
+    on:keydown
+    on:keypress
+    on:keyup
+    on:mousedown
+    on:mouseenter
+    on:mouseleave
+    on:mousemove
+    on:mouseout
+    on:mouseover
+    on:mouseup
+    on:mousewheel
+    {...$$restProps}
   >
     <slot />
   </svelte:element>
