@@ -1,6 +1,6 @@
-import type { Writable, Readable, Unsubscriber, Subscriber } from 'svelte/store';
+import type { Writable, Readable, Unsubscriber } from 'svelte/store';
 import type { Action } from 'svelte/action';
-import type { Bridge, Ordered } from '$lib/stores';
+import type { Bridge, Ordered, Toggleable } from '$lib/stores';
 
 export interface ActionComponent<T = unknown> {
 	Proxy: Bridge;
@@ -137,6 +137,27 @@ declare type SyncFunction<T> = (
 	this: void,
 	configuration: { previous: T; current: T | Readable<T> }
 ) => void;
+
+export namespace Toggler {
+	export interface Settings {
+		isOpen?: boolean;
+		isFocusForced?: boolean;
+	}
+
+	export interface Plugin {
+		(this: Toggleable, element: HTMLElement): Unsubscriber;
+	}
+
+	export interface ButtonOptions {
+		plugins?: Array<Plugin>;
+		isToggler?: boolean;
+	}
+
+	export interface PanelOptions {
+		plugins?: Array<Plugin>;
+		onOpen?: (panel: HTMLElement) => void;
+	}
+}
 
 export interface WritableWrapper<T> extends Writable<T> {
 	sync: SyncFunction<T>;

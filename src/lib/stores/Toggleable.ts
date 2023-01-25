@@ -1,197 +1,118 @@
-import type { Expand, Store } from '$lib/types';
-import type { Readable, Unsubscriber, Writable } from 'svelte/store';
-import { focusFirstElement, makeUnique, setAttribute } from '$lib/utils';
-import { hasTagName, isFocusable, isHTMLElement, isNullish, isWithin } from '$lib/predicate';
-import { useCleanup, useCollector, useDataSync, useListener } from '$lib/hooks';
-import { storable } from '$lib/stores/storable';
-import { tick } from 'svelte';
+import type { Toggler } from '$lib/types';
+import { useCollector, useListener } from '$lib/hooks';
+import { isFocusable, isHTMLElement, isNullish, isWithin } from '$lib/predicate';
+import { focusFirstElement, ref } from '$lib/utils';
+import { onDestroy, tick } from 'svelte';
+import { useHidePanelFocusOnClose } from '$lib/plugins';
 
-export class Toggleable {
-	protected readonly Open: Store<boolean>;
-	protected readonly FocusForce: Store<Readable<boolean>>;
+export default class Toggleable {
+	readonly isOpen = ref(false);
+	readonly isFocusForced = ref(false);
+	protected readonly button = ref<HTMLElement | undefined>(undefined);
+	protected readonly panel = ref<HTMLElement | undefined>(undefined);
 
-	protected readonly primitive: {
-		isFocusForced: boolean;
-		isOpen: boolean;
-		button?: HTMLElement;
-		panel?: HTMLElement;
-	} = {
-		isFocusForced: false,
-		isOpen: false
-	};
-
-	constructor(options: Expand<Toggleable.Options> = {}) {
-		const { Open, initialValue = false, notifier, ForceFocus } = options;
-
-		this.Open = storable({ Store: Open, initialValue, notifier });
-		this.FocusForce = storable({ Store: ForceFocus, initialValue: false });
-	}
-
-	get subscribe() {
-		return this.Open.subscribe;
-	}
-
-	get sync() {
-		return this.Open.sync;
-	}
-
-	listen(this: Toggleable, button: HTMLElement, onChange?: (isOpen: boolean) => void) {
-		const sync = useDataSync(this.primitive);
-		return useCleanup(
-			sync(this.FocusForce, 'isFocusForced'),
-			sync(this.Open, 'isOpen', (isOpen) => {
-				this.handleFocusForced(isOpen, button);
-			}),
-			onChange && this.Open.subscribe(onChange)
-		);
-	}
-
-	open(this: Toggleable) {
-		this.Open.set(true);
-	}
-
-	close(this: Toggleable, ref?: Event | HTMLElement) {
-		this.Open.set(false);
-		this.handleFocus(ref);
-	}
-
-	toggle(this: Toggleable) {
-		this.Open.update((val) => !val);
-	}
-
-	set(this: Toggleable, value: boolean) {
-		return this.Open.set(value);
-	}
-
-	protected focusButton(this: Toggleable, event?: Event) {
-		event?.preventDefault();
-		this.elements.button?.focus();
-	}
-
-	protected handleFocus(this: Toggleable, ref?: Event | HTMLElement) {
-		if (!ref) return this.focusButton();
-
-		if (ref instanceof Event) {
-			return this.isValidRef(ref) ? void 64 : this.focusButton(ref);
-		}
-
-		if (ref instanceof HTMLElement) {
-			return this.isValidRef(ref) ? ref.focus() : this.focusButton();
-		}
-	}
-
-	protected async handleFocusForced(isOpen: boolean, button: HTMLElement) {
-		await tick();
-		if (this.isFocusForced && isOpen && this.elements.panel) {
-			focusFirstElement(this.elements.panel, { fallback: button });
-		}
-	}
-
-	protected isValidRef(this: Toggleable, ref?: Event | HTMLElement) {
-		const target = isHTMLElement(ref) ? ref : ref?.target;
-		return !isNullish(target) && isFocusable(target) && !isWithin(this.elements.panel, target);
-	}
-
-	protected get handleAttributes() {
-		return {
-			button: (button: HTMLElement) => {
-				if (hasTagName(button, 'button')) setAttribute(button, ['type', 'button']);
-				else setAttribute(button, ['role', 'button']);
-				return button;
-			},
-			panel: (panel: HTMLElement, { isFocusable }: { isFocusable?: boolean } = {}) => {
-				if (isFocusable)
-					setAttribute(panel, ['tabIndex', '0'], {
-						predicate: () => panel.tabIndex <= -1
-					});
-
-				return panel;
-			}
-		};
-	}
-
-	protected handleClick(this: Toggleable, button: HTMLElement) {
-		return useCleanup(
-			useListener(button, 'mousedown', (event) => {
-				if (this.isFocusForced && this.isOpen) event.preventDefault();
-			}),
-			useListener(button, 'click', async () => {
-				this.toggle();
-				await tick();
-				if (this.isClosed) button.focus();
+	constructor({ isFocusForced = false, isOpen = false }: Toggler.Settings) {
+		this.isOpen.value = isOpen;
+		this.isFocusForced.value = isFocusForced;
+		onDestroy(
+			this.isOpen.subscribe((isOpen) => {
+				this.handleFocusForce(isOpen);
 			})
 		);
 	}
 
-	button(
-		this: Toggleable,
-		element: HTMLElement,
-		options: {
-			isToggler?: boolean;
-			onChange?: (isOpen: boolean) => void;
-		} = {}
-	) {
-		const { onChange, isToggler = true } = options;
-		this.primitive.button = this.handleAttributes.button(element);
-		return useCollector({
-			beforeCollection: () => {
-				this.primitive.button = undefined;
-			},
-			init: () => [this.listen(element, onChange), isToggler && this.handleClick(element)]
-		});
+	get subscribe() {
+		return this.isOpen.subscribe;
 	}
 
-	panel(
-		this: Toggleable,
-		element: HTMLElement,
-		options: {
-			isFocusable?: boolean;
-			handlers?: Array<(this: Toggleable, panel: HTMLElement) => Unsubscriber>;
-			plugins?: Array<(this: Toggleable, panel: HTMLElement) => Unsubscriber>;
-			onOpen?: (panel: HTMLElement) => void;
-		} = {}
-	) {
-		const { isFocusable, handlers = [], plugins = [], onOpen } = options;
+	get isClosed() {
+		return this.isOpen.value === false;
+	}
 
-		this.primitive.panel = this.handleAttributes.panel(element, { isFocusable });
+	close(this: Toggleable, event?: Event | HTMLElement) {
+		this.isOpen.value = false;
+		this.handleFocus(event);
+	}
+
+	open(this: Toggleable) {
+		this.isOpen.value = true;
+	}
+
+	toggle(this: Toggleable) {
+		this.isOpen.value = !this.isOpen.value;
+	}
+
+	createButton(this: Toggleable, element: HTMLElement, settings: Toggler.ButtonOptions = {}) {
+		const { plugins, isToggler = true } = settings;
+		this.button.value = element;
+		element.setAttribute('type', 'button');
 		return useCollector({
 			beforeCollection: () => {
-				this.primitive.panel = undefined;
+				this.button.value = undefined;
 			},
 			init: () => [
-				onOpen && this.Open.subscribe((isOpen) => isOpen && onOpen(element)),
-				makeUnique(handlers).map((handler) => handler.bind(this)(element)),
-				makeUnique(plugins).map((plugins) => plugins.bind(this)(element))
+				isToggler && useListener(element, 'click', () => this.toggle()),
+				this.initialisePlugins(element, plugins)
 			]
 		});
 	}
 
-	get isFocusForced() {
-		return this.primitive.isFocusForced;
+	createOverlay(this: Toggleable, element: HTMLElement) {
+		return useListener(element, 'click', () => this.close());
 	}
 
-	get isOpen() {
-		return this.primitive.isOpen;
+	createPanel(this: Toggleable, element: HTMLElement, settings?: Toggler.PanelOptions) {
+		const plugins = [useHidePanelFocusOnClose, ...(settings?.plugins ?? [])];
+		this.panel.value = element;
+		return useCollector({
+			beforeCollection: () => {
+				this.panel.value = undefined;
+			},
+			init: () => [
+				settings?.onOpen && this.isOpen.subscribe((isOpen) => isOpen && settings.onOpen?.(element)),
+				this.initialisePlugins(element, plugins)
+			]
+		});
 	}
 
-	get isClosed() {
-		return !this.primitive.isOpen;
+	protected handleFocus(this: Toggleable, event?: Event | HTMLElement) {
+		if (isNullish(event)) return this.button.value?.focus();
+		if (event instanceof Event) {
+			const target = event.target;
+			if (isHTMLElement(target) && this.isValidFocusTarget(target)) return;
+			this.button.value?.focus();
+		} else {
+			if (this.isValidFocusTarget(event)) event.focus();
+			else this.button.value?.focus();
+		}
 	}
 
-	get elements() {
-		return { button: this.primitive.button, panel: this.primitive.panel };
+	protected async handleFocusForce(this: Toggleable, isOpen: boolean) {
+		await tick();
+		if (this.isFocusForced.value && isOpen && this.panel.value) {
+			focusFirstElement(this.panel.value, {
+				fallback: this.button.value
+			});
+		}
 	}
 
-	get tuple(): [button: HTMLElement | undefined, panel: HTMLElement | undefined] {
-		return [this.primitive.button, this.primitive.panel];
+	protected initialisePlugins(
+		this: Toggleable,
+		element: HTMLElement,
+		plugins: Toggler.Plugin[] = []
+	) {
+		return plugins.map((plugin) => plugin.bind(this)(element));
 	}
-}
 
-export namespace Toggleable {
-	export interface Options {
-		ForceFocus?: Readable<boolean>;
-		Open?: Writable<boolean> | boolean;
-		initialValue?: boolean;
-		notifier?: (isOpen: boolean) => void;
+	protected isValidFocusTarget(this: Toggleable, target: HTMLElement) {
+		if (!isFocusable(target)) return false;
+		const panel = this.panel.value;
+		return panel ? !isWithin(panel, target) : true;
+	}
+
+	isWithinElements(this: Toggleable, element: HTMLElement) {
+		const button = this.button.value;
+		const panel = this.panel.value;
+		return (button && isWithin(button, element)) || (panel && isWithin(panel, element));
 	}
 }
