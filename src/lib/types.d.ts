@@ -2,6 +2,10 @@ import type { Writable, Readable, Unsubscriber } from 'svelte/store';
 import type { Ordered, Toggleable } from '$lib/stores';
 import type { ElementBinder } from '$lib/core';
 
+export interface Action {
+	(element: HTMLElement): void | { destroy?: Unsubscriber };
+}
+
 export interface ActionComponent<T = void> {
 	action: (element: HTMLElement) => {
 		destroy: Unsubscriber;
@@ -22,17 +26,6 @@ export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 export type ExtractContext<C, K extends keyof C> = OmitAllThisParameter<Pick<C, K>>;
 
 export type ExtractContextKeys<T> = { [P in keyof T]: any };
-
-export namespace Forwarder {
-	export type Actions = [action: Action, parameter?: any][];
-
-	interface BuiltAction {
-		action: Action;
-		update?: (argument: unknown) => void;
-		destroy?: () => void;
-		parameter?: unknown;
-	}
-}
 
 export namespace Navigable {
 	export interface HandlerCallbackContext {
