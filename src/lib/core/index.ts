@@ -1,2 +1,3 @@
 export * from './Component';
-export * from './forwarder';
+export { Bridge } from './Bridge';
+export { forward } from './ActionForwarder';

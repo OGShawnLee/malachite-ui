@@ -1,6 +1,6 @@
 import Navigation from './Navigation';
 import type { Expand, Navigable as Nav } from '$lib/types';
-import type { Bridge } from '$lib/stores/Bridge';
+import type { Bridge } from '$lib/core/Bridge';
 import { useCollector, useListener } from '$lib/hooks';
 import { tick } from 'svelte';
 import type { Unsubscriber } from 'svelte/store';

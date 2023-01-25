@@ -1,5 +1,5 @@
 export * from './activable';
-export * from './Bridge';
+export * from '../core/Bridge';
 export * from './Group';
 export * from './Hashable';
 export * from './navigable';
