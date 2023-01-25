@@ -9,7 +9,7 @@ import {
 	handleFocusLeave,
 	useActiveHover,
 	useKeyMatch,
-	usePreventInternalFocus
+	useHidePanelFocusOnClose
 } from '$lib/plugins';
 import { createStoreWrapper, generate, makeReadable, ref } from '$lib/utils';
 import {
@@ -120,7 +120,7 @@ export function createMenu({
 			destroy: ({ element }) => [
 				Open.panel(element, {
 					isFocusable: true,
-					plugins: [usePreventInternalFocus],
+					plugins: [useHidePanelFocusOnClose],
 					handlers: [handleClickOutside, handleEscapeKey, handleFocusLeave],
 					onOpen: () => element.focus()
 				}),

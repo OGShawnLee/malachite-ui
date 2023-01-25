@@ -2,7 +2,8 @@ import type { ActionComponent, ExtractContextKeys, WritableWrapper } from '$lib/
 import type { Readable } from 'svelte/store';
 import { defineActionComponent, initIndexGenerator } from '$lib/core';
 import { useComponentNaming, useContext } from '$lib/hooks';
-import { Bridge, Toggleable, usePreventInternalFocus } from '$lib/stores';
+import { useHidePanelFocusOnClose } from '$lib/plugins'
+import { Bridge, Toggleable } from '$lib/stores';
 import { generate, makeReadable } from '$lib/utils';
 import { isActionComponent, isFunction, isInterface, isStore } from '$lib/predicate';
 
@@ -48,7 +49,7 @@ export function createDisclosure({ Open: uOpen }: Configuration) {
 		return defineActionComponent({
 			Bridge: Panel,
 			onMount: nameChild('panel'),
-			destroy: ({ element }) => Open.panel(element, { plugins: [usePreventInternalFocus] })
+			destroy: ({ element }) => Open.panel(element, { plugins: [useHidePanelFocusOnClose] })
 		});
 	}
 

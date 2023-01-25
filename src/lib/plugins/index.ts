@@ -10,5 +10,5 @@ export {
 	handleEscapeKey,
 	handleFocusLeave,
 	useFocusTrap,
-	usePreventInternalFocus
+	useHidePanelFocusOnClose
 } from './toggleable';

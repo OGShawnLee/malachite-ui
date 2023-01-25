@@ -6,7 +6,7 @@ import {
 	handleClickOutside,
 	handleEscapeKey,
 	handleFocusLeave,
-	usePreventInternalFocus,
+	useHidePanelFocusOnClose,
 	useFocusTrap
 } from '$lib/plugins';
 import { focusFirstElement, makeReadable, useHideScrollbar } from '$lib/utils';
@@ -102,7 +102,7 @@ export default class Dialog extends Component {
 			onMount: this.nameChild('content'),
 			destroy: ({ element }) => [
 				this.Toggleable.panel(element, {
-					plugins: [useFocusTrap, usePreventInternalFocus],
+					plugins: [useFocusTrap, useHidePanelFocusOnClose],
 					handlers: [handleClickOutside, handleEscapeKey, handleFocusLeave]
 				}),
 				this.Toggleable.subscribe(async (isOpen) => {

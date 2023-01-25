@@ -53,10 +53,10 @@ export function useFocusTrap(this: Toggleable, panel: HTMLElement) {
 }
 
 /** Prevents tabbing inside the panel during a leaving transition */
-export function usePreventInternalFocus(this: Toggleable, panel: HTMLElement) {
+export function useHidePanelFocusOnClose(this: Toggleable, panel: HTMLElement) {
 	const children = getFocusableElements(panel);
 	const tabIndexes = children.map(({ tabIndex }) => tabIndex);
-	return this.subscribe((isOpen) => {
+	return this.isOpen.subscribe((isOpen) => {
 		if (isOpen) {
 			children.forEach((child, index) => (child.tabIndex = tabIndexes[index]));
 		} else children.forEach((child) => (child.tabIndex = -1));

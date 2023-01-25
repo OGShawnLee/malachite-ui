@@ -10,7 +10,7 @@ import {
 	isString
 } from '$lib/predicate';
 import { Bridge, Hashable, Navigable, Ordered, type Toggleable } from '$lib/stores';
-import { usePreventInternalFocus } from '$lib/plugins';
+import { useHidePanelFocusOnClose } from '$lib/plugins';
 import { generate, makeReadable, setAttribute } from '$lib/utils';
 import { onDestroy, tick } from 'svelte';
 import { useContext, useListener, usePair } from '$lib/hooks';
@@ -173,7 +173,7 @@ export default class Accordion extends Component {
 				},
 				destroy: ({ element }) => [
 					Toggleable.panel(element, {
-						plugins: [usePreventInternalFocus]
+						plugins: [useHidePanelFocusOnClose]
 					}),
 					Button.Name.subscribe((id) => {
 						if (id) element.setAttribute('aria-labelledby', id);

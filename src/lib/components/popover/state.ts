@@ -7,7 +7,7 @@ import {
 	handleClickOutside,
 	handleEscapeKey,
 	handleFocusLeave,
-	usePreventInternalFocus
+	useHidePanelFocusOnClose
 } from '$lib/plugins';
 import { createStoreWrapper, generate, makeReadable } from '$lib/utils';
 import { useComponentNaming, useContext, useListener } from '$lib/hooks';
@@ -78,7 +78,7 @@ export function createPopover({ ForceFocus: uForceFocus }: Configuration) {
 			onMount: nameChild('panel'),
 			destroy: ({ element }) => [
 				Open.panel(element, {
-					plugins: [usePreventInternalFocus],
+					plugins: [useHidePanelFocusOnClose],
 					handlers: groupClient ? [] : [handleClickOutside, handleEscapeKey, handleFocusLeave]
 				}),
 				groupClient?.panel(element)
