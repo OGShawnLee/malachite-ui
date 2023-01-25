@@ -1,4 +1,13 @@
 export * from './core';
-export * from './dom';
+export {
+	hasTagName,
+	isDisabled,
+	isFocusable,
+	isHTMLElement,
+	isNavigationKey,
+	isNotDisabled,
+	isVoidElement,
+	isWithin
+} from './dom';
 export * from './internal';
 export * from './store';

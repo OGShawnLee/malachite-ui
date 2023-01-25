@@ -71,7 +71,7 @@ export function isNotDisabled(val: Nullable<EventTarget | HTMLElement>) {
 	return isHTMLElement(val) && !isDisabled(val);
 }
 
-export function isVoidTagName(tag: string) {
+export function isVoidElement(tag: string) {
 	return tag.toLowerCase() in VOID_TAGS;
 }
 
