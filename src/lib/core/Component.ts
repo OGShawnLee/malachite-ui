@@ -1,7 +1,5 @@
-import type { Collectable } from '$lib/types';
-import { Bridge } from '$lib/stores';
-import { useCollector } from '$lib/hooks';
-import { isArray, isFunction, isNumber, isString } from '$lib/predicate';
+import { defineActionComponent } from '$lib/core';
+import { isNumber, isString } from '$lib/predicate';
 
 export const LIBRARY_NAME = 'malachite';
 
@@ -33,96 +31,6 @@ export class Component {
 
 		return `${parent}-${name}`;
 	}
-}
-
-export function defineActionComponent(Settings: {
-	Bridge?: Bridge;
-	onInit?: (context: { Bridge: Bridge }) => void;
-	onMount: ((context: { element: HTMLElement; Bridge: Bridge }) => string) | string;
-	destroy?:
-		| Collectable
-		| ((context: { Bridge: Bridge; element: HTMLElement; name: string }) => Collectable);
-}) {
-	const { Bridge: Shard = new Bridge(), onInit, onMount, destroy } = Settings;
-	onInit?.({ Bridge: Shard });
-	return {
-		Proxy: Shard,
-		action(element: HTMLElement) {
-			const name = isFunction(onMount) ? onMount({ element, Bridge: Shard }) : onMount;
-			return {
-				destroy: useCollector({
-					beforeInit: () => [Shard.onMount(element, name)],
-					init: () => {
-						if (isFunction(destroy)) {
-							const collect = destroy({ element, name, Bridge: Shard });
-
-							if (isArray(collect)) return collect;
-							return collect ? [collect] : [];
-						}
-
-						return destroy ?? [];
-					}
-				})
-			};
-		}
-	};
-}
-
-export function defineActionComponentWithParams<T>(Settings: {
-	Bridge?: Bridge;
-	onInit?: (context: { Bridge: Bridge }) => void;
-	onMount:
-		| ((context: { element: HTMLElement; parameter: T | undefined; Bridge: Bridge }) => string)
-		| string;
-	onUpdate?: (context: {
-		element: HTMLElement;
-		name: string;
-		parameter: T | undefined;
-		Bridge: Bridge;
-	}) => void;
-	destroy?:
-		| Collectable
-		| ((context: {
-				Bridge: Bridge;
-				element: HTMLElement;
-				name: string;
-				parameter: {
-					initialValue: T | undefined;
-					value: T | undefined;
-				};
-		  }) => Collectable);
-}) {
-	const { Bridge: Shard = new Bridge(), onInit, onMount, onUpdate, destroy } = Settings;
-	onInit?.({ Bridge: Shard });
-	return {
-		Proxy: Shard,
-		action(element: HTMLElement, parameter?: T) {
-			const name = isFunction(onMount) ? onMount({ element, parameter, Bridge: Shard }) : onMount;
-			const initialValue = parameter;
-			const parameterData = { initialValue, value: parameter };
-			return {
-				update(parameter?: T) {
-					if (onUpdate && parameter !== parameterData.value)
-						onUpdate({ Bridge: Shard, element, name, parameter });
-
-					parameterData.value = parameter;
-				},
-				destroy: useCollector({
-					beforeInit: () => [Shard.onMount(element, name)],
-					init: () => {
-						if (isFunction(destroy)) {
-							const collect = destroy({ Bridge: Shard, element, name, parameter: parameterData });
-
-							if (isArray(collect)) return collect;
-							return collect ? [collect] : [];
-						}
-
-						return destroy ?? [];
-					}
-				})
-			};
-		}
-	};
 }
 
 export function* indexGenerator() {
