@@ -8,7 +8,7 @@ import {
 	handleEscapeKey,
 	handleFocusLeave,
 	usePreventInternalFocus
-} from '$lib/stores/toggleable';
+} from '$lib/plugins';
 import { createStoreWrapper, generate, makeReadable } from '$lib/utils';
 import { useComponentNaming, useContext, useListener } from '$lib/hooks';
 import { isActionComponent, isFunction, isInterface, isStore } from '$lib/predicate';

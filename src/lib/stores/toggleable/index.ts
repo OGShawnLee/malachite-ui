@@ -6,9 +6,6 @@ import { useCleanup, useCollector, useDataSync, useListener } from '$lib/hooks';
 import { storable } from '$lib/stores/storable';
 import { tick } from 'svelte';
 
-export * from './handler';
-export * from './plugin';
-
 export class Toggleable {
 	protected readonly Open: Store<boolean>;
 	protected readonly FocusForce: Store<Readable<boolean>>;

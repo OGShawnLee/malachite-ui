@@ -1,8 +1,31 @@
-import type { Nullable } from '$lib/types';
 import type { Toggleable } from '$lib/stores';
-import { getFirstAndLast, getFocusableElements } from '$lib/utils';
+import type { Nullable } from '$lib/types';
 import { useWindowListener } from '$lib/hooks';
 import { isEmpty, isHTMLElement, isWithin } from '$lib/predicate';
+import { getFirstAndLast, getFocusableElements } from '$lib/utils';
+
+export function handleClickOutside(this: Toggleable) {
+	return useWindowListener('click', (event) => {
+		if (this.isClosed || isWithin(this.tuple, event.target)) return;
+		this.close(event);
+	});
+}
+
+export function handleEscapeKey(this: Toggleable) {
+	return useWindowListener('keydown', (event) => {
+		if (this.isOpen && event.code === 'Escape') this.close(event);
+	});
+}
+
+export function handleFocusLeave(this: Toggleable, panel: HTMLElement) {
+	return useWindowListener('focusin', (event) => {
+		if (this.isClosed || event.target === window || event.target === document.body) return;
+		if (this.isFocusForced && !isWithin(panel, event.target)) return this.close(event);
+		if (isWithin(this.tuple, event.target)) return;
+
+		this.close(event);
+	});
+}
 
 export function useFocusTrap(this: Toggleable, panel: HTMLElement) {
 	const fallback = document.activeElement;

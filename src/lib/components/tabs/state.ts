@@ -2,7 +2,7 @@ import type { Expand, ExtractContext, Navigable as Nav, Nullable, Store } from '
 import type { Readable, Writable } from 'svelte/store';
 import { Component } from '$lib/core';
 import { Bridge, Hashable, Ordered, Navigable } from '$lib/stores';
-import { useManualSync } from '$lib/stores/addons';
+import { useManualSync } from '$lib/plugins';
 import { derived, writable } from 'svelte/store';
 import { useCollector, useContext, usePair } from '$lib/hooks';
 import { makeReadable, setAttribute } from '$lib/utils';

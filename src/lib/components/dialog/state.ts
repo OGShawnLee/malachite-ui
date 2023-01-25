@@ -8,7 +8,7 @@ import {
 	handleFocusLeave,
 	usePreventInternalFocus,
 	useFocusTrap
-} from '$lib/stores/toggleable';
+} from '$lib/plugins';
 import { focusFirstElement, makeReadable, useHideScrollbar } from '$lib/utils';
 import { useContext, useListener } from '$lib/hooks';
 import { isHTMLElement, isInterface, isStore, isActionComponent, isFunction } from '$lib/predicate';

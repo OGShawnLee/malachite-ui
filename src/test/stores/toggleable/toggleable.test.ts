@@ -1,11 +1,12 @@
 import '@testing-library/jest-dom';
-import { handleClickOutside, handleEscapeKey, handleFocusLeave, Toggleable } from '$lib/stores';
+import { handleClickOutside, handleEscapeKey, handleFocusLeave } from '$lib/plugins';
 import { Addons, Base as Component } from './samples';
 import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/svelte';
 import { isBoolean, isObject, isStore } from '$lib/predicate';
 import { appendChild, useCleaner, waitAWhile } from '@test-utils';
 import { get, writable } from 'svelte/store';
 import { useDOMTraversal } from '$lib/hooks';
+import { Toggleable } from '$lib/stores';
 
 const { add, destroy } = useCleaner();
 const Open = new Toggleable();

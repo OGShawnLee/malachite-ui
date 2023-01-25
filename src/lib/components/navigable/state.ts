@@ -11,7 +11,7 @@ import { Bridge, Navigable, Ordered } from '$lib/stores';
 import { isFunction, isInterface } from '$lib/predicate';
 import { writable } from 'svelte/store';
 import { ref, setAttribute } from '$lib/utils';
-import { useFocusSync, useResetOnItemOutside } from '$lib/stores/addons';
+import { useFocusSync, useResetOnItemOutside } from '$lib/plugins';
 
 interface Configuration {
 	Finite: ReadableWrapper<boolean>;

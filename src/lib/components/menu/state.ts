@@ -3,13 +3,14 @@ import type { ActionComponent, Navigable as Nav } from '$lib/types';
 import { defineActionComponent, initIndexGenerator } from '$lib/core';
 import { useComponentNaming, useContext, useListener } from '$lib/hooks';
 import { Bridge, Navigable, Ordered, Toggleable } from '$lib/stores';
-import { useActiveHover, useKeyMatch } from '$lib/stores/addons';
 import {
 	handleClickOutside,
 	handleEscapeKey,
 	handleFocusLeave,
+	useActiveHover,
+	useKeyMatch,
 	usePreventInternalFocus
-} from '$lib/stores/toggleable';
+} from '$lib/plugins';
 import { createStoreWrapper, generate, makeReadable, ref } from '$lib/utils';
 import {
 	isActionComponent,

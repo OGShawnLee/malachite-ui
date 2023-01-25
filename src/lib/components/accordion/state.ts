@@ -10,7 +10,7 @@ import {
 	isString
 } from '$lib/predicate';
 import { Bridge, Hashable, Navigable, Ordered, type Toggleable } from '$lib/stores';
-import { usePreventInternalFocus } from '$lib/stores/toggleable';
+import { usePreventInternalFocus } from '$lib/plugins';
 import { generate, makeReadable, setAttribute } from '$lib/utils';
 import { onDestroy, tick } from 'svelte';
 import { useContext, useListener, usePair } from '$lib/hooks';
