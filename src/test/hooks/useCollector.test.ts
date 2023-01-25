@@ -118,28 +118,12 @@ describe('recursion', () => {
 		}
 	});
 
-	it('Should work with functions that return collectable values', () => {});
-
-	it('Should work with promises that return collectable values', () => {});
-
 	it('Should work with complex structures', async () => {
 		const functions = generateSpyFunctions(9);
 		await useCollector({
-			beforeInit: () => [
-				functions[0],
-				new Promise((res) => res(functions[1])),
-				{ destroy: functions[2] }
-			],
-			init: () => [
-				functions[3],
-				new Promise((res) => res(functions[4])),
-				{ destroy: functions[5] }
-			],
-			afterInit: () => [
-				functions[6],
-				new Promise((res) => res(functions[7])),
-				{ destroy: functions[8] }
-			]
+			beforeInit: () => [functions[0], { destroy: functions[2] }],
+			init: () => [functions[3], { destroy: functions[5] }],
+			afterInit: () => [functions[6], { destroy: functions[8] }]
 		})();
 		for (const func of functions) {
 			expect(func).toBeCalledTimes(1);

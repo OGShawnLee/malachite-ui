@@ -16,8 +16,6 @@ export interface ActionComponent<T = unknown> {
 export type Collectable =
 	| Unsubscriber
 	| Nullable<boolean>
-	| (() => Promise<Collectable>)
-	| Promise<Collectable>
 	| Collectable[]
 	| { destroy: Collectable }
 	| void;

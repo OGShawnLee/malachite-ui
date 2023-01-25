@@ -43,14 +43,6 @@ describe('destroy', () => {
 		expect(second).toBeCalledTimes(1);
 	});
 
-	it('Should work with promises', () => {
-		const func = vi.fn(() => {});
-		const promise = new Promise<typeof func>((res) => res(func));
-
-		destroy(promise);
-		expect(promise).resolves.toBeCalledTimes(1);
-	});
-
 	it('Should work recursively with complex and nested structures', async () => {
 		const collectable = generate(5, () => generateSpyFunctions(2));
 		const [one, two, three, four, five] = collectable;
