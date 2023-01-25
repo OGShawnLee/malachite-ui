@@ -1,7 +1,17 @@
-import { type Readable, derived } from 'svelte/store';
+import type { Readable, Unsubscriber } from 'svelte/store';
+import { derived } from 'svelte/store';
 
-export function usePair<F, S>(First: Readable<F>, Second: Readable<S>) {
-	return derived([First, Second], ([first, second]) => {
-		return [first, second] as [F, S];
+export default function usePair<T, K>(a: Readable<T>, b: Readable<K>): Readable<[T, K]>;
+
+export default function usePair<T, K>(
+	a: Readable<T>,
+	b: Readable<K>,
+	fn: (a: T, b: K) => void
+): Unsubscriber;
+
+export default function usePair<T, K>(a: Readable<T>, b: Readable<K>, fn?: (a: T, b: K) => void) {
+	const store = derived([a, b], ([first, second]) => {
+		return [first, second] as [T, K];
 	});
+	return fn ? store.subscribe(([a, b]) => fn(a, b)) : store;
 }
