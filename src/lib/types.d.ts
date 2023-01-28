@@ -166,31 +166,30 @@ export interface WritableWrapper<T> extends Writable<T> {
 	sync: SyncFunction<T>;
 }
 
-// * -> useClassNameResolver
-
-declare type ClassName<S extends ComponentStates> = Nullable<
-	string | ClassNameObject<S> | FunctionClassName<S>
+// --> ClassName Resolver
+type ClassName<S extends ComponentState> = Nullable<
+	| FunctionClassName<S>
+	| string
+	| ({
+			base?: Nullable<string>;
+	  } & {
+			[P in S as Lowercase<P>]?: Nullable<string | SwitchClassName>;
+	  })
 >;
 
-export type ClassNameObject<S extends ComponentStates = ComponentStates> = NullableRecursively<{
-	active: string | SwitchClassName;
-	base: string | FunctionClassName<S> | ClassNameObject<S>;
-	checked: string | SwitchClassName;
-	disabled: string | SwitchClassName;
-	dual: string; // isActive && isSelected || isActive && isChecked || isChecked && isSelected
-	triple: string; // isActive && isChecked && isSelected
-	open: string | SwitchClassName;
-	selected: string | SwitchClassName;
-}>;
+type ComponentState = 'ACTIVE' | 'CHECKED' | 'DISABLED' | 'OPEN' | 'PRESSED' | 'SELECTED';
 
-declare type ComponentState<S extends ComponentStates = ComponentStates> = Expand<
-	Record<S, boolean>
->;
+interface FunctionClassName<S extends ComponentState> {
+	(predicate: StatePredicate<S>): Nullable<string>;
+}
 
-declare type FunctionClassName<S extends ComponentStates> = (
-	state: ComponentState<S>
-) => Nullable<string>;
+type PredicateString<K extends string> = `is${Capitalize<Lowercase<K>>}`;
 
-declare type ComponentStates = 'isActive' | 'isChecked' | 'isDisabled' | 'isOpen' | 'isSelected';
+type StatePredicate<T extends ComponentState> = {
+	[P in T as PredicateString<P>]: boolean;
+};
 
-export type SwitchClassName = Expand<NullableRecursively<{ on: string; off: string }>>;
+interface SwitchClassName {
+	on?: string;
+	off?: string;
+}

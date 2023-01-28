@@ -1,105 +1,70 @@
 import type {
 	ClassName,
 	ComponentState,
-	ComponentStates,
+	FunctionClassName,
 	Nullable,
-	Optional,
+	StatePredicate,
 	SwitchClassName
 } from '$lib/types';
-import { isEmpty, isFunction, isNullish, isObject, isString } from '$lib/predicate';
-import { clearString, makeUnique } from '$lib/utils';
+import { clearString } from '$lib/utils';
+import { isFunction, isNullish, isString, isEmpty } from '$lib/predicate';
 
-export function useClassNameResolver<S extends ComponentStates>(
-	className?: Nullable<ClassName<S>>
-) {
-	return function (
-		state: ComponentState<S>,
-		dualCombination: 'ACTIVE-SELECTED' | 'ACTIVE-CHECKED' | 'CHECKED-SELECTED' = 'ACTIVE-SELECTED'
-	): Nullable<string> {
+export default function useClassNameResolver<S extends ComponentState>(className: ClassName<S>) {
+	return function (state: StatePredicate<S>) {
+		if (isFunction(className)) return handleFunctionClassName(className, state);
+		if (isNullish(className)) return;
 		if (isString(className)) return clearClassName(className);
-		if (isFunction(className)) return clearClassName(className(state));
 
-		if (isObject(className)) {
-			let { active, base, checked, disabled, dual, open, triple, selected } = className;
+		const { active, base, checked, disabled, open, pressed, selected } = className as Exclude<
+			ClassName<ComponentState>,
+			Nullable<string | FunctionClassName<ComponentState>>
+		>;
+		const classList = [base];
+		const { isActive, isChecked, isDisabled, isOpen, isPressed, isSelected } =
+			state as StatePredicate<ComponentState>;
 
-			if (isFunction(base)) return clearClassName(base(state));
-			if (isObject(base)) base = useClassNameResolver(base)(state);
-
-			const { isActive, isChecked, isDisabled, isOpen, isSelected } = state as Optional<
-				ComponentState<ComponentStates>
-			>;
-			const classList = [base];
-
-			if (isDisabled) {
-				classList.push(handleSwitchClassName(disabled, isDisabled));
-				return processClassList(classList);
-			} else if (isObject(disabled)) classList.push(disabled.off);
-
-			classList.push(handleSwitchClassName(open, isOpen));
-
-			if (isActive && isChecked && isSelected) {
-				return classList.push(triple), processClassList(classList);
-			}
-
-			switch (dualCombination) {
-				case 'ACTIVE-CHECKED':
-					if (isActive && isChecked) {
-						classList.push(dual, handleSwitchClassName(selected, isSelected));
-						return processClassList(classList);
-					}
-					break;
-				case 'ACTIVE-SELECTED':
-					if (isActive && isSelected) {
-						classList.push(dual, handleSwitchClassName(checked, isChecked));
-						return processClassList(classList);
-					}
-					break;
-				case 'CHECKED-SELECTED':
-					if (isChecked && isSelected) {
-						classList.push(dual, handleSwitchClassName(active, isActive));
-						return processClassList(classList);
-					}
-			}
-
-			classList.push(
-				handleSwitchClassName(active, isActive),
-				handleSwitchClassName(checked, isChecked),
-				handleSwitchClassName(selected, isSelected)
-			);
-
-			return processClassList(classList);
-		}
-
-		return className;
+		classList.push(handleSwitchClassName(checked, isChecked));
+		classList.push(handleSwitchClassName(disabled, isDisabled));
+		if (isDisabled) return getClassNameFromClassList(classList);
+		classList.push(
+			handleSwitchClassName(open, isOpen),
+			handleSwitchClassName(active, isActive),
+			handleSwitchClassName(pressed, isPressed),
+			handleSwitchClassName(selected, isSelected)
+		);
+		return getClassNameFromClassList(classList);
 	};
 }
 
 function clearClassName(className: Nullable<string>) {
-	if (isNullish(className)) return;
-
-	className = clearString(className);
-	return isEmpty(className) ? null : makeUnique(className.split(' ')).join(' ');
+	if (isNullish(className) || isEmpty(className)) return;
+	return clearString(className);
 }
 
-function handleSwitchClassName(
-	className: Nullable<string | SwitchClassName>,
-	condition: boolean | undefined
+function getClassNameFromClassList(classList: Nullable<string>[]) {
+	const className = classList.reduce((className, next) => {
+		const nextClassName = clearClassName(next);
+		return nextClassName ? `${className} ${nextClassName}` : className;
+	}, '');
+	return clearClassName(className);
+}
+
+function handleFunctionClassName<S extends ComponentState>(
+	className: Nullable<string | FunctionClassName<S>>,
+	predicate: StatePredicate<S>
 ) {
-	if (isObject(className)) {
-		const { on, off } = className;
-		return condition ? on : off;
-	} else if (condition) return className;
+	if (isNullish(className)) return;
+	if (isString(className)) return clearClassName(className);
+
+	return clearClassName(className(predicate)) ?? undefined;
 }
 
-function processClassList(classList: Nullable<string>[]) {
-	let className = '';
-
-	for (let str of classList) {
-		if (isString(str) && !isEmpty(str)) {
-			className += ` ${clearString(str)}`;
-		}
+function handleSwitchClassName(className: Nullable<SwitchClassName | string>, condition: boolean) {
+	if (isNullish(className)) return;
+	if (isString(className)) {
+		if (condition) return clearClassName(className);
+	} else {
+		const { off, on } = className;
+		return clearClassName(condition ? on : off);
 	}
-
-	className = className.trim();
-	return isEmpty(className) ? null : makeUnique(className.split(' ')).join(' ');
 }
