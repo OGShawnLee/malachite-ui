@@ -1,6 +1,6 @@
 tasks:
-  - init: npm install
-    command: npm run coverage
+  - init: pnpm install
+    command: pnpm run coverage
 
 vscode:
   extensions:
