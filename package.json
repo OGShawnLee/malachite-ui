@@ -32,6 +32,7 @@
 		"@sveltejs/vite-plugin-svelte": "^2.0.2",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/svelte": "^3.2.2",
+		"@vitest/coverage-c8": "^0.28.3",
 		"c8": "^7.12.0",
 		"jsdom": "^21.1.0",
 		"prettier": "^2.8.3",
