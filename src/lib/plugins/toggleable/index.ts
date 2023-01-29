@@ -1,8 +1,24 @@
 import type { Toggleable } from '$lib/stores';
-import type { Nullable } from '$lib/types';
+import type { Nullable, Toggler } from '$lib/types';
+import type { ElementBinder } from '$lib/core';
 import { useWindowListener } from '$lib/hooks';
 import { isEmpty, isHTMLElement, isWithin } from '$lib/predicate';
 import { getFirstAndLast, getFocusableElements } from '$lib/utils';
+
+export function handleAriaControls(panel: ElementBinder): Toggler.Plugin {
+	return function (element) {
+		return panel.finalName.subscribe((name) => {
+			if (name) element.setAttribute('aria-controls', name);
+			else element.removeAttribute('aria-controls');
+		});
+	};
+}
+
+export const handleAriaExpanded: Toggler.Plugin = function (element) {
+	return this.isOpen.subscribe((isOpen) => {
+		element.ariaExpanded = '' + isOpen;
+	});
+};
 
 export function handleClickOutside(this: Toggleable) {
 	return useWindowListener('click', (event) => {

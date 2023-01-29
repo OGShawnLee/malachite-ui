@@ -1,43 +1,58 @@
 <script lang="ts">
-  import { createDisclosure } from './state';
-  import { Render } from '$lib/components';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { isNotStore } from '$lib/predicate';
-  import { useClassNameResolver } from '$lib/hooks';
-  import { createStoreWrapper } from '$lib/utils';
+	import type { Action, ClassName, ComponentTagName } from "$lib/types";
+	import { Render } from "$lib/components";
+	import { createDisclosureState } from "./state";
+	import { useClassNameResolver } from "$lib/hooks";
 
-  export let open = false;
+	let className: ClassName<"OPEN"> = undefined;
 
-  const { Open, button, panel, close } = createDisclosure({
-    Open: createStoreWrapper({
-      Store: open,
-      initialValue: false,
-      notifier: (isOpen) => isNotStore(open) && (open = isOpen)
-    })
-  });
+	export let as: ComponentTagName = "div";
+	export let element: HTMLElement | undefined = undefined;
+	export let open = false;
+	export let id: string | undefined = undefined;
+	export let use: Action[] | undefined = undefined;
+	export { className as class };
 
-  $: Open.sync({ previous: $Open, current: open });
+	const { isOpen, close, button, panel } = createDisclosureState(open);
 
-  let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
-
-  export { className as class };
-  export let as: RenderElementTagName = 'slot';
-  export let element: HTMLElement | undefined = undefined;
-  export let disabled: Nullable<boolean> = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
-
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isOpen: $Open, isDisabled });
+	$: isOpen.set(open);
+	$: open = $isOpen;
+	$: finalClassName = useClassNameResolver(className)({ isOpen: $isOpen });
 </script>
 
-<Render {as} class={finalClassName} bind:disabled bind:element {...$$restProps} {use}>
-  {#if $Open}
-    <slot name="up-panel" {isDisabled} panel={panel.action} {close} />
-  {/if}
-  <!-- we render the panel above the button -->
-  <slot isOpen={$Open} {isDisabled} button={button.action} panel={panel.action} {close} />
-  <!-- we render the panel below the button -->
-  {#if $Open}
-    <slot name="panel" {isDisabled} panel={panel.action} {close} />
-  {/if}
+<Render
+	{as}
+	class={finalClassName}
+	{id}
+	{...$$restProps}
+	bind:element
+	actions={use}
+	on:blur
+	on:change
+	on:click
+	on:contextmenu
+	on:dblclick
+	on:focus
+	on:focusin
+	on:focusout
+	on:input
+	on:keydown
+	on:keypress
+	on:keyup
+	on:mousedown
+	on:mouseenter
+	on:mouseleave
+	on:mousemove
+	on:mouseout
+	on:mouseover
+	on:mouseup
+	on:mousewheel
+>
+	{#if $isOpen}
+		<slot name="up-panel" {panel} {close} />
+	{/if}
+	<slot isOpen={$isOpen} {button} {panel} {close} />
+	{#if $isOpen}
+		<slot name="panel" {panel} {close} />
+	{/if}
 </Render>

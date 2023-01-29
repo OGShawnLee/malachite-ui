@@ -6,6 +6,8 @@ export {
 	useResetOnItemOutside
 } from './navigable';
 export {
+	handleAriaControls,
+	handleAriaExpanded,
 	handleClickOutside,
 	handleEscapeKey,
 	handleFocusLeave,

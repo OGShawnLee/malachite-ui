@@ -1,70 +1,61 @@
-import type { ActionComponent, ExtractContextKeys, WritableWrapper } from '$lib/types';
+import type { ComponentInitialiser, ExtractContextKeys } from '$lib/types';
 import type { Readable } from 'svelte/store';
-import { defineActionComponent, initIndexGenerator } from '$lib/core';
+import { ElementBinder, defineActionComponent } from '$lib/core';
 import { useComponentNaming, useContext } from '$lib/hooks';
-import { useHidePanelFocusOnClose } from '$lib/plugins'
-import { Bridge, Toggleable } from '$lib/stores';
-import { generate, makeReadable } from '$lib/utils';
-import { isActionComponent, isFunction, isInterface, isStore } from '$lib/predicate';
-
-interface Configuration {
-	Open: WritableWrapper<boolean>;
-}
+import { Toggleable } from '$lib/stores';
+import { isFunction, isInterface, isStore } from '$lib/predicate';
+import { handleAriaControls, handleAriaExpanded } from '$lib/plugins';
 
 interface Context {
-	Open: Readable<boolean>;
+	isOpen: Readable<boolean>;
 	close: OmitThisParameter<Toggleable['close']>;
-	button: ActionComponent;
-	panel: ActionComponent;
+	createDisclosureButton: ComponentInitialiser<Readable<string | undefined>>;
+	createDisclosurePanel: ComponentInitialiser;
 }
 
 export type ContextKeys = ExtractContextKeys<Context>;
 
-const generateIndex = initIndexGenerator();
+export function createDisclosureState(isOpen = false) {
+	const button = new ElementBinder();
+	const panel = new ElementBinder();
+	const toggler = new Toggleable({ isOpen });
+	const { nameChild } = useComponentNaming('disclosure');
 
-export function createDisclosure({ Open: uOpen }: Configuration) {
-	const Open = new Toggleable({ Open: uOpen });
-	const { nameChild } = useComponentNaming({ name: 'disclosure', index: generateIndex() });
-	const [Button, Panel] = generate(2, () => new Bridge());
-
-	function createButton() {
+	function createDisclosureButton(id: string | undefined) {
 		return defineActionComponent({
-			Bridge: Button,
-			onMount: nameChild('button'),
-			destroy: ({ element }) => [
-				Open.button(element, {
-					onChange(isOpen) {
-						element.ariaExpanded = String(isOpen);
-					}
-				}),
-				Panel.Name.subscribe((id) => {
-					if (id) element.setAttribute('aria-controls', id);
-					else element.removeAttribute('aria-controls');
+			binder: button,
+			id: id,
+			name: nameChild('button'),
+			onInit: () => panel.finalName,
+			onMount: ({ element }) =>
+				toggler.createButton(element, {
+					plugins: [handleAriaControls(panel), handleAriaExpanded]
 				})
-			]
 		});
 	}
 
-	function createPanel() {
+	function createDisclosurePanel(id: string | undefined) {
 		return defineActionComponent({
-			Bridge: Panel,
-			onMount: nameChild('panel'),
-			destroy: ({ element }) => Open.panel(element, { plugins: [useHidePanelFocusOnClose] })
+			binder: panel,
+			id: id,
+			name: nameChild('panel'),
+			isShowing: isOpen,
+			onMount: ({ element }) => toggler.createPanel(element)
 		});
 	}
 
 	setContext({
-		Open: makeReadable(Open),
-		button: createButton(),
-		panel: createPanel(),
-		close: Open.close.bind(Open)
+		isOpen: toggler.isOpen,
+		createDisclosureButton,
+		createDisclosurePanel,
+		close: toggler.close.bind(toggler)
 	});
 
 	return {
-		Open: uOpen,
-		button: createButton(),
-		panel: createPanel(),
-		close: Open.close.bind(Open)
+		isOpen: toggler.isOpen,
+		button: createDisclosureButton('').action,
+		panel: createDisclosurePanel('').action,
+		close: toggler.close.bind(toggler)
 	};
 }
 
@@ -72,9 +63,9 @@ const { getContext, setContext } = useContext({
 	component: 'disclosure',
 	predicate: (val): val is Context =>
 		isInterface<Context>(val, {
-			Open: isStore,
-			button: isActionComponent,
-			panel: isActionComponent,
+			isOpen: isStore,
+			createDisclosureButton: isFunction,
+			createDisclosurePanel: isFunction,
 			close: isFunction
 		})
 });

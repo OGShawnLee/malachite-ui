@@ -1,31 +1,31 @@
-import { LIBRARY_NAME } from '$lib/core';
-import { isEmpty, isString } from '$lib/predicate';
 import { clearString } from '$lib/utils';
+import { isEmpty } from '$lib/predicate';
 import { nanoid } from 'nanoid';
+import { LIBRARY_NAME } from '$lib/core';
 
 const UID_LENGTH = 8;
 
-export function useComponentNaming({ name, parent }: { name: string; parent?: string }) {
-	if (isString(parent) && isEmpty(parent)) throw Error('parent must not be an empty string.');
-	if (isEmpty(name)) throw Error('name must not be an empty string.');
+export function useComponentNaming(name: string) {
+	const baseName = getUniqueName(name, 'component');
 
-	const uid = nanoid(UID_LENGTH);
-	parent = parent ? separateWithDashes(parent) : parent;
-	name = separateWithDashes(name);
-	let baseName = `${parent || LIBRARY_NAME}-${name}-${uid}`;
-	if (parent === null) baseName = `${name}-${uid}`;
-	return {
-		baseName,
-		nameChild(childName: string) {
-			if (isEmpty(childName)) throw new Error('childName must not be an empty string.');
+	function nameChild(name: string) {
+		return getUniqueName(name, 'child', baseName);
+	}
 
-			const uid = nanoid(UID_LENGTH);
-			childName = separateWithDashes(childName);
-			return `${baseName}-${childName}-${uid}`;
-		}
-	};
+	return { baseName, nameChild };
 }
 
-function separateWithDashes(str: string) {
+function clearAndSeparateWithDashes(str: string) {
 	return clearString(str).replace(/\s/, '-');
+}
+
+function getUniqueName(name: string, type: string, parent?: string) {
+	name = clearAndSeparateWithDashes(name);
+	const uid = nanoid(UID_LENGTH);
+
+	if (parent) {
+		return isEmpty(name) ? `${parent}-${type}-${uid}` : `${parent}-${name}-${uid}`;
+	}
+
+	return isEmpty(name) ? `${LIBRARY_NAME}-${type}-${uid}` : `${LIBRARY_NAME}-${name}-${uid}`;
 }

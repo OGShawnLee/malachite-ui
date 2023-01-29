@@ -1,4 +1,4 @@
-export * from './useClassNameResolver';
+export { default as useClassNameResolver } from './useClassNameResolver';
 export * from './useCleanup';
 export * from './useClickOutside';
 export * from './useCollector';

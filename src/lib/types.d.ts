@@ -21,6 +21,12 @@ export type Collectable =
 	| { destroy: Collectable }
 	| void;
 
+type ComponentTagName = keyof HTMLElementTagNameMap | 'fragment';
+
+interface ComponentInitialiser<T = void> {
+	(id: string | undefined): ActionComponent<T>;
+}
+
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
 export type ExtractContext<C, K extends keyof C> = OmitAllThisParameter<Pick<C, K>>;
