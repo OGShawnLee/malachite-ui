@@ -1,45 +1,63 @@
 <script lang="ts">
-  import { createPopover } from './state';
+  import type { Action, ClassName, ComponentTagName } from '$lib/types';
+  import { getContext } from './Group.state';
   import { Render } from '$lib/components';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
+  import { createPopoverState } from './state';
   import { useClassNameResolver } from '$lib/hooks';
 
-  export let forceFocus = false;
+  let className: ClassName<'OPEN'> = undefined;
 
-  const { Open, ForceFocus, ShowOverlay, close, button, overlay, panel } = createPopover({
-    ForceFocus: forceFocus
+  export let as: ComponentTagName = 'div';
+  export let element: HTMLElement | undefined = undefined;
+  export let forceFocus = false;
+  export let id: string | undefined = undefined;
+  export let use: Action[] | undefined = undefined;
+  export { className as class };
+
+  const { isOpen, isFocusForced, close, button, overlay, panel } = createPopoverState({
+    isFocusForced: forceFocus,
+    isOpen: false,
+    group: getContext(false)
   });
 
-  $: ForceFocus.sync({ previous: $ForceFocus, current: forceFocus });
-
-  let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
-
-  export { className as class };
-  export let as: RenderElementTagName = 'div';
-  export let disabled: Nullable<boolean> = undefined;
-  export let element: HTMLElement | undefined = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
-
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isDisabled, isOpen: $Open });
+  $: isFocusForced.value = forceFocus;
+  $: finalClassName = useClassNameResolver(className)({ isOpen: $isOpen });
 </script>
 
-<Render {as} bind:element class={finalClassName} {...$$restProps} {use}>
-  {#if $Open && $ShowOverlay}
-    <slot name="overlay" overlay={overlay.action} />
+<Render
+  {as}
+  class={finalClassName}
+  {id}
+  {...$$restProps}
+  bind:element
+  actions={use}
+  on:blur
+  on:change
+  on:click
+  on:contextmenu
+  on:dblclick
+  on:focus
+  on:focusin
+  on:focusout
+  on:input
+  on:keydown
+  on:keypress
+  on:keyup
+  on:mousedown
+  on:mouseenter
+  on:mouseleave
+  on:mousemove
+  on:mouseout
+  on:mouseover
+  on:mouseup
+  on:mousewheel
+>
+  {#if $isOpen}
+    <slot name="overlay" {overlay} />
+    <slot name="up-panel" {panel} {close} />
   {/if}
-  {#if $Open}
-    <slot name="up-panel" panel={panel.action} {close} />
-  {/if}
-  <slot
-    isOpen={$Open}
-    {isDisabled}
-    overlay={overlay.action}
-    button={button.action}
-    panel={panel.action}
-    {close}
-  />
-  {#if $Open}
-    <slot name="panel" panel={panel.action} {close} />
+  <slot isOpen={$isOpen} {button} {overlay} {panel} {close} />
+  {#if $isOpen}
+    <slot name="panel" {panel} {close} />
   {/if}
 </Render>

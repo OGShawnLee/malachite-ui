@@ -1,44 +1,49 @@
 <script lang="ts">
-  import Group from './Group.state';
+  import type { Action, ClassName, ComponentTagName } from '$lib/types';
   import { Render } from '$lib/components';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { storable } from '$lib/stores';
-  import { onMount } from 'svelte';
+  import { createPopoverGroupState } from './Group.state';
   import { useClassNameResolver } from '$lib/hooks';
 
-  export let expanded = false;
+  let className: ClassName<'OPEN'> = undefined;
 
-  const Expanded = storable({ Store: expanded, initialValue: false });
-  $: Expanded.sync({ previous: $Expanded, value: expanded });
-
-  const State = new Group({ mode: Group.getMode($Expanded) });
-  $: State.mode = Group.getMode($Expanded);
-
-  onMount(State.listen.bind(State));
-
-  const { AllClosed, AllOpen, Open, overlay } = State;
-
-  export let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
-
-  export { className as class };
-  export let as: RenderElementTagName = 'div';
+  export let as: ComponentTagName = 'div';
   export let element: HTMLElement | undefined = undefined;
-  export let disabled: Nullable<boolean> = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
+  export let id: string | undefined = undefined;
+  export let use: Action[] | undefined = undefined;
+  export { className as class };
 
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isDisabled, isOpen: $Open });
+  const isOpen = createPopoverGroupState();
+
+  $: finalClassName = useClassNameResolver(className)({ isOpen: $isOpen });
 </script>
 
-<Render {as} bind:element class={finalClassName} {use} {...$$restProps}>
-  {#if $Open}
-    <slot name="overlay" overlay={overlay.action} />
-  {/if}
-  <slot
-    allClosed={$AllClosed}
-    allOpen={$AllOpen}
-    isOpen={$Open}
-    {isDisabled}
-    overlay={overlay.action}
-  />
+<Render
+  {as}
+  class={finalClassName}
+  {id}
+  {...$$restProps}
+  bind:element
+  actions={use}
+  on:blur
+  on:change
+  on:click
+  on:contextmenu
+  on:dblclick
+  on:focus
+  on:focusin
+  on:focusout
+  on:input
+  on:keydown
+  on:keypress
+  on:keyup
+  on:mousedown
+  on:mouseenter
+  on:mouseleave
+  on:mousemove
+  on:mouseout
+  on:mouseover
+  on:mouseup
+  on:mousewheel
+>
+  <slot isOpen={$isOpen} />
 </Render>

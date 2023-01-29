@@ -21,6 +21,13 @@ export function createDisclosureState(isOpen = false) {
 	const toggler = new Toggleable({ isOpen });
 	const { nameChild } = useComponentNaming('disclosure');
 
+	setContext({
+		isOpen: toggler.isOpen,
+		createDisclosureButton,
+		createDisclosurePanel,
+		close: toggler.close.bind(toggler)
+	});
+
 	function createDisclosureButton(id: string | undefined) {
 		return defineActionComponent({
 			binder: button,
@@ -43,13 +50,6 @@ export function createDisclosureState(isOpen = false) {
 			onMount: ({ element }) => toggler.createPanel(element)
 		});
 	}
-
-	setContext({
-		isOpen: toggler.isOpen,
-		createDisclosureButton,
-		createDisclosurePanel,
-		close: toggler.close.bind(toggler)
-	});
 
 	return {
 		isOpen: toggler.isOpen,

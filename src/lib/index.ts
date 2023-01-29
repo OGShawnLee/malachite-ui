@@ -4,7 +4,7 @@ export {
 	Disclosure,
 	DisclosureButton,
 	DisclosurePanel,
-	createDisclosure
+	createDisclosureState
 } from './components/disclosure';
 export * from './components/menu';
 export { Navigable, NavigableItem, createNavigable } from './components/navigable';
@@ -14,7 +14,7 @@ export {
 	PopoverGroup,
 	PopoverOverlay,
 	PopoverPanel,
-	createPopover
+	createPopoverState
 } from './components/popover';
 export * from './components/switch';
 export * from './components/tabs';

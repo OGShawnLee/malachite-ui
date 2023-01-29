@@ -1,6 +1,6 @@
 export * from './accordion';
 export * from './dialog';
-export { Disclosure, DisclosureButton, DisclosurePanel, createDisclosure } from './disclosure';
+export { Disclosure, DisclosureButton, DisclosurePanel, createDisclosureState } from './disclosure';
 export { Navigable, NavigableItem, createNavigable } from './navigable';
 export * from './menu';
 export {
@@ -9,7 +9,7 @@ export {
 	PopoverGroup,
 	PopoverOverlay,
 	PopoverPanel,
-	createPopover
+	createPopoverState
 } from './popover';
 export * from './switch';
 export * from './tabs';

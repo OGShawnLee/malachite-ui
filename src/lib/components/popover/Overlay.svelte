@@ -1,46 +1,52 @@
 <script lang="ts">
+  import type { Action, ComponentTagName } from '$lib/types';
   import { getContext } from './state';
-  import { GroupContext } from './Group.state';
   import { Render } from '$lib/components';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { storable } from '$lib/stores';
-  import { useClassNameResolver } from '$lib/hooks';
 
-  const {
-    Open,
-    overlay: { Proxy, action }
-  } = getContext(false) || GroupContext.getContext();
+  let className: string | undefined = undefined;
 
-  const ShowOverlay = storable({
-    Store: getContext(false)?.ShowOverlay,
-    initialValue: true
-  });
-
-  let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
-
-  export { className as class };
-  export let as: RenderElementTagName = 'div';
-  export let disabled: Nullable<boolean> = undefined;
+  export let as: ComponentTagName = 'div';
   export let element: HTMLElement | undefined = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
+  export let id: string | undefined = undefined;
+  export let use: Action[] | undefined = undefined;
+  export { className as class };
 
-  let finalUse: Forwarder.Actions;
-  $: finalUse = [...use, [action]];
+  const { isOpen, createPopoverOverlay } = getContext();
+  const { action, binder } = createPopoverOverlay(id);
 
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isDisabled, isOpen: $Open });
+  $: actions = use ? [action, ...use] : [action];
 </script>
 
-{#if $Open && $ShowOverlay}
+{#if $isOpen}
   <Render
     {as}
-    {Proxy}
-    class={finalClassName}
-    bind:disabled
-    bind:element
+    class={className}
+    {id}
     {...$$restProps}
-    use={finalUse}
+    bind:element
+    {binder}
+    {actions}
+    on:blur
+    on:change
+    on:click
+    on:contextmenu
+    on:dblclick
+    on:focus
+    on:focusin
+    on:focusout
+    on:input
+    on:keydown
+    on:keypress
+    on:keyup
+    on:mousedown
+    on:mouseenter
+    on:mouseleave
+    on:mousemove
+    on:mouseout
+    on:mouseover
+    on:mouseup
+    on:mousewheel
   >
-    <slot isOpen={$Open} {isDisabled} overlay={action} />
+    <slot overlay={action} />
   </Render>
 {/if}

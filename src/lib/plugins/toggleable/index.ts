@@ -20,28 +20,30 @@ export const handleAriaExpanded: Toggler.Plugin = function (element) {
 	});
 };
 
-export function handleClickOutside(this: Toggleable) {
+export const useCloseClickOutside: Toggler.Plugin = function () {
 	return useWindowListener('click', (event) => {
-		if (this.isClosed || isWithin(this.tuple, event.target)) return;
+		const { target } = event;
+		if (this.isClosed || !isHTMLElement(target) || this.isWithinElements(target)) return;
 		this.close(event);
 	});
-}
+};
 
-export function handleEscapeKey(this: Toggleable) {
+export const useCloseEscapeKey: Toggler.Plugin = function () {
 	return useWindowListener('keydown', (event) => {
-		if (this.isOpen && event.code === 'Escape') this.close(event);
-	});
-}
-
-export function handleFocusLeave(this: Toggleable, panel: HTMLElement) {
-	return useWindowListener('focusin', (event) => {
-		if (this.isClosed || event.target === window || event.target === document.body) return;
-		if (this.isFocusForced && !isWithin(panel, event.target)) return this.close(event);
-		if (isWithin(this.tuple, event.target)) return;
-
+		if (this.isClosed || event.code !== 'Escape') return;
 		this.close(event);
 	});
-}
+};
+
+export const useCloseFocusLeave: Toggler.Plugin = function (panel) {
+	return useWindowListener('focusin', (event) => {
+		const { target } = event;
+		if (this.isClosed || target === document || target === window || !isHTMLElement(target)) return;
+		if (this.isFocusForced.value && !isWithin(panel, target)) return this.close(event);
+		if (this.isWithinElements(target) || this.group?.isWithinElements(target)) return;
+		this.close(event);
+	});
+};
 
 export function useFocusTrap(this: Toggleable, panel: HTMLElement) {
 	const fallback = document.activeElement;

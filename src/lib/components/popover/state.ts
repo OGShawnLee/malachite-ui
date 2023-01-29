@@ -1,121 +1,96 @@
-import type { ActionComponent, ExtractContextKeys } from '$lib/types';
+import type { ComponentInitialiser, ExtractContextKeys, Toggler } from '$lib/types';
 import type { Readable } from 'svelte/store';
-import { GroupContext } from './Group.state';
-import { defineActionComponent, initIndexGenerator } from '$lib/core';
-import { Bridge, Toggleable } from '$lib/stores';
+import { Toggleable } from '$lib/stores';
+import { defineActionComponent, ElementBinder } from '$lib/core';
+import { useComponentNaming, useContext } from '$lib/hooks';
+import { isFunction, isInterface, isReadableRef } from '$lib/predicate';
+import { createReadableRef } from '$lib/utils';
 import {
-	handleClickOutside,
-	handleEscapeKey,
-	handleFocusLeave,
-	useHidePanelFocusOnClose
+	handleAriaControls,
+	handleAriaExpanded,
+	useCloseClickOutside,
+	useCloseEscapeKey,
+	useCloseFocusLeave
 } from '$lib/plugins';
-import { createStoreWrapper, generate, makeReadable } from '$lib/utils';
-import { useComponentNaming, useContext, useListener } from '$lib/hooks';
-import { isActionComponent, isFunction, isInterface, isStore } from '$lib/predicate';
-import { readable } from 'svelte/store';
-
-interface Configuration {
-	ForceFocus: Readable<boolean> | boolean;
-}
 
 interface Context {
-	Open: Readable<boolean>;
-	ShowOverlay: Readable<boolean>;
-	button: ActionComponent;
-	overlay: ActionComponent;
-	panel: ActionComponent;
-	close: Toggleable['close'];
+	isOpen: Readable<boolean>;
+	close: OmitThisParameter<Toggleable['close']>;
+	createPopoverButton: ComponentInitialiser<Readable<string | undefined>>;
+	createPopoverOverlay: ComponentInitialiser;
+	createPopoverPanel: ComponentInitialiser;
 }
 
 export type ContextKeys = ExtractContextKeys<Context>;
 
-const generateIndex = initIndexGenerator();
+export function createPopoverState(settings: Toggler.Settings) {
+	const button = new ElementBinder();
+	const panel = new ElementBinder();
+	const toggler = new Toggleable(settings);
+	const { nameChild } = useComponentNaming('popover');
 
-export function createPopover({ ForceFocus: uForceFocus }: Configuration) {
-	const ForceFocus = createStoreWrapper({ Store: uForceFocus, initialValue: false });
-	const Open = new Toggleable({ ForceFocus });
-	const ShowOverlay = readable(true, (set) =>
-		groupClient?.Mode.subscribe((mode) => set(mode === 'UNIQUE'))
-	);
-	const { nameChild } = useComponentNaming({ name: 'popover', index: generateIndex() });
-	const [Button, Overlay, Panel] = generate(3, () => new Bridge());
+	setContext({
+		isOpen: createReadableRef(toggler.isOpen),
+		close: toggler.close.bind(toggler),
+		createPopoverButton,
+		createPopoverOverlay,
+		createPopoverPanel
+	});
 
-	const groupClient = GroupContext.getContext(false)?.initClient(Open);
-
-	function createButton() {
+	function createPopoverButton(id: string | undefined) {
 		return defineActionComponent({
-			Bridge: Button,
-			onMount: nameChild('button'),
-			destroy: ({ element }) => [
-				Open.button(element, {
-					onChange(isOpen) {
-						element.ariaExpanded = String(isOpen);
-					}
-				}),
-				Panel.Name.subscribe((id) => {
-					if (id) element.setAttribute('aria-controls', id);
-					else element.removeAttribute('aria-controls');
-				}),
-				groupClient?.button(element)
-			]
-		});
-	}
-
-	function createOverlay() {
-		return defineActionComponent({
-			Bridge: Overlay,
-			onMount: nameChild('overlay'),
-			destroy: ({ element }) =>
-				useListener(element, 'click', (event) => {
-					if (event.target === element) Open.close();
+			binder: button,
+			id: id,
+			name: nameChild('button'),
+			onInit: () => panel.finalName,
+			onMount: ({ element }) =>
+				toggler.createButton(element, {
+					plugins: [handleAriaControls(panel), handleAriaExpanded]
 				})
 		});
 	}
 
-	function createPanel() {
+	function createPopoverOverlay(id: string | undefined) {
 		return defineActionComponent({
-			Bridge: Panel,
-			onMount: nameChild('panel'),
-			destroy: ({ element }) => [
-				Open.panel(element, {
-					plugins: [useHidePanelFocusOnClose],
-					handlers: groupClient ? [] : [handleClickOutside, handleEscapeKey, handleFocusLeave]
-				}),
-				groupClient?.panel(element)
-			]
+			id: id,
+			name: nameChild('overlay'),
+			isShowing: false,
+			onMount: ({ element }) => toggler.createOverlay(element)
 		});
 	}
 
-	setContext({
-		Open: makeReadable(Open),
-		ShowOverlay: ShowOverlay,
-		button: createButton(),
-		panel: createPanel(),
-		overlay: createOverlay(),
-		close: Open.close.bind(Open)
-	});
+	function createPopoverPanel(id: string | undefined) {
+		return defineActionComponent({
+			binder: panel,
+			id: id,
+			name: nameChild('panel'),
+			isShowing: false,
+			onMount: ({ element }) =>
+				toggler.createPanel(element, {
+					plugins: [useCloseClickOutside, useCloseEscapeKey, useCloseFocusLeave]
+				})
+		});
+	}
 
 	return {
-		Open: makeReadable(Open),
-		ForceFocus: ForceFocus,
-		ShowOverlay: ShowOverlay,
-		button: createButton(),
-		panel: createPanel(),
-		overlay: createOverlay(),
-		close: Open.close.bind(Open)
+		isFocusForced: toggler.isFocusForced,
+		isOpen: toggler.isOpen,
+		button: createPopoverButton('').action,
+		close: toggler.close.bind(toggler),
+		overlay: createPopoverOverlay('').action,
+		panel: createPopoverPanel('').action
 	};
 }
 
 const { getContext, setContext } = useContext({
 	component: 'popover',
-	predicate: (val): val is Context =>
-		isInterface<Context>(val, {
-			Open: isStore,
-			ShowOverlay: isStore,
-			button: isActionComponent,
-			overlay: isActionComponent,
-			panel: isActionComponent,
-			close: isFunction
+	predicate: (context): context is Context =>
+		isInterface<Context>(context, {
+			isOpen: isReadableRef,
+			close: isFunction,
+			createPopoverButton: isFunction,
+			createPopoverOverlay: isFunction,
+			createPopoverPanel: isFunction
 		})
 });
 

@@ -8,9 +8,9 @@ export {
 export {
 	handleAriaControls,
 	handleAriaExpanded,
-	handleClickOutside,
-	handleEscapeKey,
-	handleFocusLeave,
+	useCloseClickOutside,
+	useCloseEscapeKey,
+	useCloseFocusLeave,
 	useFocusTrap,
 	useHidePanelFocusOnClose
 } from './toggleable';

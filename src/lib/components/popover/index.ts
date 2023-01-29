@@ -1,4 +1,4 @@
-export { type ContextKeys, createPopover } from './state';
+export { type ContextKeys, createPopoverState } from './state';
 export { default as Popover } from './Popover.svelte';
 export { default as PopoverButton } from './Button.svelte';
 export { default as PopoverGroup } from './Group.svelte';
