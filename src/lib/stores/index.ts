@@ -1,6 +1,6 @@
 export * from './activable';
 export * from './Group';
-export * from './Hashable';
+export { default as Hashable } from './Hashable';
 export * from './navigable';
 export * from './notifiable';
 export * from './Ordered';

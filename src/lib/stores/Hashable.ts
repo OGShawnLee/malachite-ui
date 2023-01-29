@@ -1,85 +1,92 @@
-import type { Readable, Writable } from 'svelte/store';
-import { derived, writable } from 'svelte/store';
+import type { ReadableRef } from '$lib/types';
+import type { Unsubscriber } from 'svelte/store';
+import { createDerivedRef } from '$lib/utils';
+import { ref } from '$lib/utils';
 
-export class Hashable<K, V> {
-	protected readonly Hash: Writable<Map<K, V>>;
-	protected readonly hash: Map<K, V>;
+interface Settings {
+	entries?: boolean;
+	keys?: boolean;
+	values?: boolean;
+}
 
-	readonly Keys: Readable<K[]>;
-	readonly Entries: Readable<[K, V][]>;
-	readonly Values: Readable<V[]>;
-	readonly Size: Readable<number>;
-	constructor() {
-		this.hash = new Map();
-		this.Hash = writable(this.hash);
+export default class Hashable<K, V> {
+	readonly hash = ref(new Map<K, V>());
+	readonly entries: ReadableRef<[K, V][]>;
+	readonly keys: ReadableRef<K[]>;
+	readonly values: ReadableRef<V[]>;
 
-		this.Entries = derived(this.Hash, (hash) => Array.from(hash.entries()));
-		this.Keys = derived(this.Hash, (hash) => Array.from(hash.keys()));
-		this.Values = derived(this.Hash, (hash) => Array.from(hash.values()));
-		this.Size = derived(this.Hash, (hash) => hash.size);
+	constructor(watch?: Settings) {
+		this.entries = createDerivedRef(
+			this.hash,
+			(hash) => {
+				return [...hash.entries()];
+			},
+			watch?.entries
+		);
+		this.keys = createDerivedRef(
+			this.hash,
+			(hash) => {
+				return [...hash.keys()];
+			},
+			watch?.keys
+		);
+		this.values = createDerivedRef(
+			this.hash,
+			(hash) => {
+				return [...hash.values()];
+			},
+			watch?.values
+		);
 	}
 
 	get subscribe() {
-		return this.Hash.subscribe;
+		return this.hash.subscribe;
 	}
 
-	add(this: Hashable<K, V>, key: K, value: V) {
-		const duplicate = this.has(key);
-		if (duplicate) throw new Error('Unable to Add Item: Duplicate');
-
-		const index = this.hash.size;
-		this.Hash.update((hash) => hash.set(key, value));
-		return { index, value, destroy: this.destroy(key) };
+	get size() {
+		return this.hash.value.size;
 	}
 
 	clear(this: Hashable<K, V>) {
-		this.Hash.update((hash) => {
+		this.hash.update((hash) => {
 			return hash.clear(), hash;
 		});
 	}
 
 	delete(this: Hashable<K, V>, key: K) {
-		if (this.has(key)) {
-			this.Hash.update((hash) => (hash.delete(key), hash));
-			return true;
-		}
-
-		return false;
+		let isDeleted = this.has(key);
+		this.hash.update((hash) => {
+			return hash.delete(key), hash;
+		});
+		return isDeleted;
 	}
 
-	destroy(this: Hashable<K, V>, key: K) {
+	destroy(this: Hashable<K, V>, key: K): Unsubscriber {
 		return () => this.delete(key);
 	}
 
 	get(this: Hashable<K, V>, key: K) {
-		return this.hash.get(key);
+		return this.hash.value.get(key);
+	}
+
+	getSafe(this: Hashable<K, V>, key: K) {
+		if (this.has(key)) return this.get(key) as V;
+		throw new Error(`Unable to Get ${key}`);
 	}
 
 	has(this: Hashable<K, V>, key: K) {
-		return this.hash.has(key);
+		return this.hash.value.has(key);
 	}
 
-	push(this: Hashable<number, V>, value: V) {
-		const index = this.size;
-		return this.add(index, value);
+	set(this: Hashable<K, V>, key: K, value: V) {
+		this.hash.update((hash) => hash.set(key, value));
+		return this.hash.value.size;
 	}
 
-	set(key: K, value: V) {
-		this.Hash.update((hash) => {
-			return hash.set(key, value);
+	update(this: Hashable<K, V>, key: K, callback: (value: V) => V) {
+		this.hash.update((hash) => {
+			const value = hash.get(key);
+			return value ? hash.set(key, callback(value)) : hash;
 		});
-	}
-
-	get size() {
-		return this.hash.size;
-	}
-
-	update(this: Hashable<K, V>, key: K, callback: (item: V) => V) {
-		if (this.has(key)) {
-			this.Hash.update((hash) => {
-				const item = hash.get(key);
-				return item ? hash.set(key, callback(item)) : hash;
-			});
-		} else throw new Error('Unable to Update Item: Not Found');
 	}
 }
