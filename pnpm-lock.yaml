@@ -9,6 +9,7 @@ specifiers:
   '@vitest/coverage-c8': ^0.28.3
   c8: ^7.12.0
   jsdom: ^21.1.0
+  nanoid: ^4.0.0
   prettier: ^2.8.3
   prettier-plugin-svelte: ^2.9.0
   standard-version: ^9.5.0
@@ -30,6 +31,7 @@ devDependencies:
   '@vitest/coverage-c8': 0.28.3_jsdom@21.1.0
   c8: 7.12.0
   jsdom: 21.1.0
+  nanoid: 4.0.0
   prettier: 2.8.3
   prettier-plugin-svelte: 2.9.0_kdmmghgdi3ngrsq6otxkjilbry
   standard-version: 9.5.0
@@ -2382,6 +2384,12 @@ packages:
   /nanoid/3.3.4:
     resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+    dev: true
+
+  /nanoid/4.0.0:
+    resolution: {integrity: sha512-IgBP8piMxe/gf73RTQx7hmnhwz0aaEXYakvqZyE302IXW3HyVNhdNGC+O2MwMAVhLEnvXlvKtGbtJf6wvHihCg==}
+    engines: {node: ^14 || ^16 || >=18}
     hasBin: true
     dev: true
 
