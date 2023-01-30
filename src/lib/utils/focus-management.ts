@@ -3,29 +3,23 @@ import { useDOMTraversal, useListener } from '$lib/hooks';
 import { isFocusable, isWithin } from '$lib/predicate';
 import { findElement } from '$lib/utils';
 
-export function focusFirstElement(
+export function focusFirstChildElement(
 	container: HTMLElement,
 	options: {
 		fallback?: Nullable<HTMLElement>;
 		initialFocus?: Nullable<HTMLElement>;
-		predicate?: (child: HTMLElement) => boolean;
+		isValidTarget?: (child: HTMLElement) => unknown;
 	} = {}
 ) {
-	const { fallback, initialFocus, predicate } = options;
-
-	if (initialFocus && isWithin(container, initialFocus)) {
-		if (predicate && predicate(initialFocus)) return initialFocus.focus();
-		return initialFocus.focus();
-	}
-
-	const callback = predicate
-		? (node: HTMLElement) => isFocusable(node) && predicate(node)
+	const { fallback, initialFocus, isValidTarget } = options;
+	const isValidFocusElement = isValidTarget
+		? (element: HTMLElement) => isFocusable(element) && isValidTarget(element)
 		: isFocusable;
-	const first = findElement(container, callback);
-	if (first) return first.focus();
-	if (fallback && callback(fallback)) {
-		fallback.focus();
-	}
+	if (initialFocus && isWithin(container, initialFocus) && isValidFocusElement(initialFocus))
+		return initialFocus.focus();
+
+	const child = findElement(container, isValidFocusElement);
+	child ? child.focus() : fallback?.focus();
 }
 
 export function getFocusableElements(container: Element, callback?: (child: Element) => unknown) {
