@@ -2,6 +2,7 @@ export * from './core';
 export {
 	hasTagName,
 	isChildless,
+	isClient,
 	isDisabled,
 	isFocusable,
 	isHTMLElement,
