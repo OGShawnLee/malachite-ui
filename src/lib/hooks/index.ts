@@ -5,7 +5,7 @@ export { default as useCollector } from './useCollector';
 export * from './useComponentNaming';
 export * from './useContext';
 export * from './useDataSync';
-export * from './useDOMTraversal';
+export { default as useDOMTraversal } from './useDOMTraversal';
 export * from './useFocusOutside';
 export { default as useListener } from './useListener';
 export { default as usePair } from './usePair';

@@ -1,17 +1,14 @@
-import { traverse } from '$lib/utils';
+import { isChildless } from '$lib/predicate';
 
-export function useDOMTraversal(
-	container: Element,
-	predicate?: (element: Element, elements: Element[]) => unknown
+export default function useDOMTraversal(
+	container: HTMLElement,
+	isValidElement: (element: HTMLElement) => unknown
 ) {
-	if (predicate) {
-		const elements: Element[] = [];
-		for (const element of traverse(container)) {
-			if (predicate(element, elements)) elements.push(element);
-		}
-
-		return elements;
+	if (isChildless(container)) return isValidElement(container) ? [container] : [];
+	const children: HTMLElement[] = [];
+	if (isValidElement(container)) children.push(container);
+	for (const child of container.children) {
+		if (child instanceof HTMLElement) children.push(...useDOMTraversal(child, isValidElement));
 	}
-
-	return Array.from(traverse(container));
+	return children;
 }
