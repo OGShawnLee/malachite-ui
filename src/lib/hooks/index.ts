@@ -7,7 +7,7 @@ export * from './useContext';
 export * from './useDataSync';
 export * from './useDOMTraversal';
 export * from './useFocusOutside';
-export * from './useListener';
+export { default as useListener } from './useListener';
 export { default as usePair } from './usePair';
 export * from './useValidator';
 export * from './useWindowListener';
