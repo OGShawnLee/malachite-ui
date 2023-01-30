@@ -1,6 +1,7 @@
 export * from './core';
 export {
 	hasTagName,
+	isChildless,
 	isDisabled,
 	isFocusable,
 	isHTMLElement,

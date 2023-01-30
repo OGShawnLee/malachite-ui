@@ -36,6 +36,10 @@ export function hasTagName<T extends keyof HTMLElementTagNameMap>(
 	return element.tagName === tag.toUpperCase();
 }
 
+export function isChildless(container: HTMLElement) {
+	return !container.hasChildNodes();
+}
+
 export function isDisabled(element: HTMLElement | EventTarget) {
 	return (
 		isHTMLElement(element) &&
