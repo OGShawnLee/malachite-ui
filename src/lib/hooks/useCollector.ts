@@ -1,12 +1,13 @@
 import type { Collectable } from '$lib/types';
+import type { Unsubscriber } from 'svelte/store';
 import { destroy } from '$lib/utils';
 
-export function useCollector(options: {
+export default function useCollector(options: {
 	afterInit?: () => Collectable;
 	beforeInit?: () => Collectable;
 	init: () => Collectable;
 	beforeCollection?: () => void;
-}) {
+}): Unsubscriber {
 	const { afterInit, beforeCollection, beforeInit, init } = options;
 	const collectable: Collectable[] = [];
 
@@ -15,7 +16,7 @@ export function useCollector(options: {
 	const after = afterInit?.();
 
 	collectable.push(before, toCollect, after);
-	return async () => {
+	return () => {
 		beforeCollection?.();
 		destroy(collectable);
 	};

@@ -1,7 +1,7 @@
 export { default as useClassNameResolver } from './useClassNameResolver';
 export * from './useCleanup';
 export * from './useClickOutside';
-export * from './useCollector';
+export { default as useCollector } from './useCollector';
 export * from './useComponentNaming';
 export * from './useContext';
 export * from './useDataSync';
