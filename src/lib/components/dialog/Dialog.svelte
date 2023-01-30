@@ -1,50 +1,63 @@
 <script lang="ts">
-  import Dialog from './state';
-  import { Render, Portal } from '$lib/components';
-  import type { Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { storable } from '$lib/stores';
-  import { isNotStore } from '$lib/predicate';
+	import type { Action, ComponentTagName, Nullable } from "$lib/types";
+	import { Render } from "$lib/components";
+	import { createDialogState } from "./state";
+	import { ref } from "$lib/utils";
+	import { isClient } from "$lib/predicate";
 
-  export let open = false;
-  export let initialFocus: Nullable<HTMLElement> = undefined;
+	let className: string | undefined = undefined;
 
-  const InitialFocus = storable({ Store: initialFocus, initialValue: undefined });
-  $: InitialFocus.sync({ previous: $InitialFocus, value: initialFocus });
+	export let as: ComponentTagName = "div";
+	export let element: HTMLElement | undefined = undefined;
+	export let initialFocus: Nullable<HTMLElement> = undefined;
+	export let open = false;
+	export let id: string | undefined = undefined;
+	export let use: Action[] | undefined = undefined;
+	export { className as class };
 
-  const State = new Dialog({
-    Store: open,
-    initialValue: false,
-    notifier: (newValue) => isNotStore(open) && (open = newValue),
-    initialFocus: $InitialFocus
-  });
+	const initialFocusRef = ref(initialFocus);
+	const { isOpen, content, close, createDialogRoot, overlay } = createDialogState(
+		open,
+		initialFocusRef
+	);
+	const { action, binder } = createDialogRoot(id);
 
-  const { overlay, dialog, content, title, description, close } = State;
-
-  $: State.sync({ previous: $State, value: open });
-  $: State.initialFocus = $InitialFocus;
-
-  let className: Nullable<string> = undefined;
-
-  export { className as class };
-  export let as: RenderElementTagName = 'div';
-  export let element: HTMLElement | undefined = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
-
-  let finalUse: Forwarder.Actions;
-  $: finalUse = [...use, [dialog.action]];
+	$: actions = use ? [action, ...use] : [action];
+	$: isOpen.set(open);
+	$: open = $isOpen;
+	$: initialFocusRef.set(initialFocus);
 </script>
 
-{#if $State}
-  <Portal id="malachite-portal-root">
-    <Render {as} bind:element class={className} {...$$restProps} use={finalUse}>
-      <slot
-        overlay={overlay.action}
-        dialog={dialog.action}
-        content={content.action}
-        title={title.action}
-        description={description.action}
-        {close}
-      />
-    </Render>
-  </Portal>
+{#if $isOpen && isClient()}
+	<Render
+		{as}
+    class={className}
+    {id}
+		{...$$restProps}
+		bind:element
+		{binder}
+		{actions}
+		on:blur
+		on:change
+		on:click
+		on:contextmenu
+		on:dblclick
+		on:focus
+		on:focusin
+		on:focusout
+		on:input
+		on:keydown
+		on:keypress
+		on:keyup
+		on:mousedown
+		on:mouseenter
+		on:mouseleave
+		on:mousemove
+		on:mouseout
+		on:mouseover
+		on:mouseup
+		on:mousewheel
+	>
+		<slot dialog={action} {content} {close} {overlay} />
+	</Render>
 {/if}

@@ -28,6 +28,10 @@ interface ComponentInitialiser<T = void> {
 	(id: string | undefined): ActionComponent<T>;
 }
 
+interface ComponentInitialiserStrict<T = void> {
+	(id: string | undefined, binder: ElementBinder): ActionComponent<T>;
+}
+
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
 export type ExtractContext<C, K extends keyof C> = OmitAllThisParameter<Pick<C, K>>;

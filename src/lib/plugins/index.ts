@@ -12,5 +12,6 @@ export {
 	useCloseEscapeKey,
 	useCloseFocusLeave,
 	useFocusTrap,
-	useHidePanelFocusOnClose
+	useHidePanelFocusOnClose,
+	usePreventTabbing
 } from './toggleable';

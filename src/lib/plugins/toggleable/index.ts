@@ -1,9 +1,9 @@
 import type { Toggleable } from '$lib/stores';
 import type { Nullable, Toggler } from '$lib/types';
 import type { ElementBinder } from '$lib/core';
-import { useWindowListener } from '$lib/hooks';
-import { isEmpty, isHTMLElement, isWithin } from '$lib/predicate';
-import { getFirstAndLast, getFocusableElements } from '$lib/utils';
+import { useDOMTraversal, useListener, useWindowListener } from '$lib/hooks';
+import { isEmpty, isFocusable, isHTMLElement, isWithin } from '$lib/predicate';
+import { getFocusableElements } from '$lib/utils';
 
 export function handleAriaControls(panel: ElementBinder): Toggler.Plugin {
 	return function (element) {
@@ -45,29 +45,33 @@ export const useCloseFocusLeave: Toggler.Plugin = function (panel) {
 	});
 };
 
-export function useFocusTrap(this: Toggleable, panel: HTMLElement) {
-	const fallback = document.activeElement;
-	const children = getFocusableElements(panel);
+export function useFocusTrap(fallback?: Nullable<Element>): Toggler.Plugin {
+	return function (panel: HTMLElement) {
+		return useWindowListener('keydown', (event) => {
+			if (this.isClosed) return;
+			const children = useDOMTraversal(panel, isFocusable);
+			const first = children.at(0);
+			const last = children.at(-1);
 
-	const handleFocus = (event: Event, target: Nullable<EventTarget | HTMLElement>) => {
-		event.preventDefault();
-		if (isHTMLElement(target)) target.focus();
+			if (event.code !== 'Tab') return;
+			if (isEmpty(children) && isHTMLElement(fallback) && isFocusable(fallback)) {
+				event.preventDefault();
+				return fallback.focus();
+			}
+
+			if (event.shiftKey) {
+				if (first && first === document.activeElement) {
+					event.preventDefault();
+					last?.focus();
+				}
+			} else {
+				if (last && last === document.activeElement) {
+					event.preventDefault();
+					first?.focus();
+				}
+			}
+		});
 	};
-
-	return useWindowListener('keydown', (event) => {
-		if (event.code !== 'Tab' || !this.isOpen) return;
-
-		const active = document.activeElement;
-		const [first, last] = getFirstAndLast(children);
-
-		if (!isWithin(panel, event.target)) return handleFocus(event, first ?? fallback);
-
-		if ((isEmpty(children) && !fallback) || children.length === 1) return event.preventDefault();
-		if (isEmpty(children)) return handleFocus(event, fallback);
-
-		if (active === first && event.shiftKey) return handleFocus(event, last);
-		if (active === last && !event.shiftKey) return handleFocus(event, first);
-	});
 }
 
 /** Prevents tabbing inside the panel during a leaving transition */
@@ -78,5 +82,11 @@ export function useHidePanelFocusOnClose(this: Toggleable, panel: HTMLElement) {
 		if (isOpen) {
 			children.forEach((child, index) => (child.tabIndex = tabIndexes[index]));
 		} else children.forEach((child) => (child.tabIndex = -1));
+	});
+}
+
+export function usePreventTabbing(panel: HTMLElement) {
+	return useListener(panel, 'keydown', (event) => {
+		if (event.code === 'Tab') event.preventDefault();
 	});
 }

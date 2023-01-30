@@ -3,18 +3,16 @@ import { isHTMLElement } from '$lib/predicate';
 import { tick } from 'svelte';
 
 export function findElement(
-	container: Document | HTMLElement,
-	predicate: (node: HTMLElement) => unknown
+	container: HTMLElement,
+	isTargetElement: (child: HTMLElement) => unknown
 ): HTMLElement | undefined {
 	if (!container.hasChildNodes) return;
-
-	const children = Array.from(container.children);
+	const children = container.children;
 	for (const child of children) {
-		if (isHTMLElement(child)) {
-			if (predicate(child)) return child;
-			const match = findElement(child, predicate);
-			if (match) return match;
-		}
+		if (!isHTMLElement(child)) continue;
+		if (isTargetElement(child)) return child;
+		const element = findElement(child, isTargetElement);
+		if (element) return element;
 	}
 }
 

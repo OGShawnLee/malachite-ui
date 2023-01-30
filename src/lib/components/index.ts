@@ -1,5 +1,5 @@
 export * from './accordion';
-export * from './dialog';
+export { Dialog, DialogContent, DialogDescription, DialogOverlay, DialogTitle } from './dialog';
 export { Disclosure, DisclosureButton, DisclosurePanel, createDisclosureState } from './disclosure';
 export { Navigable, NavigableItem, createNavigable } from './navigable';
 export * from './menu';

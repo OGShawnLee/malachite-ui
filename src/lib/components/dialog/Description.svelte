@@ -1,22 +1,51 @@
 <script lang="ts">
-  import { Context } from './state';
-  import { Render } from '$lib/components';
-  import type { Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { Bridge } from '$lib/stores';
+	import type { Action, ComponentTagName } from "$lib/types";
+	import Context from "./context";
+	import { Render } from "$lib/components";
+	import { ElementBinder } from "$lib/core";
 
-  const { action, Proxy } = Context.getContext().initDescription({ Description: new Bridge() });
+	let className: string | undefined = undefined;
 
-  let className: Nullable<string> = undefined;
+	export let as: ComponentTagName = "span";
+	export let element: HTMLElement | undefined = undefined;
+	export let id: string | undefined = undefined;
+	export let use: Action[] | undefined = undefined;
+	export { className as class };
 
-  export { className as class };
-  export let as: RenderElementTagName = 'p';
-  export let element: HTMLElement | undefined = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
+	const { createDialogDescription } = Context.getContext();
+	const { binder, action } = createDialogDescription(id, new ElementBinder());
 
-  let finalUse: Forwarder.Actions;
-  $: finalUse = [...use, [action]];
+	$: actions = use ? [action, ...use] : [action];
 </script>
 
-<Render {as} bind:element {Proxy} class={className} {...$$restProps} use={finalUse}>
-  <slot description={action} />
+<Render
+	{as}
+	class={className}
+	{id}
+	{...$$restProps}
+	bind:element
+	{binder}
+	{actions}
+	on:blur
+	on:change
+	on:click
+	on:contextmenu
+	on:dblclick
+	on:focus
+	on:focusin
+	on:focusout
+	on:input
+	on:keydown
+	on:keypress
+	on:keyup
+	on:mousedown
+	on:mouseenter
+	on:mouseleave
+	on:mousemove
+	on:mouseout
+	on:mouseover
+	on:mouseup
+	on:mousewheel
+>
+	<slot description={action} />
 </Render>

@@ -1,20 +1,37 @@
-export * from './components/accordion';
-export * from './components/dialog';
 export {
+	Accordion,
+	AccordionButton,
+	AccordionHeader,
+	AccordionItem,
+	AccordionPanel,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogOverlay,
+	DialogTitle,
 	Disclosure,
 	DisclosureButton,
 	DisclosurePanel,
-	createDisclosureState
-} from './components/disclosure';
-export * from './components/menu';
-export { Navigable, NavigableItem, createNavigable } from './components/navigable';
-export {
+	Menu,
+	MenuButton,
+	MenuItem,
+	MenuItems,
+	Navigable,
+	NavigableItem,
 	Popover,
 	PopoverButton,
 	PopoverGroup,
 	PopoverOverlay,
 	PopoverPanel,
-	createPopoverState
-} from './components/popover';
-export * from './components/switch';
-export * from './components/tabs';
+	Portal,
+	Render,
+	Switch,
+	SwitchDescription,
+	SwitchGroup,
+	SwitchLabel,
+	Tab,
+	TabGroup,
+	TabList,
+	TabPanel,
+	TabPanels
+} from '$lib/components';
