@@ -1,9 +1,10 @@
-import type { Toggleable } from '$lib/stores';
+import type { Navigable, Toggleable } from '$lib/stores';
 import type { Nullable, Toggler } from '$lib/types';
 import type { ElementBinder } from '$lib/core';
 import { useDOMTraversal, useListener, useWindowListener } from '$lib/hooks';
-import { isEmpty, isFocusable, isHTMLElement, isWithin } from '$lib/predicate';
+import { isEmpty, isFocusable, isHTMLElement, isNavigationKey, isWithin } from '$lib/predicate';
 import { getFocusableElements } from '$lib/utils';
+import { tick } from 'svelte';
 
 export function handleAriaControls(panel: ElementBinder): Toggler.Plugin {
 	return function (element) {
@@ -19,6 +20,15 @@ export const handleAriaExpanded: Toggler.Plugin = function (element) {
 		element.ariaExpanded = '' + isOpen;
 	});
 };
+
+export function handleAriaLabelledby(button: ElementBinder): Toggler.Plugin {
+	return function (element) {
+		return button.finalName.subscribe((name) => {
+			if (name) element.setAttribute('aria-labelledby', name);
+			else element.removeAttribute('aria-labelledby');
+		});
+	};
+}
 
 export const useCloseClickOutside: Toggler.Plugin = function () {
 	return useWindowListener('click', (event) => {
@@ -83,6 +93,28 @@ export function useHidePanelFocusOnClose(this: Toggleable, panel: HTMLElement) {
 			children.forEach((child, index) => (child.tabIndex = tabIndexes[index]));
 		} else children.forEach((child) => (child.tabIndex = -1));
 	});
+}
+
+export function useNavigationStarter(navigation: Navigable): Toggler.Plugin {
+	return function (button) {
+		return useListener(button, 'keydown', async (event) => {
+			if (!isNavigationKey(event.code)) return;
+			switch (event.code) {
+				case 'ArrowDown':
+					if (navigation.isVertical.value) {
+						this.open();
+						await tick();
+						return navigation.goFirst();
+					}
+				case 'ArrowUp':
+					if (navigation.isVertical.value) {
+						this.open();
+						await tick();
+						return navigation.goLast();
+					}
+			}
+		});
+	};
 }
 
 export function usePreventTabbing(panel: HTMLElement) {

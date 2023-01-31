@@ -1,242 +1,134 @@
-import type { Readable } from 'svelte/store';
-import type { ActionComponent, Navigable as Nav } from '$lib/types';
-import { defineActionComponent, initIndexGenerator } from '$lib/core';
+import type { ComponentInitialiser, ComponentInitialiserStrict, Navigation } from '$lib/types';
+import { Navigable, Toggleable } from '$lib/stores';
+import { ElementBinder, defineActionComponent } from '$lib/core';
 import { useComponentNaming, useContext, useListener } from '$lib/hooks';
-import { Bridge, Navigable, Ordered, Toggleable } from '$lib/stores';
 import {
-	handleClickOutside,
-	handleEscapeKey,
-	handleFocusLeave,
-	useActiveHover,
+	handleAriaControls,
+	handleAriaExpanded,
+	handleAriaLabelledby,
+	handleAriaOrientation,
+	useCloseClickOutside,
+	useCloseEscapeKey,
+	useCloseFocusLeave,
+	useHoverMove,
+	usePreventTabbing,
 	useKeyMatch,
-	useHidePanelFocusOnClose
+	useNavigationStarter
 } from '$lib/plugins';
-import { createStoreWrapper, generate, makeReadable, ref } from '$lib/utils';
-import {
-	isActionComponent,
-	isDisabled,
-	isFunction,
-	isInterface,
-	isNavigationKey,
-	isStore
-} from '$lib/predicate';
-import { writable } from 'svelte/store';
+import { isDisabled, isFunction, isInterface, isStore } from '$lib/predicate';
+import type { Readable } from 'svelte/store';
 
-interface Configuration {
-	Finite: boolean | Readable<boolean>;
-	ShouldOrder: boolean | Readable<boolean>;
-	Vertical: boolean | Readable<boolean>;
-}
+export function createMenuState(settings: Navigation.Settings) {
+	const button = new ElementBinder();
+	const navigation = new Navigable(settings);
+	const panel = new ElementBinder();
+	const toggler = new Toggleable();
+	const { nameChild } = useComponentNaming('menu');
 
-interface Context {
-	Open: Readable<boolean>;
-	button: ActionComponent;
-	items: ActionComponent;
-	initItem: (Item: Bridge) => ActionComponent;
-	close: OmitThisParameter<Toggleable['close']>;
-}
-
-const generateIndex = initIndexGenerator();
-
-export function createMenu({
-	Finite: uFinite,
-	ShouldOrder: uOrder,
-	Vertical: uVertical
-}: Configuration) {
-	const Open = new Toggleable();
-	const Finite = createStoreWrapper({ Store: uFinite, initialValue: false });
-	const Vertical = createStoreWrapper({ Store: uVertical, initialValue: true });
-	const Order = createStoreWrapper({ Store: uOrder, initialValue: false });
-	const Items = new Ordered<Nav.Member>(Order);
-	const Navigation = new Navigable({
-		Finite: Finite,
-		Ordered: Items,
-		Vertical: Vertical,
-		ShouldWait: true,
-		shouldFocus: false
+	setContext({
+		isOpen: toggler.isOpen,
+		createMenuButton,
+		createMenuItem,
+		createMenuPanel
 	});
-	const [Button, Panel] = generate(2, () => new Bridge());
-	const { nameChild } = useComponentNaming({ name: 'menu', index: generateIndex() });
 
-	function createButton() {
-		const isVertical = ref(true, Vertical);
+	function createMenuButton(id: string | undefined) {
 		return defineActionComponent({
-			Bridge: Button,
+			id: id,
+			binder: button,
+			name: nameChild('button'),
 			onMount: ({ element }) => {
-				element.ariaHasPopup = 'true';
-				return nameChild('button');
-			},
-			destroy: ({ element }) => [
-				isVertical.listen(),
-				Open.button(element, {
-					onChange(isOpen) {
-						element.ariaExpanded = String(isOpen);
-					}
-				}),
-				useListener(element, 'keydown', (event) => {
-					if (!isNavigationKey(event.code)) return;
-					switch (event.code) {
-						case 'ArrowDown':
-							event.preventDefault();
-							if (!isVertical.value) return;
-							Navigation.startAt = event.ctrlKey ? 'LAST' : 'FIRST';
-							return Open.open();
-						case 'ArrowRight':
-							event.preventDefault();
-							if (isVertical.value) return;
-							Navigation.startAt = event.ctrlKey ? 'LAST' : 'FIRST';
-							return Open.open();
-						case 'ArrowUp':
-							event.preventDefault();
-							if (!isVertical.value) return;
-							Navigation.startAt = event.ctrlKey ? 'FIRST' : 'LAST';
-							return Open.open();
-						case 'ArrowLeft':
-							event.preventDefault();
-							if (isVertical.value) return;
-							Navigation.startAt = event.ctrlKey ? 'FIRST' : 'LAST';
-							return Open.open();
-						case 'Enter':
-						case 'Space':
-							Navigation.startAt = 'FIRST';
-							return Open.isClosed && Open.open();
-					}
-				}),
-				Panel.Name.subscribe((id) => {
-					if (id) element.setAttribute('aria-controls', id);
-					else element.removeAttribute('aria-controls');
-				})
-			]
-		});
-	}
-
-	function createItems() {
-		return defineActionComponent({
-			Bridge: Panel,
-			onMount: ({ element }) => {
-				element.setAttribute('role', 'menu');
-				return nameChild('items');
-			},
-			destroy: ({ element }) => [
-				Open.panel(element, {
-					isFocusable: true,
-					plugins: [useHidePanelFocusOnClose],
-					handlers: [handleClickOutside, handleEscapeKey, handleFocusLeave],
-					onOpen: () => element.focus()
-				}),
-				Navigation.initNavigation(element, {
-					plugins: [useActiveHover, useKeyMatch],
-					preventTabbing: true,
-					onClose() {
-						this.Waiting.set(true);
-						this.hardSet(0, false);
-						this.startAt = 'AUTO';
-					}
-				}),
-				Navigation.initNavigationHandler({
-					parent: element,
-					callback({ event, code, ctrlKey }) {
-						switch (code) {
-							case 'ArrowDown':
-							case 'ArrowRight':
-								event.preventDefault();
-								return this.handleNextKey(code, ctrlKey);
-							case 'ArrowLeft':
-							case 'ArrowUp':
-								event.preventDefault();
-								return this.handleBackKey(code, ctrlKey);
-							case 'End':
-								event.preventDefault();
-								return this.goLast();
-							case 'Home':
-								event.preventDefault();
-								return this.goFirst();
-							case 'Enter':
-							case 'Space':
-								event?.preventDefault();
-								this.activeElement?.click();
-						}
-					}
-				}),
-				Navigation.Active.subscribe((active) => {
-					if (!active || (active[0] && !active[0].id))
-						return element.removeAttribute('aria-activedescendant');
-
-					const [{ id }] = active;
-					element.setAttribute('aria-activedescendant', id);
-				}),
-				Navigation.listenSelected(),
-				Navigation.Vertical.subscribe((isVertical) => {
-					element.ariaOrientation = isVertical ? 'vertical' : 'horizontal';
-				}),
-				Button.Name.subscribe((id) => {
-					if (id) element.setAttribute('aria-labelledby', id);
-					else element.removeAttribute('aria-labelledby');
-				})
-			]
-		});
-	}
-
-	function initItem(Item: Bridge) {
-		return defineActionComponent({
-			Bridge: Item,
-			onMount: ({ element }) => {
-				element.tabIndex = -1;
-				element.setAttribute('role', 'menuitem');
-				return nameChild('item', Items.size);
-			},
-			destroy: ({ element }) => {
-				const Index = writable(Items.size);
 				return [
-					Navigation.initItem(element, {
-						Bridge: Item,
-						Value: { Index },
-						focusOnSelection: false
+					toggler.createButton(element, {
+						plugins: [
+							useNavigationStarter(navigation),
+							handleAriaControls(panel),
+							handleAriaExpanded
+						]
 					}),
-					Index.subscribe((index) => {
-						Item.name = nameChild('item', index);
+				];
+			}
+		});
+	}
+
+	function createMenuPanel(id: string | undefined) {
+		return defineActionComponent({
+			binder: panel,
+			id: id,
+			name: nameChild('items'),
+			isShowing: false,
+			onMount: ({ element }) => {
+				element.role = 'menu';
+				element.tabIndex = 0;
+				return [
+					navigation.initNavigation(element, {
+						plugins: [handleAriaOrientation, useHoverMove, usePreventTabbing, useKeyMatch]
 					}),
-					useListener(element, 'click', (event) => {
-						if (event.defaultPrevented) return;
-						if (isDisabled(element)) {
-							event.stopImmediatePropagation();
-							event.preventDefault();
-						} else Open.close(event);
+					toggler.createPanel(element, {
+						plugins: [
+							handleAriaLabelledby(button),
+							useCloseClickOutside,
+							useCloseEscapeKey,
+							useCloseFocusLeave
+						],
+						onOpen: () => element.focus()
+					}),
+					navigation.active.subscribe((item) => {
+						const name = item?.binder.finalName.value;
+						if (name) element.setAttribute('aria-activedescendant', name);
+						else element.removeAttribute('aria-activedescendant');
 					})
 				];
 			}
 		});
 	}
 
-	setContext({
-		Open: makeReadable(Open),
-		button: createButton(),
-		items: createItems(),
-		initItem: initItem,
-		close: Open.close.bind(Open)
-	});
+	function createMenuItem(id: string | undefined, binder: ElementBinder) {
+		return defineActionComponent({
+			binder: binder,
+			id: id,
+			name: nameChild('item'),
+			onInit: ({ binder, name }) => {
+				navigation.onInitItem(name, binder, {});
+			},
+			onMount: ({ element, name }) => {
+				element.role = 'menuitem';
+				element.tabIndex = -1;
+				return [
+					navigation.initItem(element, name),
+					useListener(element, 'click', () => {
+						if (isDisabled(element)) return;
+						toggler.close();
+						element.click();
+					})
+				];
+			}
+		});
+	}
 
 	return {
-		Open: makeReadable(Open),
-		Finite: Finite,
-		Vertical: Vertical,
-		ShouldOrder: Order,
-		button: createButton(),
-		items: createItems(),
-		initItem: initItem,
-		close: Open.close.bind(Open)
+		isOpen: toggler.isOpen,
+		navigation,
+		button: createMenuButton('').action,
+		panel: createMenuPanel('').action
 	};
+}
+
+interface Context {
+	isOpen: Readable<boolean>;
+	createMenuButton: ComponentInitialiser;
+	createMenuPanel: ComponentInitialiser;
+	createMenuItem: ComponentInitialiserStrict;
 }
 
 const { getContext, setContext } = useContext({
 	component: 'menu',
-	predicate: (val): val is Context =>
-		isInterface<Context>(val, {
-			Open: isStore,
-			button: isActionComponent,
-			items: isActionComponent,
-			initItem: isFunction,
-			close: isFunction
+	predicate: (context): context is Context =>
+		isInterface<Context>(context, {
+			isOpen: isStore,
+			createMenuButton: isFunction,
+			createMenuItem: isFunction,
+			createMenuPanel: isFunction
 		})
 });
 

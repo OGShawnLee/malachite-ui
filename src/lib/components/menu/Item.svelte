@@ -1,38 +1,63 @@
 <script lang="ts">
-  import { getContext } from './state';
-  import { Render } from '$lib/components';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { Bridge } from '$lib/stores';
-  import { useClassNameResolver } from '$lib/hooks';
+	import type { Action, ClassName, ComponentTagName, Nullable } from "$lib/types";
+	import { getContext } from "./state";
+	import { Render } from "$lib/components";
+	import { useClassNameResolver } from "$lib/hooks";
+	import { ElementBinder } from "$lib/core";
 
-  const { initItem } = getContext();
-  const { Proxy, action } = initItem(new Bridge());
-  const { Selected } = Proxy;
+	let className: ClassName<"ACTIVE" | "DISABLED"> = undefined;
 
-  let className: ClassName<'isDisabled' | 'isSelected'> = undefined;
+	export let as: ComponentTagName = "button";
+	export let disabled: Nullable<boolean> = undefined;
+	export let element: HTMLElement | undefined = undefined;
+	export let id: string | undefined = undefined;
+	export let value = "";
+	export let use: Action[] | undefined = undefined;
+	export { className as class };
 
-  export { className as class };
-  export let as: RenderElementTagName = 'li';
-  export let disabled: Nullable<boolean> = undefined;
-  export let element: HTMLElement | undefined = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
+	const { createMenuItem } = getContext();
+	const { action, binder } = createMenuItem(value, new ElementBinder());
+	const { isActive } = binder;
 
-  let finalUse: Forwarder.Actions;
-  $: finalUse = [...use, [action]];
-
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isDisabled, isSelected: $Selected });
+	$: finalUse = use ? [action, ...use] : [action];
+	$: isDisabled = disabled ?? false;
+	$: finalClassName = useClassNameResolver(className)({
+		isDisabled,
+		isActive: $isActive
+	});
 </script>
 
 <Render
-  {as}
-  {Proxy}
-  bind:element
-  {disabled}
-  class={finalClassName}
-  use={finalUse}
-  {...$$restProps}
-  on:click
+	{as}
+	class={finalClassName}
+	{id}
+	{...$$restProps}
+	bind:element
+	{binder}
+	actions={finalUse}
+	{disabled}
+	role="menuitem"
+	tabIndex={-1}
+	on:blur
+	on:change
+	on:click
+	on:contextmenu
+	on:dblclick
+	on:focus
+	on:focusin
+	on:focusout
+	on:input
+	on:keydown
+	on:keypress
+	on:keyup
+	on:mousedown
+	on:mouseenter
+	on:mouseleave
+	on:mousemove
+	on:mouseout
+	on:mouseover
+	on:mouseup
+	on:mousewheel
 >
-  <slot {isDisabled} isSelected={$Selected} item={action} />
+	<slot {isDisabled} isActive={$isActive} item={action} />
 </Render>

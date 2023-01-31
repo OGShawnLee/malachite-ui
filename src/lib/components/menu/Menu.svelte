@@ -1,45 +1,62 @@
 <script lang="ts">
-  import { createMenu } from './state';
-  import { Render } from '$lib/components';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { useClassNameResolver } from '$lib/hooks';
-  import { createStoreWrapper } from '$lib/utils';
+	import type { Action, ComponentTagName } from "$lib/types";
+	import { Render } from "$lib/components";
+	import { createMenuState } from "./state";
 
-  export let order = false;
-  export let horizontal  = false;
-  export let finite = false;
+	let className: string | undefined = undefined;
 
-  const Horizontal = createStoreWrapper({ Store: horizontal, initialValue: false });
+	export let as: ComponentTagName = "div";
+	export let element: HTMLElement | undefined = undefined;
+	export let horizontal = false;
+	export let infinite = false;
+	export let id: string | undefined = undefined;
+	export let use: Action[] | undefined = undefined;
+	export { className as class };
 
-  const { Open, Finite, ShouldOrder, Vertical, button, items } = createMenu({
-    Finite: finite,
-    ShouldOrder: order,
-    Vertical: true
-  });
+	const { button, isOpen, navigation, panel } = createMenuState({
+		isFinite: !infinite,
+		isFocusEnabled: false,
+		isVertical: !horizontal,
+		isWaiting: true
+	});
 
-  $: Finite.sync({ previous: $Finite, current: finite });
-  $: Horizontal.sync({ previous: $Horizontal, current: horizontal });
-  $: Vertical.sync({ previous: $Vertical, current: !$Horizontal });
-  $: ShouldOrder.sync({ previous: $ShouldOrder, current: order });
-
-  let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
-
-  export { className as class };
-  export let as: RenderElementTagName = 'slot';
-  export let disabled: Nullable<boolean> = undefined;
-  export let element: HTMLElement | undefined = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
-
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isDisabled, isOpen: $Open });
+	$: navigation.isFinite.value = !infinite;
+	$: navigation.isVertical.value = !horizontal;
 </script>
 
-<Render {as} bind:element {disabled} class={finalClassName} {use} {...$$restProps}>
-  {#if $Open}
-    <slot name="up-items" {isDisabled} items={items.action} />
-  {/if}
-  <slot isOpen={$Open} {isDisabled} button={button.action} items={items.action} />
-  {#if $Open}
-    <slot name="items" {isDisabled} items={items.action} />
-  {/if}
+<Render
+	{as}
+	class={className}
+	{id}
+	{...$$restProps}
+	bind:element
+	actions={use}
+	on:blur
+	on:change
+	on:click
+	on:contextmenu
+	on:dblclick
+	on:focus
+	on:focusin
+	on:focusout
+	on:input
+	on:keydown
+	on:keypress
+	on:keyup
+	on:mousedown
+	on:mouseenter
+	on:mouseleave
+	on:mousemove
+	on:mouseout
+	on:mouseover
+	on:mouseup
+	on:mousewheel
+>
+	{#if $isOpen}
+		<slot name="up-items" items={panel} />
+	{/if}
+	<slot {button} isOpen={$isOpen} items={panel} />
+	{#if $isOpen}
+		<slot name="items" items={panel} />
+	{/if}
 </Render>
