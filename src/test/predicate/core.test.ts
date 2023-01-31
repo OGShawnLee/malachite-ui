@@ -371,3 +371,16 @@ describe.skip('isString', () => {
 		}
 	});
 });
+
+describe('isWhitespace', () => {
+	const { isWhitespace } = core;
+	
+	it('Should return whether or not the given string is whitespace', () => {
+		expect(isWhitespace(' ')).toBe(true);
+		expect(isWhitespace('I have a dream!')).toBe(false);
+	});
+
+	it('Should return true if the given string is empty', () => {
+		expect(isWhitespace('')).toBe(true);
+	});
+});

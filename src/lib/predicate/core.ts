@@ -93,3 +93,7 @@ export function isServer() {
 export function isString(val: unknown): val is string {
 	return typeof val === 'string' || val instanceof String;
 }
+
+export function isWhitespace(value: string) {
+	return value.replace(/\s+/g, '').length === 0;
+}
