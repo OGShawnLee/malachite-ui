@@ -55,8 +55,13 @@ export function isDisabled(element: HTMLElement | EventTarget) {
 	);
 }
 
-export function isFocusable(element: HTMLElement | EventTarget) {
-	return isHTMLElement(element) && !isDisabled(element) && element.tabIndex >= 0;
+export function isFocusable(element: HTMLElement | EventTarget, strict = true) {
+	if (!isHTMLElement(element) || isDisabled(element)) return false;
+	return element.tabIndex >= (strict ? 0 : -1);
+}
+
+export function isHorizontalNavigationKey(code: string): code is 'ArrowRight' | 'ArrowLeft' {
+	return code === 'ArrowRight' || code === 'ArrowLeft';
 }
 
 export function isHTMLElement(val: unknown): val is HTMLElement {
@@ -86,6 +91,10 @@ export function isNotDisabled(val: Nullable<EventTarget | HTMLElement>) {
 export function isValidHTMLElementID(id: string) {
 	const regex = /^[A-Za-z]+[\w\-\:\.]*$/;
 	return regex.test(id);
+}
+
+export function isVerticalNavigationKey(code: string): code is 'ArrowDown' | 'ArrowUp' {
+	return code === 'ArrowDown' || code === 'ArrowUp';
 }
 
 export function isVoidElement(tag: string) {

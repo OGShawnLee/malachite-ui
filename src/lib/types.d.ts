@@ -1,5 +1,5 @@
 import type { Writable, Readable, Unsubscriber } from 'svelte/store';
-import type { Ordered, Toggleable } from '$lib/stores';
+import type { Navigable, Ordered, Toggleable } from '$lib/stores';
 import type { ElementBinder } from '$lib/core';
 import type { ToggleableGroup } from './stores/Toggleable';
 
@@ -38,59 +38,48 @@ export type ExtractContext<C, K extends keyof C> = OmitAllThisParameter<Pick<C, 
 
 export type ExtractContextKeys<T> = { [P in keyof T]: any };
 
-export namespace Navigable {
-	export interface HandlerCallbackContext {
-		code: NavigationKey;
-		event: KeyboardEvent;
-		ctrlKey: boolean;
+export namespace Navigation {
+	type Directions = 'BACK' | 'NEXT';
+
+	interface FinderSettings {
+		direction: Directions | 'BOUNCE';
+		edge?: boolean;
+		index?: number;
 	}
 
-	export interface Item {
-		readonly Index: Writable<number>;
-	}
+	export type Handler = (this: Navigable, event: KeyboardEvent) => void;
 
-	export interface Member extends Item {
-		readonly Selected: Writable<boolean>;
-		readonly Active: Writable<boolean>;
-		readonly element: HTMLElement;
-		isDisabled: Nullable<boolean>;
-	}
-
-	export type Options<T> = {
-		Index?: Writable<number> | number;
-		Manual?: Readable<boolean> | boolean;
-		Vertical?: Readable<boolean> | boolean;
-		ShouldWait?: Readable<boolean> | boolean;
-		Finite?: Readable<boolean> | boolean;
-		shouldFocus?: boolean;
-		startAt?: StartAt;
-	} & { Ordered: Ordered<T & Member> };
-
-	interface Primitive<T> {
-		active: [HTMLElement, T & Member] | undefined;
-		elements: HTMLElement[];
+	interface Item {
+		binder: ElementBinder;
+		disabled: Nullable<boolean>;
+		element?: HTMLElement;
 		index: number;
-		isFinite: boolean;
-		isManual: boolean;
-		isVertical: boolean;
-		isWaiting: boolean;
-		manualIndex: number;
-		selected: [HTMLElement, T & Member] | undefined;
-		shouldWait: boolean;
+		isActive: boolean;
+		isSelected: boolean;
 	}
 
-	export type StartAt = 'AUTO' | 'FIRST' | 'LAST' | number;
+	export interface RootSettings {
+		handler?: Handler;
+		plugins?: Plugin<Navigable>[];
+	}
+
+	export interface Settings {
+		initialIndex?: number;
+		isDisabled?: boolean;
+		isFinite?: boolean;
+		isFocusEnabled?: boolean;
+		isGlobal?: boolean;
+		isManual?: boolean;
+		isVertical?: boolean;
+		isWaiting?: boolean;
+	}
 }
 
-export type NavigationKey =
-	| 'ArrowUp'
-	| 'ArrowRight'
-	| 'ArrowLeft'
-	| 'ArrowDown'
-	| 'Enter'
-	| 'Home'
-	| 'End'
-	| 'Space';
+type KeyBack = 'ArrowUp' | 'ArrowLeft' | 'Home';
+
+type KeyNext = 'ArrowDown' | 'ArrowRight' | 'End';
+
+type NavigationKey = KeyBack | KeyNext | 'Enter' | 'Space';
 
 export type Nullable<T> = T | null | undefined;
 
@@ -111,6 +100,8 @@ export type OmitAllThisParameter<T> = {
 export type Optional<T> = {
 	[P in keyof T]?: T[P];
 };
+
+export type Plugin<T extends object> = (this: T, element: HTMLElement) => Unsubscriber;
 
 export type RenderElementTagName = keyof HTMLElementTagNameMap | 'slot';
 

@@ -1,9 +1,9 @@
 export {
-	useActiveHover,
-	useFocusSync,
+	handleAriaOrientation,
+	handleNavigation,
+	useHoverMove,
 	useKeyMatch,
-	useManualSync,
-	useResetOnItemOutside
+	useResetOnLeave
 } from './navigable';
 export {
 	handleAriaControls,
