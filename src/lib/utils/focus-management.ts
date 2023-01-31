@@ -22,11 +22,14 @@ export function focusFirstChildElement(
 	child ? child.focus() : fallback?.focus();
 }
 
-export function getFocusableElements(container: Element, callback?: (child: Element) => unknown) {
+export function getFocusableElements(
+	container: HTMLElement,
+	callback?: (child: Element) => unknown
+) {
 	if (callback)
 		return useDOMTraversal(
 			container,
-			(child) => callback(child) && isFocusable(child)
+			(child) => isFocusable(child) && callback(child)
 		) as HTMLElement[];
 	return useDOMTraversal(container, isFocusable) as HTMLElement[];
 }
