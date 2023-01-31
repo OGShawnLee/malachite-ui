@@ -22,7 +22,7 @@ export function focusFirstChildElement(
 	child ? child.focus() : fallback?.focus();
 }
 
-export function getFocusableElements(
+export function getFocusableChildren(
 	container: HTMLElement,
 	callback?: (child: Element) => unknown
 ) {

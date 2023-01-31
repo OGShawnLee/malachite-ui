@@ -3,7 +3,7 @@ import type { Nullable, Toggler } from '$lib/types';
 import type { ElementBinder } from '$lib/core';
 import { useDOMTraversal, useListener, useWindowListener } from '$lib/hooks';
 import { isEmpty, isFocusable, isHTMLElement, isNavigationKey, isWithin } from '$lib/predicate';
-import { getFocusableElements } from '$lib/utils';
+import { getFocusableChildren } from '$lib/utils';
 import { tick } from 'svelte';
 
 export function handleAriaControls(panel: ElementBinder): Toggler.Plugin {
@@ -86,7 +86,7 @@ export function useFocusTrap(fallback?: Nullable<Element>): Toggler.Plugin {
 
 /** Prevents tabbing inside the panel during a leaving transition */
 export function useHidePanelFocusOnClose(this: Toggleable, panel: HTMLElement) {
-	const children = getFocusableElements(panel);
+	const children = getFocusableChildren(panel);
 	const tabIndexes = children.map(({ tabIndex }) => tabIndex);
 	return this.isOpen.subscribe((isOpen) => {
 		if (isOpen) {
