@@ -3,9 +3,9 @@ import type { Unsubscriber } from 'svelte/store';
 import Hashable from './Hashable';
 import { derived } from 'svelte/store';
 import { useCollector, useListener } from '$lib/hooks';
-import { focusFirstElement, ref } from '$lib/utils';
+import { focusFirstChildElement, ref } from '$lib/utils';
 import { isFocusable, isHTMLElement, isNullish, isWithin } from '$lib/predicate';
-import { onDestroy, onMount, tick } from 'svelte';
+import { onDestroy, tick } from 'svelte';
 import { useHidePanelFocusOnClose } from '$lib/plugins';
 
 export class Toggleable {
@@ -99,7 +99,7 @@ export class Toggleable {
 	protected async handleFocusForce(this: Toggleable, isOpen: boolean) {
 		await tick();
 		if (this.isFocusForced.value && isOpen && this.panel.value) {
-			focusFirstElement(this.panel.value, {
+			focusFirstChildElement(this.panel.value, {
 				fallback: this.button.value
 			});
 		}
