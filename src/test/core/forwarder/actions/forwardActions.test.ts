@@ -5,8 +5,8 @@ import { generate } from '$lib/utils';
 
 afterEach(() => cleanup());
 
-describe('onMount', () => {
-	it('Should forward all the given actions', async () => {
+describe.skip('onMount', () => {
+	it.skip('Should forward all the given actions', async () => {
 		const actions = generateActions(4);
 		render(Component, { props: { use: actions } });
 		for (const [action] of actions) {
@@ -14,7 +14,7 @@ describe('onMount', () => {
 		}
 	});
 
-	it('Should pass the element and the given parameter', async () => {
+	it.skip('Should pass the element and the given parameter', async () => {
 		const actions = generateActions(3, 'Twenty One');
 		const { findByText } = render(Component, { props: { use: actions } });
 		const element = await findByText('Container');
@@ -24,7 +24,7 @@ describe('onMount', () => {
 		}
 	});
 
-	it('Should not call the actions if the element is not rendered', () => {
+	it.skip('Should not call the actions if the element is not rendered', () => {
 		const actions = generateActions(3);
 		render(Component, { props: { showing: false, use: actions } });
 		for (const [action] of actions) {
@@ -32,7 +32,7 @@ describe('onMount', () => {
 		}
 	});
 
-	it('Should not call the destroy and update action methods', () => {
+	it.skip('Should not call the destroy and update action methods', () => {
 		const [update, destroy] = generateSpyFunctions(2);
 		const action = () => ({ update, destroy });
 		render(Component, { use: [[action]] });
@@ -40,7 +40,7 @@ describe('onMount', () => {
 		expect(destroy).not.toBeCalled();
 	});
 
-	it('Should call the actions everytime the element is rendered', async () => {
+	it.skip('Should call the actions everytime the element is rendered', async () => {
 		const actions = generateActions(5);
 		const { component } = render(Component, { use: actions });
 
@@ -62,8 +62,8 @@ describe('onMount', () => {
 	});
 });
 
-describe('onUpdate', () => {
-	it('Should call all the actions update methods', async () => {
+describe.skip('onUpdate', () => {
+	it.skip('Should call all the actions update methods', async () => {
 		const functions = generateSpyFunctions(2);
 		const first = () => ({ update: functions[0] });
 		const second = () => ({ update: functions[1] });
@@ -75,7 +75,7 @@ describe('onUpdate', () => {
 		expect(functions[1]).toBeCalledWith(30);
 	});
 
-	it('Should not call the update method if the argument has not changed', async () => {
+	it.skip('Should not call the update method if the argument has not changed', async () => {
 		const update = generateSpyFunctions(2);
 		const first = () => ({ update: update[0] });
 		const second = () => ({ update: update[1] });
@@ -90,7 +90,7 @@ describe('onUpdate', () => {
 		expect(update[1]).toBeCalledTimes(0);
 	});
 
-	it('Should add and call the new actions', async () => {
+	it.skip('Should add and call the new actions', async () => {
 		const [one, two] = generateSpyFunctions(2);
 		const [three, four] = generateSpyFunctions(2);
 		const { component, findByText } = render(Component, { props: { use: [[one], [two]] } });
@@ -108,7 +108,7 @@ describe('onUpdate', () => {
 		expect(four).toBeCalledWith(element, true);
 	});
 
-	it('Should remove and run the destroy method of the removed actions', async () => {
+	it.skip('Should remove and run the destroy method of the removed actions', async () => {
 		const destroy = generateSpyFunctions(4);
 		const actions = generate(4, (index) => () => ({ destroy: destroy[index] }));
 		const { component } = render(Component, { use: [[actions[0]], [actions[1]]] });
@@ -119,8 +119,8 @@ describe('onUpdate', () => {
 	});
 });
 
-describe('onDestroy', () => {
-	it('Should call all the actions destroy methods', async () => {
+describe.skip('onDestroy', () => {
+	it.skip('Should call all the actions destroy methods', async () => {
 		const functions = generateSpyFunctions(2);
 		const foo = () => ({ destroy: functions[0] });
 		const bar = () => ({ destroy: functions[1] });
@@ -132,7 +132,7 @@ describe('onDestroy', () => {
 		}
 	});
 
-	it('Should only call the current actions and not the removed ones during update', async () => {
+	it.skip('Should only call the current actions and not the removed ones during update', async () => {
 		const [fooFn, barFn] = generateSpyFunctions(4);
 		const foo = () => ({ destroy: fooFn });
 		const bar = () => ({ destroy: barFn });

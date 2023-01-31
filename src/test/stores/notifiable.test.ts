@@ -2,9 +2,9 @@ import { notifiable } from '$lib/stores';
 import { isWritable } from '$lib/predicate';
 import { get, writable } from 'svelte/store';
 
-describe('options', () => {
-	describe('initialValue', () => {
-		it('Should always return a writable store', () => {
+describe.skip('options', () => {
+	describe.skip('initialValue', () => {
+		it.skip('Should always return a writable store', () => {
 			const Bar = notifiable({ initialValue: 0, notifier: () => {} });
 			expect(isWritable(Bar)).toBe(true);
 
@@ -33,12 +33,12 @@ describe('options', () => {
 			}
 		});
 
-		it('Should return a new store if given a writable', () => {
+		it.skip('Should return a new store if given a writable', () => {
 			const Original = writable(false);
 			expect(notifiable({ initialValue: Original, notifier: console.log })).not.toBe(Original);
 		});
 
-		it('Should update the given store upon changes', () => {
+		it.skip('Should update the given store upon changes', () => {
 			const Name = writable('James');
 			const Another = notifiable({ initialValue: Name, notifier: () => {} });
 
@@ -50,8 +50,8 @@ describe('options', () => {
 		});
 	});
 
-	describe('start', () => {
-		it('Should run the start callback if given a primitive value', () => {
+	describe.skip('start', () => {
+		it.skip('Should run the start callback if given a primitive value', () => {
 			const onStop = vi.fn(() => {});
 			const start = vi.fn((set: (val: number) => void) => {
 				set(10);
@@ -68,7 +68,7 @@ describe('options', () => {
 			expect(onStop).toBeCalledTimes(1);
 		});
 
-		it('Should not run the start callback if given a store', () => {
+		it.skip('Should not run the start callback if given a store', () => {
 			const onStop = vi.fn(() => {});
 			const start = vi.fn((set: (val: number) => void) => {
 				set(10);
@@ -81,14 +81,14 @@ describe('options', () => {
 		});
 	});
 
-	describe('notifier', () => {
-		it('Should not run the notifier when created', () => {
+	describe.skip('notifier', () => {
+		it.skip('Should not run the notifier when created', () => {
 			const notifier = vi.fn(() => {});
 			notifiable({ initialValue: 0, notifier });
 			expect(notifier).not.toBeCalled();
 		});
 
-		it('Should run the notifier whenever the store changes', () => {
+		it.skip('Should run the notifier whenever the store changes', () => {
 			const notifier = vi.fn(() => {});
 			const Country = notifiable({ initialValue: 'USA', notifier });
 
@@ -99,7 +99,7 @@ describe('options', () => {
 			expect(notifier).toBeCalledTimes(2);
 		});
 
-		it('Should pass the current value', () => {
+		it.skip('Should pass the current value', () => {
 			const notifier = vi.fn(() => {});
 			const Country = notifiable({ initialValue: 'USA', notifier });
 

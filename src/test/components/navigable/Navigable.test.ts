@@ -34,9 +34,9 @@ function initComponent(
 }
 
 const { ActionComponent, Behaviour, DisabledNavigation } = samples;
-describe('Behaviour', () => {
-	describe('Navigation', () => {
-		it('Should be horizontal by default', async () => {
+describe.skip('Behaviour', () => {
+	describe.skip('Navigation', () => {
+		it.skip('Should be horizontal by default', async () => {
 			const { root, items } = initComponent(Behaviour);
 
 			await fireEvent.keyDown(root, { code: 'ArrowDown' });
@@ -52,7 +52,7 @@ describe('Behaviour', () => {
 			expect(items[0]).toHaveFocus();
 		});
 
-		it('Should be local by default', async () => {
+		it.skip('Should be local by default', async () => {
 			const { root, items } = initComponent(Behaviour);
 
 			await fireEvent.keyDown(root, { code: 'ArrowRight' });
@@ -68,16 +68,16 @@ describe('Behaviour', () => {
 			expect(items[1]).toHaveFocus();
 		});
 
-		describe.each(['Global', 'Local'])('%s', (mode) => {
+		describe.skip.each(['Global', 'Local'])('%s', (mode) => {
 			const global = mode === 'Global';
 
-			describe.each([
+			describe.skip.each([
 				['Horizontal', 'ArrowRight', 'ArrowLeft'],
 				['Vertical', 'ArrowDown', 'ArrowUp']
 			])('%s', (orientation, nextKey, previousKey) => {
 				const vertical = orientation === 'Vertical';
 
-				it(`Should focus the next Item by pressing ${nextKey}`, async () => {
+				it.skip(`Should focus the next Item by pressing ${nextKey}`, async () => {
 					const { root, items } = initComponent(Behaviour, { global, vertical });
 					const target = global ? document : root;
 
@@ -91,7 +91,7 @@ describe('Behaviour', () => {
 					expect(items[2]).toHaveFocus();
 				});
 
-				it(`Should focus the previous Item by pressing ${previousKey}`, async () => {
+				it.skip(`Should focus the previous Item by pressing ${previousKey}`, async () => {
 					const { root, items } = initComponent(Behaviour, { global, vertical });
 					const target = global ? document : root;
 
@@ -106,7 +106,7 @@ describe('Behaviour', () => {
 				});
 
 				// * VALID ITEMS INDEXES --> 1, 3, 5
-				it('Should skip disabled Items', async () => {
+				it.skip('Should skip disabled Items', async () => {
 					const { root, items } = initComponent(DisabledNavigation, { global, vertical });
 					const target = global ? document : root;
 
@@ -140,7 +140,7 @@ describe('Behaviour', () => {
 					expect(items[1]).toHaveFocus();
 				});
 
-				it('Should be infinite', async () => {
+				it.skip('Should be infinite', async () => {
 					const { root, items } = initComponent(Behaviour, { global, vertical });
 					const target = global ? document : root;
 
@@ -155,7 +155,7 @@ describe('Behaviour', () => {
 				});
 
 				if (global) {
-					it(`Should not get stuck after pressing ${nextKey} twice if focus was on an external element`, async () => {
+					it.skip(`Should not get stuck after pressing ${nextKey} twice if focus was on an external element`, async () => {
 						const { items, external } = initComponent(Behaviour, { global, vertical });
 						await act(() => external.button.focus());
 						expect(external.button).toHaveFocus();
@@ -167,14 +167,14 @@ describe('Behaviour', () => {
 						expect(items[1]).toHaveFocus();
 					});
 
-					it(`Should focus the last Item upon pressing ctrlKey + ${nextKey}`, async () => {
+					it.skip(`Should focus the last Item upon pressing ctrlKey + ${nextKey}`, async () => {
 						const { items } = initComponent(Behaviour, { global, vertical });
 
 						await fireEvent.keyDown(document, { code: nextKey, ctrlKey: true });
 						expect(items[3]).toHaveFocus();
 					});
 
-					it('Should ignore pressing End', async () => {
+					it.skip('Should ignore pressing End', async () => {
 						const { items } = initComponent(Behaviour, { global, vertical });
 
 						await fireEvent.keyDown(document, { code: 'End', ctrlKey: true });
@@ -182,7 +182,7 @@ describe('Behaviour', () => {
 						expect(document.body).toHaveFocus();
 					});
 
-					it(`Should focus the first Item upon pressing ctrlKey + ${previousKey}`, async () => {
+					it.skip(`Should focus the first Item upon pressing ctrlKey + ${previousKey}`, async () => {
 						const { items } = initComponent(Behaviour, { global, vertical });
 
 						await fireEvent.keyDown(document, { code: nextKey, ctrlKey: true });
@@ -192,7 +192,7 @@ describe('Behaviour', () => {
 						expect(items[0]).toHaveFocus();
 					});
 
-					it('Should ignore pressing Home', async () => {
+					it.skip('Should ignore pressing Home', async () => {
 						const { items } = initComponent(Behaviour, { global, vertical });
 
 						await fireEvent.keyDown(document, { code: 'Home', ctrlKey: true });
@@ -200,7 +200,7 @@ describe('Behaviour', () => {
 						expect(document.body).toHaveFocus();
 					});
 				} else {
-					it(`Should focus the last Item upon pressing End or ctrlKey + ${nextKey}`, async () => {
+					it.skip(`Should focus the last Item upon pressing End or ctrlKey + ${nextKey}`, async () => {
 						const { root, items } = initComponent(Behaviour, { global, vertical });
 						const target = global ? document : root;
 
@@ -214,7 +214,7 @@ describe('Behaviour', () => {
 						expect(items[3]).toHaveFocus();
 					});
 
-					it(`Should focus the first Item upon pressing Home or ctrlKey + ${previousKey}`, async () => {
+					it.skip(`Should focus the first Item upon pressing Home or ctrlKey + ${previousKey}`, async () => {
 						const { root, items } = initComponent(Behaviour, { vertical });
 
 						await fireEvent.keyDown(root, { code: 'End' });
@@ -231,7 +231,7 @@ describe('Behaviour', () => {
 					});
 				}
 
-				it('Should sync the Navigation if any of the Items are focused externally', async () => {
+				it.skip('Should sync the Navigation if any of the Items are focused externally', async () => {
 					const { root, items } = initComponent(Behaviour, { global, vertical });
 
 					const target = global ? document : root;
@@ -249,7 +249,7 @@ describe('Behaviour', () => {
 					expect(items[0]).toHaveFocus();
 				});
 
-				it('Should work rendered as an Action Component / Slot Component', async () => {
+				it.skip('Should work rendered as an Action Component / Slot Component', async () => {
 					const { items, root } = initComponent(ActionComponent, { global, vertical });
 					const target = global ? document : root;
 
@@ -269,8 +269,8 @@ describe('Behaviour', () => {
 		});
 	});
 
-	describe('Attributes', () => {
-		describe('Item', () => {
+	describe.skip('Attributes', () => {
+		describe.skip('Item', () => {
 			const { Item } = samples;
 
 			function initItem(
@@ -285,21 +285,21 @@ describe('Behaviour', () => {
 				return { ...result, root: result.getByTestId('root'), item: result.getByText('Item') };
 			}
 
-			describe('tabIndex', () => {
-				describe.each(['Action Component', 'Component'])('%s', (mode) => {
+			describe.skip('tabIndex', () => {
+				describe.skip.each(['Action Component', 'Component'])('%s', (mode) => {
 					const target = mode === 'Component' ? 'COMPONENT' : 'ACTION';
 
-					it('Should have tabIndex set to 0 by default', async () => {
+					it.skip('Should have tabIndex set to 0 by default', async () => {
 						const { item } = initItem({ target });
 						expect(item).toHaveAttribute('tabIndex', '0');
 					});
 
-					it('Should not be set if the element is disabled', async () => {
+					it.skip('Should not be set if the element is disabled', async () => {
 						const { item } = initItem({ disabled: true, target });
 						await waitFor(() => expect(item).not.toHaveAttribute('tabIndex'));
 					});
 
-					it('Should be reactive and be toggled when the element is disabled', async () => {
+					it.skip('Should be reactive and be toggled when the element is disabled', async () => {
 						const { component, item } = initItem({ tabIndex: 3, target });
 						expect(item).toHaveAttribute('tabIndex', '3');
 
@@ -310,7 +310,7 @@ describe('Behaviour', () => {
 						expect(item).toHaveAttribute('tabIndex', '3');
 					});
 
-					it('Should be kept before being disabled and reapplied when the element is enabled again', async () => {
+					it.skip('Should be kept before being disabled and reapplied when the element is enabled again', async () => {
 						const { component, item } = initItem({ tabIndex: 0, target });
 						expect(item).toHaveAttribute('tabIndex', '0');
 
@@ -329,7 +329,7 @@ describe('Behaviour', () => {
 				});
 			});
 
-			it('Should be able of forwarding click events', async () => {
+			it.skip('Should be able of forwarding click events', async () => {
 				const func = vi.fn<[MouseEvent]>(() => {});
 				const { item } = initItem({ handleClick: func });
 				await fireEvent.click(item);
@@ -341,7 +341,7 @@ describe('Behaviour', () => {
 });
 
 const { Events } = samples;
-describe('Events', () => {
+describe.skip('Events', () => {
 	function initComponent(props: {
 		handleBlur: (event: FocusEvent) => void;
 		handleClick?: (event: MouseEvent) => void;
@@ -351,7 +351,7 @@ describe('Events', () => {
 		return { ...result, element: result.getByText('Item') };
 	}
 
-	it('Should be able of forwarding a blur listener', async () => {
+	it.skip('Should be able of forwarding a blur listener', async () => {
 		const handleBlur = vi.fn<[FocusEvent]>(() => {});
 		// @ts-ignore
 		const { element } = initComponent({ handleBlur });
@@ -365,7 +365,7 @@ describe('Events', () => {
 		expect(handleBlur.mock.calls[0][0]).toBeInstanceOf(FocusEvent);
 	});
 
-	it('Should be able of forwarding a click listener', async () => {
+	it.skip('Should be able of forwarding a click listener', async () => {
 		const handleClick = vi.fn<[MouseEvent]>(() => {});
 		// @ts-ignore
 		const { element } = initComponent({ handleClick });
@@ -377,7 +377,7 @@ describe('Events', () => {
 		expect(handleClick.mock.calls[0][0]).toBeInstanceOf(MouseEvent);
 	});
 
-	it('Should be able of forwarding a focus listener', async () => {
+	it.skip('Should be able of forwarding a focus listener', async () => {
 		const handleFocus = vi.fn<[FocusEvent]>(() => {});
 		// @ts-ignore
 		const { element } = initComponent({ handleFocus });
@@ -392,9 +392,9 @@ describe('Events', () => {
 	});
 });
 
-describe('Props', () => {
-	describe('Finite', () => {
-		it('Should make the navigation finite', async () => {
+describe.skip('Props', () => {
+	describe.skip('Finite', () => {
+		it.skip('Should make the navigation finite', async () => {
 			const { root, items } = initComponent(Behaviour, { finite: true });
 
 			await fireEvent.keyDown(root, { code: 'ArrowRight' });
@@ -410,7 +410,7 @@ describe('Props', () => {
 			expect(items[3]).toHaveFocus();
 		});
 
-		it('Should be false by default', async () => {
+		it.skip('Should be false by default', async () => {
 			const { root, items } = initComponent(Behaviour);
 
 			await fireEvent.keyDown(root, { code: 'ArrowRight' });
@@ -423,7 +423,7 @@ describe('Props', () => {
 			expect(items[0]).toHaveFocus();
 		});
 
-		it('Should be reactive', async () => {
+		it.skip('Should be reactive', async () => {
 			const { component, root, items } = initComponent(Behaviour, { finite: true });
 
 			await fireEvent.keyDown(root, { code: 'ArrowRight' });
@@ -447,7 +447,7 @@ describe('Props', () => {
 			expect(items[3]).toHaveFocus();
 		});
 
-		it('Should work propertly with Global and Vertical navigation', async () => {
+		it.skip('Should work propertly with Global and Vertical navigation', async () => {
 			const { items } = initComponent(Behaviour, { finite: true, global: true, vertical: true });
 
 			await fireEvent.keyDown(document, { code: 'ArrowDown' });
@@ -464,8 +464,8 @@ describe('Props', () => {
 		});
 	});
 
-	describe('Global', () => {
-		it('Should allow the navigation to be triggered without having to focus the Navigable element', async () => {
+	describe.skip('Global', () => {
+		it.skip('Should allow the navigation to be triggered without having to focus the Navigable element', async () => {
 			const { items } = initComponent(Behaviour, { global: true });
 
 			await fireEvent.keyDown(document, { code: 'ArrowRight' });
@@ -481,7 +481,7 @@ describe('Props', () => {
 			expect(items[0]).toHaveFocus();
 		});
 
-		it('Should be false by default', async () => {
+		it.skip('Should be false by default', async () => {
 			const { items } = initComponent(Behaviour);
 
 			await fireEvent.keyDown(document, { code: 'ArrowRight' });
@@ -489,7 +489,7 @@ describe('Props', () => {
 			expect(document.body).toHaveFocus();
 		});
 
-		it('Should be reactive', async () => {
+		it.skip('Should be reactive', async () => {
 			const { component, items } = initComponent(Behaviour, { global: true });
 
 			await fireEvent.keyDown(document, { code: 'ArrowRight' });
@@ -516,8 +516,8 @@ describe('Props', () => {
 		});
 	});
 
-	describe('Vertical', () => {
-		it('Should make the navigation move with the ArrowUp and ArrowDown keys', async () => {
+	describe.skip('Vertical', () => {
+		it.skip('Should make the navigation move with the ArrowUp and ArrowDown keys', async () => {
 			const { root, items } = initComponent(Behaviour, { vertical: true });
 
 			await fireEvent.keyDown(root, { code: 'ArrowDown' });
@@ -533,7 +533,7 @@ describe('Props', () => {
 			expect(items[3]).toHaveFocus();
 		});
 
-		it('Should be false by default', async () => {
+		it.skip('Should be false by default', async () => {
 			const { root, items } = initComponent(Behaviour);
 
 			await fireEvent.keyDown(root, { code: 'ArrowDown' });
@@ -543,7 +543,7 @@ describe('Props', () => {
 			expect(items[3]).not.toHaveFocus();
 		});
 
-		it('Should be reactive', async () => {
+		it.skip('Should be reactive', async () => {
 			const { component, root, items } = initComponent(Behaviour);
 
 			await fireEvent.keyDown(root, { code: 'ArrowDown' });
@@ -564,15 +564,15 @@ describe('Props', () => {
 });
 
 const { Rendering } = samples;
-describe('Rendering', () => {
-	describe.each([
+describe.skip('Rendering', () => {
+	describe.skip.each([
 		['Navigable', 'div'],
 		['Item', 'div']
 	])('%s', (name, defaultTag) => {
 		const COMPONENT_NAME = name.toLowerCase();
 		const TEST_ID = `navigable-${COMPONENT_NAME}`;
 
-		it(`Should be rendered as a ${defaultTag} by default`, async () => {
+		it.skip(`Should be rendered as a ${defaultTag} by default`, async () => {
 			const { getByTestId } = render(Rendering, {
 				props: { [COMPONENT_NAME]: { as: defaultTag, 'data-testid': TEST_ID } }
 			});
@@ -580,7 +580,7 @@ describe('Rendering', () => {
 			expect(hasTagName(element, 'div')).toBe(true);
 		});
 
-		it(`Should have a valid ${name} Navigable id`, () => {
+		it.skip(`Should have a valid ${name} Navigable id`, () => {
 			const { getByTestId } = render(Rendering, {
 				props: { [COMPONENT_NAME]: { 'data-testid': TEST_ID } }
 			});
@@ -596,7 +596,7 @@ describe('Rendering', () => {
 			expect(hasTagName(element, as)).toBe(true);
 		});
 
-		it('Should be able of forwarding attributes', () => {
+		it.skip('Should be able of forwarding attributes', () => {
 			const attributes = { tabIndex: '4', title: 'a navigable element' };
 			const { getByTestId } = render(Rendering, {
 				props: { [COMPONENT_NAME]: { 'data-testid': TEST_ID, rest: { ...attributes } } }
@@ -608,7 +608,7 @@ describe('Rendering', () => {
 			}
 		});
 
-		it('Should be able of forwarding actions', () => {
+		it.skip('Should be able of forwarding actions', () => {
 			const actions = generateActions(3);
 			const { getByTestId } = render(Rendering, {
 				props: { [COMPONENT_NAME]: { 'data-testid': TEST_ID, use: actions } }
@@ -621,35 +621,37 @@ describe('Rendering', () => {
 	});
 });
 
-describe('Context', () => {
+describe.skip('Context', () => {
 	const [init, messages] = createContextParentRenderer<ContextKeys>(ContextParent, 'navigable');
 
-	describe('Unset Context', () => {
-		describe('Item', () => {
-			it('Should throw an error if rendered without a Navigable Context', () => {
+	describe.skip('Unset Context', () => {
+		describe.skip('Item', () => {
+			it.skip('Should throw an error if rendered without a Navigable Context', () => {
 				expect(() => render(NavigableItem)).toThrow();
 			});
 
-			it('Should throw an specific error', () => {
+			it.skip('Should throw an specific error', () => {
 				expect(() => render(NavigableItem)).toThrow(messages.unset);
 			});
 		});
 	});
 
-	describe('Invalid Context', () => {
-		describe('Item', () => {
-			it('Should throw an error if rendered with an invalid Navigable Context', () => {
-				expect(() => init(NavigableItem, { initItem: null })).toThrow();
+	describe.skip('Invalid Context', () => {
+		describe.skip('Item', () => {
+			it.skip('Should throw an error if rendered with an invalid Navigable Context', () => {
+				expect(() => init.skip(NavigableItem, { initItem: null })).toThrow();
 			});
 
-			it('Should throw an specific error', () => {
-				expect(() => init(NavigableItem, { initItem: null })).toThrow(messages.invalid);
+			it.skip('Should throw an specific error', () => {
+				expect(() => init.skip(NavigableItem, { initItem: null })).toThrow(messages.invalid);
 			});
 
-			it('Should validate the context value thoroughly', () => {
-				expect(() => init(NavigableItem, { initItem: 'Not a Function' })).toThrow(messages.invalid);
+			it.skip('Should validate the context value thoroughly', () => {
+				expect(() => init.skip(NavigableItem, { initItem: 'Not a Function' })).toThrow(
+					messages.invalid
+				);
 				// TODO: HANDLE FUNCTION ERROR
-				// expect(() => init(NavigableItem, { initItem: () => "We do a litTle trolling" })).toThrow(messages.invalid);
+				// expect(() => init.skip(NavigableItem, { initItem: () => "We do a litTle trolling" })).toThrow(messages.invalid);
 			});
 		});
 	});

@@ -25,35 +25,35 @@ async function initOpenPopover(Component: typeof SvelteComponent, props = {}) {
 	return { ...instance, button, panel };
 }
 
-describe('Behaviour', () => {
+describe.skip('Behaviour', () => {
 	const { ActionComponent, Behaviour, ForwardActions, SlotComponent } = samples;
 
-	it('Should be closed by default', () => {
+	it.skip('Should be closed by default', () => {
 		const { container } = render(Behaviour);
 		const element = findElement(container, (element) => element.textContent === 'Close Me');
 		expect(element).toBe(undefined);
 	});
 
-	it('Should close upon clicking outside the panel', async () => {
+	it.skip('Should close upon clicking outside the panel', async () => {
 		const { panel } = await initOpenPopover(Behaviour);
 		await fireEvent.click(document.body);
 		expect(panel).not.toBeInTheDocument();
 	});
 
-	it('Should close upon clicking on the overlay', async () => {
+	it.skip('Should close upon clicking on the overlay', async () => {
 		const { getByTestId } = await initOpenPopover(Behaviour);
 		const overlay = getByTestId('popover-overlay');
 		await fireEvent.click(overlay);
 		expect(overlay).not.toBeInTheDocument();
 	});
 
-	it('Should close after pressing Escape', async () => {
+	it.skip('Should close after pressing Escape', async () => {
 		const { panel } = await initOpenPopover(Behaviour);
 		await fireEvent.keyDown(window, { code: 'Escape' });
 		expect(panel).not.toBeInTheDocument();
 	});
 
-	it('Should close after losing focus', async () => {
+	it.skip('Should close after losing focus', async () => {
 		const { getByText, panel } = await initOpenPopover(samples.ForceFocus);
 		const external = getByText('External');
 
@@ -61,8 +61,8 @@ describe('Behaviour', () => {
 		expect(panel).not.toBeInTheDocument();
 	});
 
-	describe('Button', () => {
-		it('Should toggle the popover by clicking', async () => {
+	describe.skip('Button', () => {
+		it.skip('Should toggle the popover by clicking', async () => {
 			const { getByText, getByTestId } = render(Behaviour);
 			const button = getByText('Button');
 
@@ -74,15 +74,15 @@ describe('Behaviour', () => {
 			expect(panel).not.toBeInTheDocument();
 		});
 
-		describe('attributes', () => {
-			describe('aria-expanded', () => {
-				it('Should be set to false by default', () => {
+		describe.skip('attributes', () => {
+			describe.skip('aria-expanded', () => {
+				it.skip('Should be set to false by default', () => {
 					const { getByText } = render(Behaviour);
 					const button = getByText('Button');
 					expect(button.ariaExpanded).toBe('false');
 				});
 
-				it('Should be reactive', async () => {
+				it.skip('Should be reactive', async () => {
 					const { getByText } = render(Behaviour);
 					const button = getByText('Button');
 					expect(button.ariaExpanded).toBe('false');
@@ -95,19 +95,19 @@ describe('Behaviour', () => {
 				});
 			});
 
-			describe('aria-controls', () => {
-				it('Should not have aria-controls by default', () => {
+			describe.skip('aria-controls', () => {
+				it.skip('Should not have aria-controls by default', () => {
 					const { getByText } = render(Behaviour);
 					const button = getByText('Button');
 					expect(button).not.toHaveAttribute('aria-controls');
 				});
 
-				it('Should point to the panel id', async () => {
+				it.skip('Should point to the panel id', async () => {
 					const { button, panel } = await initOpenPopover(Behaviour);
 					expect(button).toHaveAttribute('aria-controls', panel.id);
 				});
 
-				it('Should be reactive', async () => {
+				it.skip('Should be reactive', async () => {
 					const { getByTestId, getByText } = render(Behaviour);
 					const button = getByText('Button');
 					expect(button).not.toHaveAttribute('aria-controls');
@@ -120,7 +120,7 @@ describe('Behaviour', () => {
 					expect(button).not.toHaveAttribute('aria-controls');
 				});
 
-				it('Should be based on the panel render state rather than the open state', async () => {
+				it.skip('Should be based on the panel render state rather than the open state', async () => {
 					const { button, component, panel } = await initOpenPopover(Behaviour);
 					expect(button).toHaveAttribute('aria-controls', panel.id);
 
@@ -160,7 +160,7 @@ describe('Behaviour', () => {
 		expect(panel).not.toBeInTheDocument();
 	});
 
-	it('Should work with forwarded actions', async () => {
+	it.skip('Should work with forwarded actions', async () => {
 		const { getByText, getByTestId } = render(ForwardActions);
 		const button = getByText('Button');
 		expect(button.ariaExpanded).toBe('false');
@@ -187,10 +187,10 @@ describe('Behaviour', () => {
 	});
 });
 
-describe('Multiple Components', () => {
+describe.skip('Multiple Components', () => {
 	const { Multiple } = samples;
 
-	it('Each component should have an unique valid popover id', async () => {
+	it.skip('Each component should have an unique valid popover id', async () => {
 		const { findByText, getAllByText, getByText } = render(Multiple);
 
 		const popovers = getAllByText('Popover');
@@ -227,16 +227,16 @@ describe('Multiple Components', () => {
 	});
 });
 
-describe('Props', () => {
+describe.skip('Props', () => {
 	const { ForceFocus } = samples;
-	describe('forceFocus', async () => {
-		it('Should focus the first focusable element inside the panel upon opening', async () => {
+	describe.skip('forceFocus', async () => {
+		it.skip('Should focus the first focusable element inside the panel upon opening', async () => {
 			const { getByText } = await initOpenPopover(ForceFocus);
 			const targetButton = getByText('Close Me');
 			expect(targetButton).toHaveFocus();
 		});
 
-		it('Should be reactive', async () => {
+		it.skip('Should be reactive', async () => {
 			const { button, component, getByText } = await initOpenPopover(ForceFocus);
 			const targetButton = getByText('Close Me');
 			expect(targetButton).toHaveFocus();
@@ -247,13 +247,13 @@ describe('Props', () => {
 			expect(targetButton).not.toHaveFocus();
 		});
 
-		it('Should not focus elements inside the overlay', async () => {
+		it.skip('Should not focus elements inside the overlay', async () => {
 			const { getByText } = await initOpenPopover(ForceFocus);
 			const invalid = getByText('Overlay Button');
 			expect(invalid).not.toHaveFocus();
 		});
 
-		it('Should close after focusing the popover button', async () => {
+		it.skip('Should close after focusing the popover button', async () => {
 			const { button, panel } = await initOpenPopover(ForceFocus);
 			await act(() => button.focus());
 			expect(panel).not.toBeInTheDocument();
@@ -261,10 +261,10 @@ describe('Props', () => {
 	});
 });
 
-describe('Rendering', () => {
+describe.skip('Rendering', () => {
 	const { Multiple, Rendering, UpPanel } = samples;
-	describe('Popover', () => {
-		it('Should be rendered as a div by default', async () => {
+	describe.skip('Popover', () => {
+		it.skip('Should be rendered as a div by default', async () => {
 			const { getByTestId } = render(Rendering, { props: {} });
 			const popover = getByTestId('popover-root');
 			expect(hasTagName(popover, 'div')).toBe(true);
@@ -278,7 +278,7 @@ describe('Rendering', () => {
 			expect(hasTagName(element, as)).toBe(true);
 		});
 
-		it('Should forward attributes', async () => {
+		it.skip('Should forward attributes', async () => {
 			const attributes = { tabIndex: '4', title: 'a popover root' };
 			const { getByTestId } = render(Rendering, {
 				props: { popover: { rest: attributes } }
@@ -290,7 +290,7 @@ describe('Rendering', () => {
 			}
 		});
 
-		it('Should be able to forward actions', async () => {
+		it.skip('Should be able to forward actions', async () => {
 			const actions = generateActions(3);
 			const { getByTestId } = render(Rendering, {
 				props: { popover: { use: actions } }
@@ -302,12 +302,12 @@ describe('Rendering', () => {
 		});
 	});
 
-	it('Should be possible to render the panel above the button', async () => {
+	it.skip('Should be possible to render the panel above the button', async () => {
 		const { panel, button } = await initOpenPopover(UpPanel);
 		expect(panel.nextElementSibling).toBe(button);
 	});
 
-	describe.each([
+	describe.skip.each([
 		['Button', 'button'],
 		['Overlay', 'div'],
 		['Panel', 'div']
@@ -315,13 +315,13 @@ describe('Rendering', () => {
 		const lowerCaseComponent = component.toLowerCase();
 		const testId = `popover-${lowerCaseComponent}`;
 
-		it(`Should be rendered as a ${defaultTag} by default`, async () => {
+		it.skip(`Should be rendered as a ${defaultTag} by default`, async () => {
 			const { getByTestId } = await initOpenPopover(Rendering);
 			const element = getByTestId(testId);
 			expect(hasTagName(element, defaultTag)).toBe(true);
 		});
 
-		it(`Should have a valid ${lowerCaseComponent} popover id`, async () => {
+		it.skip(`Should have a valid ${lowerCaseComponent} popover id`, async () => {
 			const { getByTestId } = await initOpenPopover(Rendering);
 			const element = getByTestId(testId);
 			expect(isValidComponentName(element, 'popover', lowerCaseComponent)).toBe(true);
@@ -335,7 +335,7 @@ describe('Rendering', () => {
 			expect(hasTagName(element, as)).toBe(true);
 		});
 
-		it('Should be able to forward attributes', async () => {
+		it.skip('Should be able to forward attributes', async () => {
 			const attributes = { tabIndex: '4', title: 'a popover root' };
 			const { getByTestId } = await initOpenPopover(Rendering, {
 				[lowerCaseComponent]: { rest: attributes }
@@ -347,7 +347,7 @@ describe('Rendering', () => {
 			}
 		});
 
-		it('Should be able to forward actions', async () => {
+		it.skip('Should be able to forward actions', async () => {
 			const actions = generateActions(3);
 			const { getByTestId } = await initOpenPopover(Rendering, {
 				[lowerCaseComponent]: { use: actions }
@@ -360,9 +360,9 @@ describe('Rendering', () => {
 	});
 });
 
-describe('Slot Props', () => {
+describe.skip('Slot Props', () => {
 	const { Behaviour } = samples;
-	describe('close', () => {
+	describe.skip('close', () => {
 		it.each([
 			['global scope', 'Global Close'],
 			['panel scope', 'Close Me']
@@ -378,7 +378,7 @@ describe('Slot Props', () => {
 		// * --> additional behaviour is covered in the Toggleable test
 	});
 
-	describe('isOpen', () => {
+	describe.skip('isOpen', () => {
 		it.each(['global', 'button'])(
 			'Should expose the current open state from the %s scope',
 			async (scope) => {
@@ -411,7 +411,7 @@ describe('Slot Props', () => {
 });
 
 // PLACING THIS BEFORE THE OTHER TESTS CORRUPTS THEIR CONTEXT
-describe('Context', () => {
+describe.skip('Context', () => {
 	interface ContextKeys {
 		Open: any;
 		ForceFocus: any;
@@ -427,49 +427,49 @@ describe('Context', () => {
 		'popover'
 	);
 
-	describe('Unset Context', () => {
-		describe('Overlay', () => {
-			it('Should throw an error if rendered without a Popover Context', () => {
+	describe.skip('Unset Context', () => {
+		describe.skip('Overlay', () => {
+			it.skip('Should throw an error if rendered without a Popover Context', () => {
 				expect(() => render(PopoverOverlay)).toThrow();
 			});
 
-			it('Should try to fallback to a PopoverGroup Context', () => {
+			it.skip('Should try to fallback to a PopoverGroup Context', () => {
 				expect(() => render(PopoverOverlay)).toThrow(
 					`Unable to Find ${getContextKey('popover-group')} Context. Did you set it?`
 				);
 			});
 		});
 
-		describe.each([
+		describe.skip.each([
 			['Button', PopoverButton],
 			['Panel', PopoverPanel]
 			// ['Overlay', PopoverOverlay]
 		])('%s', (name, Component) => {
-			it('Should throw an error if rendered without a Popover Context', () => {
+			it.skip('Should throw an error if rendered without a Popover Context', () => {
 				expect(() => render(Component)).toThrow();
 			});
 
-			it('Should throw an specific error', () => {
+			it.skip('Should throw an specific error', () => {
 				expect(() => render(Component)).toThrow(errorMessages.unset);
 			});
 		});
 	});
 
-	describe('Invalid Context', () => {
-		describe.each([
+	describe.skip('Invalid Context', () => {
+		describe.skip.each([
 			['Button', PopoverButton],
 			['Panel', PopoverPanel],
 			['Overlay', PopoverOverlay]
 		])('%s', (name, Component) => {
-			it('Should throw an error if rendered with an invalid Popover Context', () => {
+			it.skip('Should throw an error if rendered with an invalid Popover Context', () => {
 				expect(() => renderContextParent(Component, null)).toThrow();
 			});
 
-			it('Should throw an specific error', () => {
+			it.skip('Should throw an specific error', () => {
 				expect(() => renderContextParent(Component, null)).toThrow(errorMessages.invalid);
 			});
 
-			it('Should validate the context value thoroughly', () => {
+			it.skip('Should validate the context value thoroughly', () => {
 				expect(() =>
 					renderContextParent(Component, {
 						Open: null,

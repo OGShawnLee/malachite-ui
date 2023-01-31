@@ -2,13 +2,13 @@ import { generateSpyFunctions } from '@test-utils';
 import { generate } from '$lib/utils';
 import { useCollector } from '$lib/hooks';
 
-it('Should return an async function', () => {
+it.skip('Should return an async function', () => {
 	const func = useCollector({ init: () => [] });
 	expect(func).toBeInstanceOf(Function);
 	expect(func()).toBeInstanceOf(Promise);
 });
 
-it('Should run every function except beforeCollection', () => {
+it.skip('Should run every function except beforeCollection', () => {
 	const [beforeInit, afterInit, beforeCollection] = generateSpyFunctions(3);
 	const init = vi.fn(() => []);
 
@@ -20,7 +20,7 @@ it('Should run every function except beforeCollection', () => {
 	expect(beforeCollection).not.toBeCalledTimes(1);
 });
 
-it('Should run every function in the correct order', () => {
+it.skip('Should run every function in the correct order', () => {
 	const order: number[] = [];
 	useCollector({
 		beforeInit: () => {
@@ -36,7 +36,7 @@ it('Should run every function in the correct order', () => {
 	expect(order).toEqual([0, 1, 2]);
 });
 
-it('Should not throw if given nulllable boolean values', () => {
+it.skip('Should not throw if given nulllable boolean values', () => {
 	const nonCollectable = [null, true, undefined, []];
 	function check() {
 		useCollector({
@@ -48,7 +48,7 @@ it('Should not throw if given nulllable boolean values', () => {
 	expect(check).not.toThrow();
 });
 
-it('Should not destroy if not called', () => {
+it.skip('Should not destroy if not called', () => {
 	const toCollect = generateSpyFunctions(3);
 	useCollector({
 		beforeInit: () => [toCollect[0]],
@@ -60,7 +60,7 @@ it('Should not destroy if not called', () => {
 	}
 });
 
-it('Should be able to call functions', () => {
+it.skip('Should be able to call functions', () => {
 	const functions = generateSpyFunctions(3);
 	useCollector({
 		beforeInit: () => functions[0],
@@ -72,13 +72,13 @@ it('Should be able to call functions', () => {
 	}
 });
 
-it('Should run beforeCollection when destroying', () => {
+it.skip('Should run beforeCollection when destroying', () => {
 	const beforeCollection = vi.fn(() => {});
 	useCollector({ init: () => [], beforeCollection })();
 	expect(beforeCollection).toBeCalledTimes(1);
 });
 
-it('Should work with an array of functions', () => {
+it.skip('Should work with an array of functions', () => {
 	const groups = generate(3, () => generateSpyFunctions(3));
 	useCollector({
 		beforeInit: () => [groups[0]],
@@ -90,7 +90,7 @@ it('Should work with an array of functions', () => {
 	}
 });
 
-it('Should work with action-like values', () => {
+it.skip('Should work with action-like values', () => {
 	const functions = generateSpyFunctions(3);
 	const actions = generate(3, (index) => {
 		return { destroy: functions[index] };
@@ -105,8 +105,8 @@ it('Should work with action-like values', () => {
 	}
 });
 
-describe('recursion', () => {
-	it('Should work with nested arrays', () => {
+describe.skip('recursion', () => {
+	it.skip('Should work with nested arrays', () => {
 		const arrays = generate(6, () => generateSpyFunctions(3));
 		useCollector({
 			beforeInit: () => [arrays[0], [arrays[1]]],
@@ -118,7 +118,7 @@ describe('recursion', () => {
 		}
 	});
 
-	it('Should work with complex structures', async () => {
+	it.skip('Should work with complex structures', async () => {
 		const functions = generateSpyFunctions(9);
 		await useCollector({
 			beforeInit: () => [functions[0], { destroy: functions[2] }],

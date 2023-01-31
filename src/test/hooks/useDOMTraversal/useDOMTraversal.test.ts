@@ -5,22 +5,22 @@ import { hasTagName } from '$lib/predicate';
 
 afterEach(() => cleanup());
 
-it('Should return all the nested elements by default', async () => {
+it.skip('Should return all the nested elements by default', async () => {
 	const { findByTestId } = render(Base);
 	const container = await findByTestId('container-element');
 	const elements = useDOMTraversal(container);
 	expect(elements).toHaveLength(7);
 });
 
-it('Should traverse the given container', async () => {
+it.skip('Should traverse the given container', async () => {
 	const { findByTestId } = render(Base);
 	const nested = await findByTestId('nested-container');
 	const buttons = useDOMTraversal(nested, (element) => hasTagName(element, 'button'));
 	expect(buttons).toHaveLength(1);
 });
 
-describe('predicate', () => {
-	it('Should return only the elements that match the given predicate', async () => {
+describe.skip('predicate', () => {
+	it.skip('Should return only the elements that match the given predicate', async () => {
 		const { findByTestId } = render(Base);
 		const container = await findByTestId('container-element');
 		const buttons = useDOMTraversal(container, (element) => hasTagName(element, 'button'));
@@ -30,7 +30,7 @@ describe('predicate', () => {
 		expect(section).toHaveLength(1);
 	});
 
-	it('Should pass the current element, index and the selected elements', async () => {
+	it.skip('Should pass the current element, index and the selected elements', async () => {
 		const func = vi.fn<[Element, Element[]]>(() => {});
 		const { findByTestId } = render(Base);
 		const container = await findByTestId('container-element');

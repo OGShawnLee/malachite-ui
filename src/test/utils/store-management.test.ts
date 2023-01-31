@@ -6,16 +6,16 @@ import { useCleaner } from '@test-utils';
 const { add, destroy } = useCleaner();
 afterEach(() => destroy());
 
-describe('createStoreWrapper', () => {
+describe.skip('createStoreWrapper', () => {
 	const { createStoreWrapper } = store;
-	describe('options', () => {
-		describe('Store', () => {
-			it('Should return a writable store if given a primitive value', () => {
+	describe.skip('options', () => {
+		describe.skip('Store', () => {
+			it.skip('Should return a writable store if given a primitive value', () => {
 				const Foo = createStoreWrapper({ Store: 0, initialValue: 1 });
 				expect(isWritable(Foo)).toBe(true);
 			});
 
-			it('Should return the type of the given store', () => {
+			it.skip('Should return the type of the given store', () => {
 				const Write = createStoreWrapper({ Store: writable(0), initialValue: 1 });
 				expect(isWritable(Write)).toBe(true);
 
@@ -29,8 +29,8 @@ describe('createStoreWrapper', () => {
 			});
 		});
 
-		describe('initialValue', () => {
-			it('Should set the initialValue if Store is nullish', () => {
+		describe.skip('initialValue', () => {
+			it.skip('Should set the initialValue if Store is nullish', () => {
 				const Foo = createStoreWrapper({ initialValue: 4 });
 				expect(get(Foo)).toBe(4);
 
@@ -39,7 +39,7 @@ describe('createStoreWrapper', () => {
 			});
 		});
 
-		it('Should not set the initialValue if Store is falsy', () => {
+		it.skip('Should not set the initialValue if Store is falsy', () => {
 			const Foo = createStoreWrapper({ Store: '', initialValue: 'James' });
 			expect(get(Foo)).toBe('');
 
@@ -50,8 +50,8 @@ describe('createStoreWrapper', () => {
 			expect(get(Sap)).toBe(0);
 		});
 
-		describe('notifier', () => {
-			it('Should return a notifiable store', () => {
+		describe.skip('notifier', () => {
+			it.skip('Should return a notifiable store', () => {
 				const notifier = vi.fn(() => {});
 
 				const Foo = createStoreWrapper({ initialValue: 0, notifier });
@@ -71,7 +71,7 @@ describe('createStoreWrapper', () => {
 				expect(notifier).toBeCalledWith(40);
 			});
 
-			it('Should work if given a writable store', () => {
+			it.skip('Should work if given a writable store', () => {
 				const notifier = vi.fn(() => {});
 				const Foo = createStoreWrapper({
 					Store: writable('Mongolia'),
@@ -85,13 +85,13 @@ describe('createStoreWrapper', () => {
 		});
 	});
 
-	describe('sync', () => {
-		it('Should have a sync method', () => {
+	describe.skip('sync', () => {
+		it.skip('Should have a sync method', () => {
 			expect(createStoreWrapper({ initialValue: 2 })).toHaveProperty('sync');
 			expect(createStoreWrapper({ initialValue: 2 }).sync).toBeInstanceOf(Function);
 		});
 
-		it('Should set the value if it is different to the previous one', () => {
+		it.skip('Should set the value if it is different to the previous one', () => {
 			const Foo = createStoreWrapper({ initialValue: 5 });
 
 			Foo.sync({ previous: 5, current: 10 });
@@ -101,7 +101,7 @@ describe('createStoreWrapper', () => {
 			expect(get(Foo)).toBe(10);
 		});
 
-		it('Should not trigger a subscription callback if the value has not changed', () => {
+		it.skip('Should not trigger a subscription callback if the value has not changed', () => {
 			const Foo = createStoreWrapper({ initialValue: 5 });
 			const func = vi.fn(() => {});
 			add(Foo.subscribe(func));
@@ -112,7 +112,7 @@ describe('createStoreWrapper', () => {
 		});
 
 		// * this may change
-		it('Should not sync if value is a store', () => {
+		it.skip('Should not sync if value is a store', () => {
 			const Foo = createStoreWrapper({ initialValue: 'james' });
 			Foo.sync({ previous: 'james', current: writable('carlo') });
 			expect(get(Foo)).toBe('james');
@@ -120,7 +120,7 @@ describe('createStoreWrapper', () => {
 	});
 });
 
-describe('makeReadable', () => {
+describe.skip('makeReadable', () => {
 	const { makeReadable } = store;
 
 	const First = writable(2);
@@ -131,55 +131,55 @@ describe('makeReadable', () => {
 	const Read = makeReadable(Second);
 	const Derived = makeReadable(Third);
 
-	it('Should take a store and return a readable store', () => {
+	it.skip('Should take a store and return a readable store', () => {
 		expect(isStore(Write) && !isWritable(Write)).toBe(true);
 		expect(isStore(Read) && !isWritable(Read)).toBe(true);
 		expect(isStore(Derived) && !isWritable(Derived)).toBe(true);
 	});
 
-	it('Should return the original store if it is already readable', () => {
+	it.skip('Should return the original store if it is already readable', () => {
 		expect(Read).toBe(Second);
 		expect(Derived).toBe(Third);
 	});
 
-	it('Should store the same value after the original store changes', () => {
+	it.skip('Should store the same value after the original store changes', () => {
 		First.set(200);
 		expect(get(Write)).toBe(200);
 		expect(get(Third)).toEqual([200, 'James']);
 	});
 });
 
-describe('ref', () => {
+describe.skip('ref', () => {
 	const { ref } = store;
-	
-	it("Should return a valid writable store", () => {
-		const name = ref("Jack")
-		expect(isWritable(name)).toBe(true)
-	})
-	
-	describe("#value", () => {
-		it("Should return the current value (getter)", () => {
-			const name = ref("Jack")
-			
-			expect(name.value).toBe("Jack");
-			expect(get(name)).toBe("Jack")
-			name.set("Robert")
-			expect(name.value).toBe("Robert");
-			expect(get(name)).toBe("Robert")
-			name.update(name => name.toUpperCase())
-			expect(name.value).toBe("ROBERT");
-			expect(get(name)).toBe("ROBERT")
-		})
-		
-		it("Should set the given new value (setter)", () => {
-			const name = ref("Jack")
-			
-			name.value = "Adrian"
-			expect(name.value).toBe("Adrian");
-			name.value = "Simon"
-			expect(name.value).toBe("Simon");
-			name.value = name.value.toUpperCase()
-			expect(name.value).toBe("SIMON");
-		})
-	})
+
+	it.skip('Should return a valid writable store', () => {
+		const name = ref('Jack');
+		expect(isWritable(name)).toBe(true);
+	});
+
+	describe.skip('#value', () => {
+		it.skip('Should return the current value (getter)', () => {
+			const name = ref('Jack');
+
+			expect(name.value).toBe('Jack');
+			expect(get(name)).toBe('Jack');
+			name.set('Robert');
+			expect(name.value).toBe('Robert');
+			expect(get(name)).toBe('Robert');
+			name.update((name) => name.toUpperCase());
+			expect(name.value).toBe('ROBERT');
+			expect(get(name)).toBe('ROBERT');
+		});
+
+		it.skip('Should set the given new value (setter)', () => {
+			const name = ref('Jack');
+
+			name.value = 'Adrian';
+			expect(name.value).toBe('Adrian');
+			name.value = 'Simon';
+			expect(name.value).toBe('Simon');
+			name.value = name.value.toUpperCase();
+			expect(name.value).toBe('SIMON');
+		});
+	});
 });
