@@ -1,49 +1,63 @@
 <script lang="ts">
-  import { createNavigable } from './state';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { Render } from '$lib/components';
-  import { useClassNameResolver } from '$lib/hooks';
-  import { createStoreWrapper } from '$lib/utils';
+	import type { Action, ComponentTagName } from "$lib/types";
+	import { Render } from "$lib/components";
+	import { createNavigableState } from "./state";
 
-  export let finite = false;
-  export let vertical = false;
-  export let global = false;
+	let className: string | undefined = undefined;
 
-  const { Finite, Global, Vertical, self } = createNavigable({
-    Finite: createStoreWrapper({ Store: finite, initialValue: false }),
-    Vertical: createStoreWrapper({ Store: vertical, initialValue: false }),
-    Global: createStoreWrapper({ Store: global, initialValue: false })
-  });
+	export let as: ComponentTagName = "div";
+	export let element: HTMLElement | undefined = undefined;
+	export let finite = false;
+	export let index = 0;
+	export let global = false;
+	export let vertical = false;
+	export let id: string | undefined = undefined;
+	export let use: Action[] | undefined = undefined;
+	export { className as class };
 
-  $: Finite.sync({ previous: $Finite, current: finite });
-  $: Vertical.sync({ previous: $Vertical, current: vertical });
-  $: Global.sync({ previous: $Global, current: global });
+	const { createNavigable, navigation } = createNavigableState({
+		initialIndex: index,
+		isFinite: finite,
+		isGlobal: global,
+		isVertical: vertical
+	});
 
-  const { Proxy, action } = self;
+	const { action, binder } = createNavigable(id);
 
-  let className: ClassName<'isDisabled'> = undefined;
-
-  export { className as class };
-  export let as: RenderElementTagName = 'div';
-  export let disabled: Nullable<boolean> = undefined;
-  export let element: HTMLElement | null = null;
-  export let use: Expand<Forwarder.Actions> = [];
-
-  let finalUse: Forwarder.Actions;
-  $: finalUse = [...use, [action]];
-
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isDisabled });
+	$: actions = use ? [action, ...use] : [action];
+	$: navigation.isFinite.value = finite;
+	$: navigation.isGlobal.value = global;
+	$: navigation.isVertical.value = vertical;
 </script>
 
 <Render
-  {as}
-  {Proxy}
-  bind:element
-  bind:disabled
-  class={finalClassName}
-  use={finalUse}
-  {...$$restProps}
+	{as}
+	class={className}
+	{id}
+	{...$$restProps}
+	bind:element
+	{binder}
+	{actions}
+	on:blur
+	on:change
+	on:click
+	on:contextmenu
+	on:dblclick
+	on:focus
+	on:focusin
+	on:focusout
+	on:input
+	on:keydown
+	on:keypress
+	on:keyup
+	on:mousedown
+	on:mouseenter
+	on:mouseleave
+	on:mousemove
+	on:mouseout
+	on:mouseover
+	on:mouseup
+	on:mousewheel
 >
-  <slot {isDisabled} navigable={action} />
+	<slot navigable={action} />
 </Render>
