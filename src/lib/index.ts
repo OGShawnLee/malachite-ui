@@ -4,6 +4,7 @@ export {
 	AccordionHeader,
 	AccordionItem,
 	AccordionPanel,
+	Button,
 	Dialog,
 	DialogContent,
 	DialogDescription,
