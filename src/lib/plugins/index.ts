@@ -7,6 +7,7 @@ export {
 } from './navigable';
 export {
 	handleAriaControls,
+	handleAriaDisabled,
 	handleAriaExpanded,
 	handleAriaLabelledby,
 	useCloseClickOutside,

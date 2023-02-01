@@ -15,6 +15,15 @@ export function handleAriaControls(panel: ElementBinder): Toggler.Plugin {
 	};
 }
 
+export function handleAriaDisabled(button: ElementBinder): Toggler.Plugin {
+	return function (element) {
+		return button.disabled.subscribe((isDisabled) => {
+			if (isDisabled) element.ariaDisabled = 'true';
+			element.ariaDisabled = null;
+		});
+	};
+}
+
 export const handleAriaExpanded: Toggler.Plugin = function (element) {
 	return this.isOpen.subscribe((isOpen) => {
 		element.ariaExpanded = '' + isOpen;

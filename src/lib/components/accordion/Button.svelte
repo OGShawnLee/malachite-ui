@@ -1,35 +1,62 @@
 <script lang="ts">
-  import { ItemContext } from './state';
-  import { Render } from '$lib/components';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { useClassNameResolver } from '$lib/hooks';
+	import type { Action, ClassName, ComponentTagName, Nullable } from "$lib/types";
+	import { ItemContext } from "./context";
+	import { Render } from "$lib/components";
+	import { useClassNameResolver } from "$lib/hooks";
 
-  const { Open, button } = ItemContext.getContext();
-  const { Proxy, action } = button;
+	let className: ClassName<"DISABLED" | "OPEN"> = undefined;
 
-  let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
+	export let as: ComponentTagName = "button";
+	export let element: HTMLElement | undefined = undefined;
+	export let id: string | undefined = undefined;
+	export let disabled: Nullable<boolean> = undefined;
+	export let use: Action[] | undefined = undefined;
+	export { className as class };
 
-  export { className as class };
-  export let as: RenderElementTagName = 'button';
-  export let element: HTMLElement | undefined = undefined;
-  export let disabled: Nullable<boolean> = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
+	const {
+		isOpen,
+		createAccordionButton,
+		panel: { finalName: panelName }
+	} = ItemContext.getContext();
+	const { action, binder } = createAccordionButton(id);
 
-  let finalUse: Forwarder.Actions;
-  $: finalUse = [...use, [action]];
-
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isDisabled, isOpen: $Open });
+	$: isDisabled = disabled ?? false;
+	$: finalClassName = useClassNameResolver(className)({ isOpen: $isOpen, isDisabled });
+	$: finalUse = use ? [action, ...use] : [action];
 </script>
 
 <Render
-  {as}
-  {Proxy}
-  bind:element
-  bind:disabled
-  class={finalClassName}
-  use={finalUse}
-  {...$$restProps}
+	{as}
+	class={finalClassName}
+	{id}
+	{...$$restProps}
+	bind:element
+	{binder}
+	actions={finalUse}
+	aria-expanded={$isOpen}
+	aria-controls={$panelName}
+	aria-disabled={disabled}
+	{disabled}
+	on:blur
+	on:change
+	on:click
+	on:contextmenu
+	on:dblclick
+	on:focus
+	on:focusin
+	on:focusout
+	on:input
+	on:keydown
+	on:keypress
+	on:keyup
+	on:mousedown
+	on:mouseenter
+	on:mouseleave
+	on:mousemove
+	on:mouseout
+	on:mouseover
+	on:mouseup
+	on:mousewheel
 >
-  <slot {isDisabled} isOpen={$Open} button={action} />
+	<slot {isDisabled} isOpen={$isOpen} button={action} />
 </Render>

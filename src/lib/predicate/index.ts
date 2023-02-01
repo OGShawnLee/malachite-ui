@@ -15,4 +15,4 @@ export {
 	isWithin
 } from './dom';
 export * from './internal';
-export * from './store';
+export { isElementBinder, isNotStore, isReadableRef, isStore, isWritable } from './store';

@@ -1,12 +1,20 @@
+import type { Expand } from '$lib/types';
 import { clearString } from '$lib/utils';
-import { isEmpty } from '$lib/predicate';
+import { isEmpty, isString } from '$lib/predicate';
 import { nanoid } from 'nanoid';
 import { LIBRARY_NAME } from '$lib/core';
 
 const UID_LENGTH = 8;
 
-export function useComponentNaming(name: string) {
-	const baseName = getUniqueName(name, 'component');
+interface Settings {
+	name: string;
+	parent?: string;
+}
+
+export function useComponentNaming(name: string | Expand<Settings>) {
+	const finalName = isString(name) ? name : name.name;
+	const parent = isString(name) ? undefined : name.parent;
+	const baseName = getUniqueName(finalName, 'component', parent);
 
 	function nameChild(name: string) {
 		return getUniqueName(name, 'child', baseName);

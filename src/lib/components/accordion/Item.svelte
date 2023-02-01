@@ -1,47 +1,56 @@
 <script lang="ts">
-  import { Context } from './state';
-  import { Render } from '$lib/components';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import type { Readable } from 'svelte/store';
-  import { useClassNameResolver } from '$lib/hooks';
-  import { storable, Toggleable } from '$lib/stores';
+	import type { Action, ClassName, ComponentTagName } from "$lib/types";
+	import { Render } from "$lib/components";
+	import { GroupContext } from "./context";
+	import { useClassNameResolver } from "$lib/hooks";
 
-  export let open: Readable<boolean> | boolean = false;
+	let className: ClassName<"OPEN"> = undefined;
 
-  const InitialOpen = storable({ Store: open, initialValue: false });
+	export let as: ComponentTagName = "div";
+	export let element: HTMLElement | undefined = undefined;
+	export let id: string | undefined = undefined;
+	export let use: Action[] | undefined = undefined;
+	export { className as class };
 
-  const { Open, button, header, panel, close } = Context.getContext().initItem({
-    Toggleable: new Toggleable(),
-    initialOpen: $InitialOpen
-  });
+	const { createAccordionItemState } = GroupContext.getContext();
+	const { isOpen, close, button, heading, panel } = createAccordionItemState();
 
-  let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
-
-  export { className as class };
-  export let as: RenderElementTagName = 'div';
-  export let element: HTMLElement | undefined = undefined;
-  export let disabled: Nullable<boolean> = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
-
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isDisabled, isOpen: $Open });
+	$: finalClassName = useClassNameResolver(className)({ isOpen: $isOpen });
 </script>
 
-<Render {as} bind:element bind:disabled class={finalClassName} {use} {...$$restProps}>
-  {#if $Open}
-    <slot name="up-panel" panel={panel.action} {close} />
-  {/if}
-
-  <slot
-    isOpen={$Open}
-    {isDisabled}
-    button={button.action}
-    header={header.action}
-    panel={panel.action}
-    {close}
-  />
-
-  {#if $Open}
-    <slot name="panel" panel={panel.action} {close} />
-  {/if}
+<Render
+	{as}
+	class={finalClassName}
+	{id}
+	{...$$restProps}
+	bind:element
+	actions={use}
+	on:blur
+	on:change
+	on:click
+	on:contextmenu
+	on:dblclick
+	on:focus
+	on:focusin
+	on:focusout
+	on:input
+	on:keydown
+	on:keypress
+	on:keyup
+	on:mousedown
+	on:mouseenter
+	on:mouseleave
+	on:mousemove
+	on:mouseout
+	on:mouseover
+	on:mouseup
+	on:mousewheel
+>
+	{#if $isOpen}
+		<slot name="up-panel" {panel} {close} />
+	{/if}
+	<slot isOpen={$isOpen} {button} {heading} {panel} {close} />
+	{#if $isOpen}
+		<slot name="panel" {panel} {close} />
+	{/if}
 </Render>

@@ -1,36 +1,53 @@
 <script lang="ts">
-  import { ItemContext } from './state';
-  import { Render } from '$lib/components';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { useClassNameResolver } from '$lib/hooks';
+	import type { Action, ClassName, ComponentTagName } from "$lib/types";
+	import { ItemContext } from "./context";
+	import { Render } from "$lib/components";
+	import { useClassNameResolver } from "$lib/hooks";
 
-  const { Open, header } = ItemContext.getContext();
-  const { Proxy, action } = header;
+	let className: ClassName<"OPEN"> = undefined;
 
-  let className: ClassName<'isDisabled' | 'isOpen'> = undefined;
+	export let as: ComponentTagName = "h3";
+	export let element: HTMLElement | undefined = undefined;
+	export let id: string | undefined = undefined;
+	export let use: Action[] | undefined = undefined;
 
-  export { className as class };
-  export let as: RenderElementTagName = 'h2';
-  export let element: HTMLElement | undefined = undefined;
-  export let level: number | string | undefined = undefined;
-  export let disabled: Nullable<boolean> = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
+	export { className as class };
 
-  let finalUse: Forwarder.Actions;
-  $: finalUse = [...use, [action, level]];
+	const { isOpen, createAccordionHeading } = ItemContext.getContext();
+	const { action, binder } = createAccordionHeading(id);
 
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isDisabled, isOpen: $Open });
+	$: finalClassName = useClassNameResolver(className)({ isOpen: $isOpen });
+	$: finalUse = use ? [action, ...use] : [action];
 </script>
 
 <Render
-  {as}
-  {Proxy}
-  bind:element
-  bind:disabled
-  class={finalClassName}
-  use={finalUse}
-  {...$$restProps}
+	{as}
+	class={finalClassName}
+	{id}
+	{...$$restProps}
+	bind:element
+	{binder}
+	actions={finalUse}
+	on:blur
+	on:change
+	on:click
+	on:contextmenu
+	on:dblclick
+	on:focus
+	on:focusin
+	on:focusout
+	on:input
+	on:keydown
+	on:keypress
+	on:keyup
+	on:mousedown
+	on:mouseenter
+	on:mouseleave
+	on:mousemove
+	on:mouseout
+	on:mouseover
+	on:mouseup
+	on:mousewheel
 >
-  <slot {isDisabled} isOpen={$Open} header={action} />
+	<slot isOpen={$isOpen} heading={action} />
 </Render>

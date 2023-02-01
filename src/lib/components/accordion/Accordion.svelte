@@ -1,46 +1,63 @@
 <script lang="ts">
-  import Accordion from './state';
-  import { Render } from '$lib/components';
-  import { storable } from '$lib/stores';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { useClassNameResolver } from '$lib/hooks';
+	import type { Action, ClassName, ComponentTagName } from "$lib/types";
+	import { createAccordionState } from "./state";
+	import { Render } from "$lib/components";
+	import { useClassNameResolver } from "$lib/hooks";
 
-  export let finite = false;
-  export let order = false;
+	let className: ClassName<"OPEN"> = undefined;
 
-  const { Open, Finite, ShouldOrder, accordion } = new Accordion({
-    Finite: storable({ Store: finite, initialValue: false }),
-    ShouldOrder: storable({ Store: order, initialValue: false })
-  });
+	export let as: ComponentTagName = "div";
+	export let disabled = false;
+	export let element: HTMLElement | undefined = undefined;
+	export let finite = false;
+	export let unique = true;
+	export let id: string | undefined = undefined;
+	export let use: Action[] | undefined = undefined;
+	export { className as class };
 
-  const { Proxy, action } = accordion;
+	const { createAccordion, navigation, isOpen, isUnique } = createAccordionState({
+		isDisabled: disabled,
+		isFinite: finite,
+		isVertical: true,
+		isUnique: unique
+	});
+	const { action, binder } = createAccordion(id);
 
-  $: Finite.sync({ previous: $Finite, value: finite });
-  $: ShouldOrder.sync({ previous: $ShouldOrder, value: order });
-
-  let className: ClassName<'isOpen' | 'isDisabled'> = undefined;
-
-  export { className as class };
-  export let as: RenderElementTagName = 'div';
-  export let disabled: Nullable<boolean> = undefined;
-  export let element: HTMLElement | undefined = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
-
-  let finalUse: Forwarder.Actions;
-  $: finalUse = [...use, [action]];
-
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isDisabled, isOpen: $Open });
+	$: navigation.isDisabled.value = disabled;
+	$: navigation.isFinite.value = finite;
+	$: isUnique.value = unique;
+	$: finalClassName = useClassNameResolver(className)({ isOpen: $isOpen });
+	$: finalUse = use ? [action, ...use] : [action];
 </script>
 
 <Render
-  {as}
-  {Proxy}
-  bind:element
-  bind:disabled
-  class={finalClassName}
-  use={finalUse}
-  {...$$restProps}
+	{as}
+	class={finalClassName}
+	{id}
+	{...$$restProps}
+	bind:element
+	{binder}
+	actions={finalUse}
+	on:blur
+	on:change
+	on:click
+	on:contextmenu
+	on:dblclick
+	on:focus
+	on:focusin
+	on:focusout
+	on:input
+	on:keydown
+	on:keypress
+	on:keyup
+	on:mousedown
+	on:mouseenter
+	on:mouseleave
+	on:mousemove
+	on:mouseout
+	on:mouseover
+	on:mouseup
+	on:mousewheel
 >
-  <slot isOpen={$Open} {isDisabled} accordion={action} />
+	<slot isDisabled={disabled} isOpen={$isOpen} accordion={action} />
 </Render>
