@@ -1,44 +1,59 @@
 <script lang="ts">
-  import Tabs from './state';
-  import { Render } from '$lib/components';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { storable } from '$lib/stores';
-  import { isNotStore } from '$lib/predicate';
-  import { useClassNameResolver } from '$lib/hooks';
+	import type { Action, ComponentTagName } from "$lib/types";
+	import { Render } from "$lib/components";
+	import { createTabGroupState } from "./state";
 
-  export let index = 0;
-  export let manual = false;
-  export let vertical = false;
-  export let order = false;
+	let className: string | undefined = undefined;
 
-  const { Index, Manual, ShouldOrder, Vertical, tabList, tabPanels, sync } = new Tabs({
-    Index: storable({
-      Store: index,
-      initialValue: 0,
-      notifier: (value) => isNotStore(index) && (index = value)
-    }),
-    Manual: storable({ Store: manual, initialValue: false }),
-    Vertical: storable({ Store: vertical, initialValue: false }),
-    ShouldOrder: storable({ Store: order, initialValue: false })
-  });
+	export let as: ComponentTagName = "div";
+	export let element: HTMLElement | undefined = undefined;
+	export let finite = false;
+	export let id: string | undefined = undefined;
+	export let initialIndex = 0;
+	export let manual = false;
+	export let vertical = false;
+	export let use: Action[] | undefined = undefined;
+	export { className as class };
 
-  $: sync({ previous: $Index, value: index });
-  $: Manual.sync({ previous: $Manual, value: manual });
-  $: ShouldOrder.sync({ previous: $ShouldOrder, value: order });
-  $: Vertical.sync({ previous: $Vertical, value: vertical });
+	const { isFinite, isManual, isVertical } = createTabGroupState({
+		isFinite: finite,
+		isManual: manual,
+		isVertical: vertical,
+		initialIndex: initialIndex
+	});
 
-  let className: ClassName<'isDisabled'> = undefined;
-
-  export { className as class };
-  export let as: RenderElementTagName = 'div';
-  export let disabled: Nullable<boolean> = undefined;
-  export let element: HTMLElement | undefined = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
-
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isDisabled });
+	$: isFinite.value = finite;
+	$: isManual.value = manual;
+	$: isVertical.value = vertical;
 </script>
 
-<Render {as} bind:element {disabled} class={finalClassName} {use} {...$$restProps}>
-  <slot {isDisabled} tabList={tabList.action} tabPanels={tabPanels.action} />
+<Render
+	{as}
+	class={className}
+	{id}
+	{...$$restProps}
+	bind:element
+	actions={use}
+	on:blur
+	on:change
+	on:click
+	on:contextmenu
+	on:dblclick
+	on:focus
+	on:focusin
+	on:focusout
+	on:input
+	on:keydown
+	on:keypress
+	on:keyup
+	on:mousedown
+	on:mouseenter
+	on:mouseleave
+	on:mousemove
+	on:mouseout
+	on:mouseover
+	on:mouseup
+	on:mousewheel
+>
+	<slot />
 </Render>

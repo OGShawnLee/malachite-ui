@@ -1,34 +1,50 @@
 <script lang="ts">
-  import { Context } from './state';
-  import { Render } from '$lib/components';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { useClassNameResolver } from '$lib/hooks';
+	import type { Action, ComponentTagName } from "$lib/types";
+	import { getContext } from "./state";
+	import { Render } from "$lib/components";
 
-  const { Proxy, action } = Context.getContext().tabPanels;
+	let className: string | undefined = undefined;
 
-  let className: ClassName<'isDisabled'> = undefined;
+	export let as: ComponentTagName = "div";
+	export let element: HTMLElement | undefined = undefined;
+	export let id: string | undefined = undefined;
+	export let use: Action[] | undefined = undefined;
+	export { className as class };
 
-  export { className as class };
-  export let as: RenderElementTagName = 'div';
-  export let element: HTMLElement | undefined = undefined;
-  export let disabled: Nullable<boolean> = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
+	const { createPanels } = getContext();
+	const { action, binder } = createPanels(id);
 
-  let finalUse: Forwarder.Actions;
-  $: finalUse = [...use, [action]];
-
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isDisabled });
+	$: finalUse = use ? [action, ...use] : [action];
 </script>
 
 <Render
-  {as}
-  {Proxy}
-  bind:element
-  bind:disabled
-  class={finalClassName}
-  use={finalUse}
-  {...$$restProps}
+	{as}
+	class={className}
+	{id}
+	{...$$restProps}
+	bind:element
+	{binder}
+	actions={finalUse}
+	on:blur
+	on:change
+	on:click
+	on:contextmenu
+	on:dblclick
+	on:focus
+	on:focusin
+	on:focusout
+	on:input
+	on:keydown
+	on:keypress
+	on:keyup
+	on:mousedown
+	on:mouseenter
+	on:mouseleave
+	on:mousemove
+	on:mouseout
+	on:mouseover
+	on:mouseup
+	on:mousewheel
 >
-  <slot {isDisabled} tabPanels={action} />
+	<slot tabpanels={action} />
 </Render>
