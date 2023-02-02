@@ -14,5 +14,4 @@ export {
 	isVoidElement,
 	isWithin
 } from './dom';
-export * from './internal';
 export { isElementBinder, isNotStore, isReadableRef, isStore, isWritable } from './store';
