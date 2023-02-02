@@ -118,18 +118,6 @@ export interface ReadableRef<T> extends Readable<T> {
 	readonly value: T;
 }
 
-export interface ReadableWrapper<T> extends Readable<T> {
-	sync: SyncFunction<T>;
-}
-
-export type Store<S> = [S] extends [Readable<infer V>]
-	? {
-			sync(this: void, configuration: { previous: V; value: Readable<V> | V }): void;
-	  } & S
-	: {
-			sync(this: void, configuration: { previous: S; value: Readable<S> | S }): void;
-	  } & Writable<S>;
-
 export type StoreValue<Union> = Union extends Readable<infer Value> ? Value : Union;
 
 declare type StoresValues<T> = T extends Readable<infer U>
@@ -137,11 +125,6 @@ declare type StoresValues<T> = T extends Readable<infer U>
 	: {
 			[K in keyof T]: T[K] extends Readable<infer U> ? U : never;
 	  };
-
-declare type SyncFunction<T> = (
-	this: void,
-	configuration: { previous: T; current: T | Readable<T> }
-) => void;
 
 export interface Switch extends Ref<boolean> {
 	toggle(this: void): void;
@@ -167,10 +150,6 @@ export namespace Toggler {
 		plugins?: Array<Plugin>;
 		onOpen?: (panel: HTMLElement) => void;
 	}
-}
-
-export interface WritableWrapper<T> extends Writable<T> {
-	sync: SyncFunction<T>;
 }
 
 // --> ClassName Resolver
