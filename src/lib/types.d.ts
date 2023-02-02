@@ -1,5 +1,5 @@
 import type { Writable, Readable, Unsubscriber } from 'svelte/store';
-import type { Navigable, Ordered, Toggleable } from '$lib/stores';
+import type { Navigable, Toggleable } from '$lib/stores';
 import type { ElementBinder } from '$lib/core';
 import type { ToggleableGroup } from './stores/Toggleable';
 
