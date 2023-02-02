@@ -143,6 +143,10 @@ declare type SyncFunction<T> = (
 	configuration: { previous: T; current: T | Readable<T> }
 ) => void;
 
+export interface Switch extends Ref<boolean> {
+	toggle(this: void): void;
+}
+
 export namespace Toggler {
 	export interface Settings {
 		isOpen?: boolean;

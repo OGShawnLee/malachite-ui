@@ -1,37 +1,51 @@
 <script lang="ts">
-  import Switch from './state';
-  import { Render } from '$lib/components';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { Bridge } from '$lib/stores';
-  import { GroupContext } from './Group.state';
-  import { useClassNameResolver } from '$lib/hooks';
+	import type { Action, ComponentTagName } from "$lib/types";
+	import Context from "./Group.context";
+	import { Render } from "$lib/components";
+	import { ElementBinder } from "$lib/core";
 
-  const { Checked, initDescription } = Switch.getContext(false) || GroupContext.getContext();
-  const { Proxy, action } = initDescription({ Description: new Bridge() });
+	let className: string | undefined = undefined;
 
-  let className: ClassName<'isChecked' | 'isDisabled'> = undefined;
+	export let as: ComponentTagName = "span";
+	export let element: HTMLElement | undefined = undefined;
+	export let id: string | undefined = undefined;
+	export let use: Action[] | undefined = undefined;
+	export { className as class };
 
-  export { className as class };
-  export let as: RenderElementTagName = 'p';
-  export let disabled: Nullable<boolean> = undefined;
-  export let element: HTMLElement | undefined = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
+	const { isChecked, createSwitchDescription } = Context.getContext();
+	const { binder, action } = createSwitchDescription(id, new ElementBinder());
 
-  let finalUse: Forwarder.Actions;
-  $: finalUse = [...use, [action]];
-
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isChecked: $Checked, isDisabled });
+	$: finalUse = use ? [action, ...use] : [action];
 </script>
 
 <Render
-  {as}
-  bind:element
-  {Proxy}
-  bind:disabled
-  class={finalClassName}
-  use={finalUse}
-  {...$$restProps}
+	{as}
+	class={className}
+	{id}
+	{...$$restProps}
+	bind:element
+	{binder}
+	actions={finalUse}
+	on:blur
+	on:change
+	on:click
+	on:contextmenu
+	on:dblclick
+	on:focus
+	on:focusin
+	on:focusout
+	on:input
+	on:keydown
+	on:keypress
+	on:keyup
+	on:mousedown
+	on:mouseenter
+	on:mouseleave
+	on:mousemove
+	on:mouseout
+	on:mouseover
+	on:mouseup
+	on:mousewheel
 >
-  <slot isChecked={$Checked} {isDisabled} description={action} />
+	<slot isChecked={$isChecked} description={action} />
 </Render>

@@ -1,6 +1,6 @@
 import type { Expand } from '$lib/types';
 import { clearString } from '$lib/utils';
-import { isEmpty, isString } from '$lib/predicate';
+import { isEmpty, isObject, isString } from '$lib/predicate';
 import { nanoid } from 'nanoid';
 import { LIBRARY_NAME } from '$lib/core';
 
@@ -9,12 +9,14 @@ const UID_LENGTH = 8;
 interface Settings {
 	name: string;
 	parent?: string;
+	overwrite?: string;
 }
 
 export function useComponentNaming(name: string | Expand<Settings>) {
 	const finalName = isString(name) ? name : name.name;
 	const parent = isString(name) ? undefined : name.parent;
-	const baseName = getUniqueName(finalName, 'component', parent);
+	let baseName = getUniqueName(finalName, 'component', parent);
+	if (isObject(name) && name.overwrite) baseName = name.overwrite;
 
 	function nameChild(name: string) {
 		return getUniqueName(name, 'child', baseName);

@@ -18,7 +18,7 @@ export {
 	PopoverPanel,
 	createPopoverState
 } from './popover';
-export * from './switch';
+export { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from './switch';
 export { Tab, TabGroup, TabList, TabPanel, TabPanels } from './tabs';
 export { default as Portal } from './portal';
 export { default as Render } from './render';

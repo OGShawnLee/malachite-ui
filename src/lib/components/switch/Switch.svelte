@@ -1,52 +1,62 @@
 <script lang="ts">
-  import Switch from './state';
-  import { Render } from '$lib/components';
-  import type { ClassName, Expand, Forwarder, Nullable, RenderElementTagName } from '$lib/types';
-  import { isNotStore } from '$lib/predicate';
-  import { useClassNameResolver } from '$lib/hooks';
+	import type { Action, ClassName, ComponentTagName, Nullable } from "$lib/types";
+	import { Render } from "$lib/components";
+	import { createSwitchState } from "./state";
+	import { useClassNameResolver } from "$lib/hooks";
 
-  export let checked = false;
+	let className: ClassName<"CHECKED" | "DISABLED"> = undefined;
 
-  const { Checked, button, label, description, sync } = new Switch({
-    Store: checked,
-    initialValue: false,
-    notifier: (newValue) => isNotStore(checked) && (checked = newValue)
-  });
+	export let as: ComponentTagName = "button";
+	export let element: HTMLElement | undefined = undefined;
+	export let checked = false;
+	export let disabled: Nullable<boolean> = undefined;
+	export let id: string | undefined = undefined;
+	export let use: Action[] | undefined = undefined;
+	export { className as class };
 
-  $: sync({ previous: $Checked, value: checked });
+	const { isChecked, createSwitch, descriptions, labels } = createSwitchState(checked);
+	const { binder, action } = createSwitch(id);
 
-  let className: ClassName<'isDisabled' | 'isChecked'> = undefined;
-
-  export { className as class };
-  export let as: RenderElementTagName = 'button';
-  export let disabled: Nullable<boolean> = undefined;
-  export let element: HTMLElement | undefined = undefined;
-  export let use: Expand<Forwarder.Actions> = [];
-
-  const { Proxy, action } = button;
-
-  let finalUse: Forwarder.Actions;
-  $: finalUse = [...use, [action]];
-
-  $: isDisabled = disabled ?? false;
-  $: finalClassName = useClassNameResolver(className)({ isChecked: $Checked, isDisabled });
+	$: isChecked.set(checked);
+	$: checked = $isChecked;
+	$: isDisabled = disabled ?? false;
+	$: finalClassName = useClassNameResolver(className)({ isChecked: $isChecked, isDisabled });
+	$: finalUse = use ? [action, ...use] : [action];
 </script>
 
 <Render
-  {as}
-  bind:element
-  {Proxy}
-  class={finalClassName}
-  bind:disabled
-  {...$$restProps}
-  use={finalUse}
-  on:click
+	{as}
+	class={finalClassName}
+	{id}
+	{...$$restProps}
+	bind:element
+	{binder}
+	actions={finalUse}
+	{disabled}
+	aria-checked={$isChecked}
+	aria-describedby={$descriptions}
+	aria-labelledby={$labels}
+	role="switch"
+	on:blur
+	on:change
+	on:click
+	on:contextmenu
+	on:dblclick
+	on:focus
+	on:focusin
+	on:focusout
+	on:input
+	on:keydown
+	on:keypress
+	on:keyup
+	on:mousedown
+	on:mouseenter
+	on:mouseleave
+	on:mousemove
+	on:mouseout
+	on:mouseover
+	on:mouseup
+	on:mousewheel
 >
-  <slot
-    isChecked={$Checked}
-    {isDisabled}
-    button={button.action}
-    label={label.action}
-    description={description.action}
-  />
+	<slot isChecked={$isChecked} {isDisabled} switcher={action} />
 </Render>
