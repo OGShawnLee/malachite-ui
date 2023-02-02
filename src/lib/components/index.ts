@@ -9,6 +9,7 @@ export { Button } from './button';
 export { Dialog, DialogContent, DialogDescription, DialogOverlay, DialogTitle } from './dialog';
 export { Disclosure, DisclosureButton, DisclosurePanel } from './disclosure';
 export { Navigable, NavigableItem } from './navigable';
+export { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from './listbox';
 export { Menu, MenuButton, MenuItem, MenuItems } from './menu';
 export { Popover, PopoverButton, PopoverGroup, PopoverOverlay, PopoverPanel } from './popover';
 export { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from './switch';
