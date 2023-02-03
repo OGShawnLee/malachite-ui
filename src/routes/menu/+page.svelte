@@ -1,217 +1,141 @@
 <script lang="ts">
+  import type { Nullable } from '$lib/types';
+  import { Page } from '@app/layout';
+  import { Toggle } from '@app/components';
   import { Menu, MenuButton, MenuItem, MenuItems } from '$lib';
-  import { useToggle } from '@test-utils';
-  import { fade, slide } from 'svelte/transition';
+  import { useClassNameResolver } from '$lib/hooks';
+  import { fade, fly, slide } from 'svelte/transition';
 
-  const [finite, toggleFinite] = useToggle();
-  const [horizontal, toggleHorizontal] = useToggle(true);
-  const [disabled, toggleDisabled] = useToggle(true);
+  const className = useClassNameResolver<'ACTIVE' | 'DISABLED'>({
+    base: 'px-4 py-2 | flex items-center gap-1.75 | text-left text-sm',
+    disabled: 'opacity-50',
+    active: 'text-white font-medium'
+  });
+
+  let horizontal = false;
+  let infinite = false;
+  let option: Nullable<string>;
 
   function handleClick(this: HTMLElement) {
-    alert(this.textContent);
+    option = this.textContent;
   }
 </script>
 
-<svelte:head>
-  <title>Malachite UI | Menu</title>
-</svelte:head>
-
-<main class="md:max-w-4xl xl:max-w-6xl mx-auto py-12 | grid gap-12">
-  <h1 class="text-6xl font-bold">Menu</h1>
-
-  <div class="grid gap-24">
-    <Menu class="grid gap-10" as="section" {finite}>
-      <header class="flex items-center gap-8">
-        <button
-          class="px-6 py-2 | rounded-md ring-2 {$finite
-            ? 'ring-green-400'
-            : 'ring-neutral-400'} font-medium"
-          on:click={toggleFinite}
-          aria-label="Toggle Finite Navigation"
-        >
-          Toggle
-        </button>
-        <h2 class="text-3xl font-bold">Finite Navigation</h2>
-      </header>
-      <MenuButton
-        class={{
-          base: 'max-w-[fit-content] px-6 py-2 | rounded-md font-medium ring-2',
-          open: { on: 'ring-green-400', off: 'ring-neutral-200' }
-        }}
-      >
-        Toggle
+<Page title="Menu">
+  <div class="flex items-center gap-3" slot="options">
+    <Toggle text="Toggle Infinite" bind:checked={infinite} />
+    <Toggle text="Toggle Horizontal" bind:checked={horizontal} />
+  </div>
+  <output class="max-w-fit px-6 py-2 | bg-neutral-800">
+    {option ? `You've clicked: ${option}` : 'Click an Option'}
+  </output>
+  <div class="grid grid-cols-4 gap-6">
+    <Menu class="flex flex-col items-start gap-3" {horizontal} {infinite} let:items>
+      <MenuButton class={{ base: 'button button--medium', open: 'text-white' }} use={[console.log]}>
+        Options
       </MenuButton>
-      <MenuItems class="max-w-sm | flex flex-col gap-3 | outline-none">
-        <MenuItem
-          class={{
-            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
-            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
-          }}
-          on:click={handleClick}
-        >
-          Activate
+      <div
+        class="w-40 | flex flex-col | bg-neutral-800 outline-none"
+        slot="items"
+        use:items
+        transition:slide|local
+      >
+        <MenuItem class={className} on:click={handleClick} let:isActive>
+          <i class="bx bx-archive" class:text-green-400={isActive} />
+          Archive
         </MenuItem>
-        <MenuItem
-          class={{
-            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
-            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
-          }}
-          on:click={handleClick}
-        >
+        <div class="w-full h-0.5 | bg-neutral-700/80" aria-hidden role="separator" />
+        <MenuItem class={className} on:click={handleClick} let:isActive>
+          <i class="bx bx-trash" class:text-green-400={isActive} />
+          Delete
+        </MenuItem>
+        <div class="w-full h-0.5 | bg-neutral-700/80" aria-hidden role="separator" />
+        <MenuItem class={className} on:click={handleClick} let:isActive>
+          <i class="bx bx-pen" class:text-green-400={isActive} />
           Edit
         </MenuItem>
-        <MenuItem
-          class={{
-            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
-            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
-          }}
-          on:click={handleClick}
-        >
-          Share
+        <div class="w-full h-0.5 | bg-neutral-700/80" aria-hidden role="separator" />
+        <MenuItem class={className} on:click={handleClick} let:isActive>
+          <i class="bx bx-duplicate" class:text-green-400={isActive} />
+          Duplicate
+        </MenuItem>
+      </div>
+    </Menu>
+    <Menu class="flex flex-col items-start gap-3" {horizontal} {infinite}>
+      <MenuButton class={{ base: 'button button--medium', open: 'text-white' }}>Options</MenuButton>
+      <MenuItems class="w-40 | flex flex-col | bg-neutral-800 outline-none">
+        <MenuItem class={className} on:click={handleClick} let:isActive>
+          <i class="bx bx-archive" class:text-green-400={isActive} />
+          Archive
+        </MenuItem>
+        <div class="w-full h-0.5 | bg-neutral-700/80" aria-hidden role="separator" />
+        <MenuItem class={className} on:click={handleClick} let:isActive>
+          <i class="bx bx-trash" class:text-green-400={isActive} />
+          Delete
+        </MenuItem>
+        <div class="w-full h-0.5 | bg-neutral-700/80" aria-hidden role="separator" />
+        <MenuItem class={className} on:click={handleClick} let:isActive>
+          <i class="bx bx-pen" class:text-green-400={isActive} />
+          Edit
+        </MenuItem>
+        <div class="w-full h-0.5 | bg-neutral-700/80" aria-hidden role="separator" />
+        <MenuItem class={className} on:click={handleClick} let:isActive>
+          <i class="bx bx-duplicate" class:text-green-400={isActive} />
+          Duplicate
         </MenuItem>
       </MenuItems>
     </Menu>
-    <Menu class="grid gap-10" as="section" {horizontal} let:isOpen let:items>
-      <header class="flex items-center gap-8">
-        <button
-          class="px-6 py-2 | rounded-md ring-2 {$horizontal
-            ? 'ring-green-400'
-            : 'ring-neutral-400'} font-medium"
-          on:click={toggleHorizontal}
-          aria-label="Toggle Finite Navigation"
-        >
-          Toggle
-        </button>
-        <h2 class="text-3xl font-bold">Horizontal Navigation</h2>
-      </header>
-      <div class="flex items-start gap-10" class:flex-col={!$horizontal}>
-        <MenuButton
-          class={{
-            base: 'max-w-[fit-content] px-6 py-2 | rounded-md font-medium ring-2',
-            open: { on: 'ring-green-400', off: 'ring-neutral-200' }
-          }}
-        >
-          Toggle
-        </MenuButton>
-        {#if isOpen}
-          <ul
-            class="min-w-sm | flex gap-3 | outline-none"
-            class:flex-col={!$horizontal}
-            use:items
-            transition:fade
-          >
-            <MenuItem
-              class={{
-                base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
-                selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
-              }}
-            >
-              Activate
-            </MenuItem>
-            <MenuItem
-              class={{
-                base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
-                selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
-              }}
-            >
-              Edit
-            </MenuItem>
-            <MenuItem
-              class={{
-                base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
-                selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
-              }}
-            >
-              Share
-            </MenuItem>
-          </ul>
-        {/if}
+    <Menu class="flex flex-col items-start gap-3" {horizontal} {infinite}>
+      <MenuButton class={{ base: 'button button--medium', open: 'text-white' }}>Options</MenuButton>
+      <div slot="items" transition:fly|local={{ y: 15 }}>
+        <MenuItems class="w-40 | grid | bg-neutral-800 outline-none" static>
+          <MenuItem class={className} on:click={handleClick} let:isActive>
+            <i class="bx bx-archive" class:text-green-400={isActive} />
+            Archive
+          </MenuItem>
+          <div class="w-full h-0.5 | bg-neutral-700/80" aria-hidden role="separator" />
+          <MenuItem class={className} on:click={handleClick} disabled>
+            <i class="bx bx-trash" />
+            Delete
+          </MenuItem>
+          <div class="w-full h-0.5 | bg-neutral-700/80" aria-hidden role="separator" />
+          <MenuItem class={className} on:click={handleClick} let:isActive>
+            <i class="bx bx-pen" class:text-green-400={isActive} />
+            Edit
+          </MenuItem>
+          <div class="w-full h-0.5 | bg-neutral-700/80" aria-hidden role="separator" />
+          <MenuItem class={className} on:click={handleClick} let:isActive>
+            <i class="bx bx-duplicate" class:text-green-400={isActive} />
+            Duplicate
+          </MenuItem>
+        </MenuItems>
       </div>
     </Menu>
-    <Menu class="grid gap-10" as="section" let:items>
-      <header class="flex items-center gap-8">
-        <button
-          class="px-6 py-2 | rounded-md ring-2 {$disabled
-            ? 'ring-green-400'
-            : 'ring-neutral-400'} font-medium"
-          on:click={toggleDisabled}
-          aria-label="Toggle Finite Navigation"
-        >
-          Toggle
-        </button>
-        <div>
-          <h2 class="text-3xl font-bold">Navigation with Disabled Items</h2>
-          <p class="text-sm font-medium opacity-50">
-            Disabled elements should be skipped and not trigger click events and
-          </p>
-        </div>
-      </header>
-      <MenuButton
-        class={{
-          base: 'max-w-[fit-content] px-6 py-2 | rounded-md font-medium ring-2',
-          open: { on: 'ring-green-400', off: 'ring-neutral-200' }
-        }}
-      >
-        Toggle
-      </MenuButton>
-      <ul
-        class="max-w-sm | flex flex-col gap-3 | outline-none"
-        slot="items"
-        use:items
-        transition:slide
-      >
-        <MenuItem
-          class={{
-            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
-            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' },
-            disabled: 'opacity-50 ring-neutral-200'
-          }}
-          disabled={$disabled}
-          on:click={handleClick}
-        >
-          Activate
-        </MenuItem>
-        <MenuItem
-          class={{
-            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
-            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
-          }}
-          on:click={handleClick}
-        >
-          Edit
-        </MenuItem>
-        <MenuItem
-          class={{
-            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
-            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' },
-            disabled: 'opacity-50 ring-neutral-200'
-          }}
-          disabled={$disabled}
-          on:click={handleClick}
-        >
-          Delete
-        </MenuItem>
-        <MenuItem
-          class={{
-            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
-            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' }
-          }}
-          on:click={handleClick}
-        >
-          Share
-        </MenuItem>
-        <MenuItem
-          class={{
-            base: 'px-6 py-2 | rounded ring-2 font-medium cursor-pointer shadow-md',
-            selected: { on: 'ring-cyan-400 bg-cyan-400 text-white', off: 'ring-neutral-200' },
-            disabled: 'opacity-50 ring-neutral-200'
-          }}
-          disabled={$disabled}
-          on:click={handleClick}
-        >
-          Tweet
-        </MenuItem>
-      </ul>
+    <Menu class="flex flex-col items-start gap-3" {horizontal} {infinite}>
+      <MenuButton class={{ base: 'button button--medium', open: 'text-white' }}>Options</MenuButton>
+      <div slot="items" transition:fade>
+        <MenuItems class="w-40 | grid | bg-neutral-800 outline-none" static>
+          <MenuItem class={className} on:click={handleClick} let:isActive>
+            <i class="bx bx-archive" class:text-green-400={isActive} />
+            Archive
+          </MenuItem>
+          <div class="w-full h-0.5 | bg-neutral-700/80" aria-hidden role="separator" />
+          <MenuItem class={className} on:click={handleClick} disabled>
+            <i class="bx bx-trash" />
+            Delete
+          </MenuItem>
+          <div class="w-full h-0.5 | bg-neutral-700/80" aria-hidden role="separator" />
+          <MenuItem class={className} on:click={handleClick} let:isActive>
+            <i class="bx bx-pen" class:text-green-400={isActive} />
+            Edit
+          </MenuItem>
+          <div class="w-full h-0.5 | bg-neutral-700/80" aria-hidden role="separator" />
+          <MenuItem class={className} on:click={handleClick} disabled>
+            <i class="bx bx-duplicate" />
+            Duplicate
+          </MenuItem>
+        </MenuItems>
+      </div>
     </Menu>
   </div>
-</main>
+</Page>
