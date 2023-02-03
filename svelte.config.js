@@ -9,6 +9,8 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		alias: {
+			'@app': 'src/app',
+			'@app/*': 'src/app/*',
 			'@test-utils': 'src/test-utils',
 			'@test-utils/*': 'src/test-utils/*'
 		}
