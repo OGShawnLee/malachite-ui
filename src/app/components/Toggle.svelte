@@ -5,12 +5,12 @@
   export let checked = false;
   export let text = 'Toggle';
 
-  $: finalClassName = useClassNameResolver<'CHECKED'>({
-    base: 'px-8 py-2 | bg-neutral-800 border-2 border-transparent outline-none font-medium hover:bg-neutral-700 focus:border-white',
+  $: className = useClassNameResolver<'CHECKED'>({
+    base: 'button button--medium',
     checked: 'bg-neutral-700 text-white'
   })({ isChecked: checked });
 </script>
 
-<Switch class={finalClassName} bind:checked>
+<Switch class={className} bind:checked>
   <slot>{text}</slot>
 </Switch>
