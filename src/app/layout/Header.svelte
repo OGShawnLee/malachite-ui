@@ -24,6 +24,7 @@
         <MenuButton class={buttonClassName}>Components</MenuButton>
         <div class="absolute top-12 z-10" slot="items" transition:slide|local>
           <MenuItems class="w-40 | grid | bg-neutral-800 overflow-hidden outline-none" static>
+            <MenuItem class={className} as="a" href="/accordion">Accordion</MenuItem>
             <MenuItem class={className} as="a" href="/dialog">Dialog</MenuItem>
             <MenuItem class={className} as="a" href="/disclosure">Disclosure</MenuItem>
             <MenuItem class={className} as="a" href="/menu">Menu</MenuItem>
