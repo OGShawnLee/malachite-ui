@@ -23,18 +23,19 @@
       <Menu class="relative" infinite>
         <MenuButton class={buttonClassName}>Components</MenuButton>
         <div class="absolute top-12 z-10" slot="items" transition:slide|local>
-          <MenuItems class="w-40 | grid | bg-neutral-800 overflow-hidden outline-none" static>
+          <MenuItems class="w-40 | grid | bg-neutral-800 outline-none" static>
             <MenuItem class={className} as="a" href="/accordion">Accordion</MenuItem>
             <MenuItem class={className} as="a" href="/dialog">Dialog</MenuItem>
             <MenuItem class={className} as="a" href="/disclosure">Disclosure</MenuItem>
             <MenuItem class={className} as="a" href="/menu">Menu</MenuItem>
             <MenuItem class={className} as="a" href="/navigable">Navigable</MenuItem>
+            <MenuItem class={className} as="a" href="/popover">Popover</MenuItem>
             <MenuItem class={className} as="a" href="/tabs">Tabs</MenuItem>
           </MenuItems>
         </div>
       </Menu>
       <a
-        class="outline-white focus:text-white hover:text-white"
+        class="focus:text-white hover:text-white"
         href="https://github.com/OGShawnLee/malachite-ui"
         target="__blank"
       >
