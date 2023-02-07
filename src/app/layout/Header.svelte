@@ -30,6 +30,7 @@
             <MenuItem class={className} as="a" href="/menu">Menu</MenuItem>
             <MenuItem class={className} as="a" href="/navigable">Navigable</MenuItem>
             <MenuItem class={className} as="a" href="/popover">Popover</MenuItem>
+            <MenuItem class={className} as="a" href="/radio-group">Radio Group</MenuItem>
             <MenuItem class={className} as="a" href="/tabs">Tabs</MenuItem>
           </MenuItems>
         </div>

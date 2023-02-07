@@ -1,10 +1,14 @@
 import type { ReadableRef } from '$lib/types';
 import type { Readable, Writable } from 'svelte/store';
-import { ElementBinder } from '$lib/core';
+import { ElementBinder, ElementLabel } from '$lib/core';
 import { isFunction, isInterface } from '$lib/predicate';
 
 export function isElementBinder(value: unknown): value is ElementBinder {
 	return value instanceof ElementBinder;
+}
+
+export function isElementLabel(value: unknown): value is ElementLabel {
+	return value instanceof ElementLabel;
 }
 
 export function isStore(val: unknown): val is Readable<any> {

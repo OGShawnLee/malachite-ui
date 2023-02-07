@@ -12,6 +12,12 @@ export { Navigable, NavigableItem } from './navigable';
 export { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from './listbox';
 export { Menu, MenuButton, MenuItem, MenuItems } from './menu';
 export { Popover, PopoverButton, PopoverGroup, PopoverOverlay, PopoverPanel } from './popover';
+export {
+	RadioGroup,
+	RadioGroupDescription,
+	RadioGroupLabel,
+	RadioGroupOption
+} from './radio-group';
 export { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from './switch';
 export { Tab, TabGroup, TabList, TabPanel, TabPanels } from './tabs';
 export { default as Portal } from './portal';

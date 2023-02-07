@@ -14,4 +14,11 @@ export {
 	isVoidElement,
 	isWithin
 } from './dom';
-export { isElementBinder, isNotStore, isReadableRef, isStore, isWritable } from './store';
+export {
+	isElementBinder,
+	isElementLabel,
+	isNotStore,
+	isReadableRef,
+	isStore,
+	isWritable
+} from './store';

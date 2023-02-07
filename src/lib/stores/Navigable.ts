@@ -49,16 +49,20 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		});
 	}
 
+	get isAutomatic() {
+		return !this.isManual.value;
+	}
+
 	get isHorizontal() {
 		return !this.isVertical.value;
 	}
 
-	get targetIndex() {
-		return this.targetIndexRef.value;
-	}
-
 	get size() {
 		return this.items.size;
+	}
+
+	get targetIndex() {
+		return this.targetIndexRef.value;
 	}
 
 	initNavigation(this: Navigable, element: HTMLElement, settings: Navigation.RootSettings = {}) {
@@ -96,7 +100,7 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 			isSelected: false
 		};
 		this.items.set(name, finalItem as T);
-		binder.isSelected.value = this.isSelected(name);
+		binder.isSelected.value = this.isSelectedSSR(name);
 		this.handleItemActiveState(index, binder, name);
 		this.handleItemSelectedState(index, binder, name);
 		onDestroy(() => {
@@ -174,21 +178,29 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 
 	protected addItemEventListeners(this: Navigable, element: HTMLElement, index: number) {
 		const isButton = hasTagName(element, 'button');
-		return useCleanup([
-			useListener(element, 'click', () => {
-				this.set(index, false);
-			}),
-			useListener(element, 'focus', () => {
-				if (this.targetIndex.value !== index && isFocusable(element)) {
+		return useCollector({
+			beforeInit: () => {
+				if (isButton) return;
+				return [
+					useListener(element, 'mousedown', (event) => {
+						if (isDisabled(element)) event.preventDefault(); // prevent focusing element
+					}),
+					useListener(element, 'keydown', (event) => {
+						if (isDisabled(element) || this.isAutomatic) return;
+						if (event.code === 'Enter' || event.code === 'Space') element.click();
+					})
+				];
+			},
+			init: () => [
+				useListener(element, 'click', () => {
+					this.set(index, false);
+				}),
+				useListener(element, 'focus', () => {
+					if (this.isSelectedRuntime(element, index)) return;
 					this.interact(index, false);
-				}
-			}),
-			!isButton &&
-				useListener(element, 'keydown', (event) => {
-					if (isDisabled(element) || !this.isManual.value) return;
-					if (event.code === 'Enter' || event.code === 'Space') element.click();
 				})
-		]);
+			]
+		});
 	}
 
 	at(this: Navigable, index: number) {
@@ -305,11 +317,7 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		ctrlKey ? this.goLast() : this.goNext();
 	}
 
-	protected initialisePlugins(
-		this: Navigable,
-		element: HTMLElement,
-		plugins: Plugin<Navigable>[]
-	) {
+	protected initialisePlugins(this: Navigable, element: HTMLElement, plugins: Plugin<Navigable>[]) {
 		return plugins.map((plugin) => plugin.bind(this)(element));
 	}
 
@@ -326,10 +334,15 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		return this.targetIndex.value + 1 === this.elements.length;
 	}
 
-	isSelected(this: Navigable, name: string) {
+	isSelectedSSR(this: Navigable, name: string) {
 		if (this.isWaiting.value) return false;
 		const { index, binder } = this.items.getSafe(name);
-		return !binder.disabled.value && index === this.index.value;
+		return !binder.disabled && index === this.index.value;
+	}
+
+	isSelectedRuntime(this: Navigable, element: HTMLElement, index: number) {
+		if (this.isWaiting.value || isDisabled(element)) return false;
+		return index === this.index.value;
 	}
 
 	isValidIndex(this: Navigable, index: number) {
