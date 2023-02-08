@@ -27,6 +27,7 @@
             <MenuItem class={className} as="a" href="/accordion">Accordion</MenuItem>
             <MenuItem class={className} as="a" href="/dialog">Dialog</MenuItem>
             <MenuItem class={className} as="a" href="/disclosure">Disclosure</MenuItem>
+            <MenuItem class={className} as="a" href="/listbox">Listbox</MenuItem>
             <MenuItem class={className} as="a" href="/menu">Menu</MenuItem>
             <MenuItem class={className} as="a" href="/navigable">Navigable</MenuItem>
             <MenuItem class={className} as="a" href="/popover">Popover</MenuItem>
