@@ -1,5 +1,5 @@
 import type { Navigable, Toggleable } from '$lib/stores';
-import type { Nullable, Toggler } from '$lib/types';
+import type { Nullable, ReadableRef, Toggler } from '$lib/types';
 import type { ElementBinder } from '$lib/core';
 import { useDOMTraversal, useListener, useWindowListener } from '$lib/hooks';
 import { isEmpty, isFocusable, isHTMLElement, isNavigationKey, isWithin } from '$lib/predicate';
@@ -104,10 +104,13 @@ export function useHidePanelFocusOnClose(this: Toggleable, panel: HTMLElement) {
 	});
 }
 
-export function useNavigationStarter(navigation: Navigable): Toggler.Plugin {
+export function useNavigationStarter(
+	navigation: Navigable,
+	toolbar: { isVertical: ReadableRef<boolean> } | undefined
+): Toggler.Plugin {
 	return function (button) {
 		return useListener(button, 'keydown', async (event) => {
-			if (!isNavigationKey(event.code)) return;
+			if (!isNavigationKey(event.code) || toolbar?.isVertical.value) return;
 			switch (event.code) {
 				case 'ArrowDown':
 					if (navigation.isVertical.value) {
