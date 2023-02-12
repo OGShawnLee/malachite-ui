@@ -43,5 +43,9 @@ export {
 	TabGroup,
 	TabList,
 	TabPanel,
-	TabPanels
+	TabPanels,
+	Toolbar,
+	ToolbarGroup,
+	ToolbarItem,
+	ToolbarLabel
 } from '$lib/components';

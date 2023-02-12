@@ -20,5 +20,6 @@ export {
 } from './radio-group';
 export { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from './switch';
 export { Tab, TabGroup, TabList, TabPanel, TabPanels } from './tabs';
+export { Toolbar, ToolbarGroup, ToolbarItem, ToolbarLabel } from './toolbar';
 export { default as Portal } from './portal';
 export { default as Render } from './render';
