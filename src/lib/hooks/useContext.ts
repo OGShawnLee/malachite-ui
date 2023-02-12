@@ -21,6 +21,9 @@ export function useContext<C>(configuration: {
 
 			return undefined as [T] extends [true] ? C : C | undefined;
 		},
+		hasContext() {
+			return hasContext(name);
+		},
 		setContext: (value: C) => {
 			setContext(name, value);
 			return value;
