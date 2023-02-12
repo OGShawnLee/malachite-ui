@@ -1,9 +1,11 @@
 import type { Navigation } from '$lib/types';
+import ToolbarContext from '../toolbar/context';
 import { GroupContext, OptionContext } from './context';
 import { ElementBinder, ElementLabel, defineActionComponent } from '$lib/core';
 import { Navigable } from '$lib/stores';
 import { useComponentNaming, usePair } from '$lib/hooks';
 import { ref } from '$lib/utils';
+import { getRadioGroupNavigationHandler } from '$lib/plugins';
 
 interface Settings<T> extends Navigation.Settings {
 	initialValue: T;
@@ -14,6 +16,9 @@ interface Item<T> extends Navigation.Item {
 }
 
 export function createRadioGroupState<T>(settings: Settings<T>) {
+	const toolbar = ToolbarContext.getContext(false);
+	settings.isManual = ToolbarContext.hasContext();
+
 	const descriptions = new ElementLabel();
 	const globalValue = ref(settings.initialValue);
 	const navigation = new Navigable<Item<T>>(settings);
@@ -38,7 +43,9 @@ export function createRadioGroupState<T>(settings: Settings<T>) {
 			name: baseName,
 			onMount({ element }) {
 				return [
-					navigation.initNavigation(element),
+					navigation.initNavigation(element, {
+						handler: getRadioGroupNavigationHandler(toolbar)
+					}),
 					descriptions.handleAriaDescribedby(element),
 					labels.handleAriaLabelledby(element)
 				];
@@ -101,11 +108,18 @@ export function createRadioGroupState<T>(settings: Settings<T>) {
 				onMount({ element, name }) {
 					element.tabIndex = 0;
 					return [
+						toolbar?.item(element),
 						navigation.initItem(element, name),
 						descriptions.handleAriaDescribedby(element),
 						labels.handleAriaLabelledby(element),
 						usePair(option.disabled, option.isSelected, (isDisabled, isSelected) => {
 							element.tabIndex = isDisabled ? -1 : isSelected ? 0 : -1;
+						}),
+						option.isSelected.subscribe((isSelected) => {
+							if (isSelected) {
+								globalValue.set(initialValue);
+								element.ariaChecked = 'true';
+							} else element.ariaChecked = 'false';
 						})
 					];
 				}

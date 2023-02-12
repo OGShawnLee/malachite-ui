@@ -1,5 +1,5 @@
 import type { Navigable } from '$lib/stores';
-import type { Navigation, Plugin } from '$lib/types';
+import type { Navigation, Plugin, ReadableRef } from '$lib/types';
 import { useCleanup, useListener, useWindowListener } from '$lib/hooks';
 import {
 	isDisabled,
@@ -8,6 +8,34 @@ import {
 	isNavigationKey,
 	isVerticalNavigationKey
 } from '$lib/predicate';
+
+export function getRadioGroupNavigationHandler(
+	toolbar: { isVertical: ReadableRef<boolean> } | undefined
+): Navigation.Handler {
+	if (!toolbar) return handleNavigation;
+	return function (event) {
+		if (!isNavigationKey(event.code)) return;
+		const isHorizontalToolbar = !toolbar.isVertical.value;
+		switch (event.code) {
+			case 'ArrowDown':
+				if (toolbar.isVertical.value) return;
+				if (this.isVertical.value) event.preventDefault();
+				return this.handleNextKey(event.code, event.ctrlKey, false);
+			case 'ArrowUp':
+				if (toolbar.isVertical.value) return;
+				if (this.isVertical.value) event.preventDefault();
+				return this.handleBackKey(event.code, event.ctrlKey, false);
+			case 'ArrowLeft':
+				if (isHorizontalToolbar) return;
+				if (this.isHorizontal) event.preventDefault();
+				return this.handleBackKey(event.code, event.ctrlKey, false);
+			case 'ArrowRight':
+				if (isHorizontalToolbar) return;
+				if (this.isHorizontal) event.preventDefault();
+				return this.handleNextKey(event.code, event.ctrlKey, false);
+		}
+	};
+}
 
 export const handleAriaOrientation: Plugin<Navigable> = function (panel) {
 	return this.isVertical.subscribe((isVertical) => {

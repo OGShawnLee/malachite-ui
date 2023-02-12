@@ -1,4 +1,5 @@
 export {
+	getRadioGroupNavigationHandler,
 	handleAriaOrientation,
 	handleNavigation,
 	useHoverMove,
