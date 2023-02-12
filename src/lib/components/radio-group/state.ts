@@ -4,7 +4,6 @@ import { ElementBinder, ElementLabel, defineActionComponent } from '$lib/core';
 import { Navigable } from '$lib/stores';
 import { useComponentNaming, usePair } from '$lib/hooks';
 import { ref } from '$lib/utils';
-import { derived } from 'svelte/store';
 
 interface Settings<T> extends Navigation.Settings {
 	initialValue: T;
