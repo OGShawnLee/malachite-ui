@@ -2,6 +2,114 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.9.0-0](https://github.com/OGShawnLee/malachite-ui/compare/v0.8.0...v0.9.0-0) (2023-02-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **hooks:** remove useValidator hook
+* **hooks:** remove useDataSync hook
+* **stores:** remove Group store
+* **stores:** remove Ordered store
+* **utils:** remove createStoreWrapper fn and related types
+* **stores:** remove storable store
+* **stores:** remove notifiable store
+* **stores:** remove activable store
+* **switch:** update component
+* **accordion:** update component
+* **tabs:** update component
+* **utils:** rename getFocusableElements to getFocusableChildren
+* **utils:** narrow down container type to HTMLElement
+* **menu:** update component
+* **stores:** rewrite navigable from scratch
+* **dialog:** update component
+* **utils:** rename focusFirstElement fn to focusFirstChildElement
+* **hooks:** consider only HTMLElement children
+* **popover:** update Popover and PopoverGroup component
+* **hashable:** rewrite store
+* **disclosure:** update component
+* **hooks:** generate uid instead of requiring index
+* **hooks:** update useClassNameResolver fn
+* **render:** rewrite component
+* **core:** drop support for actions with parameters
+* **core:** update defineActionComponent fn
+* **core:** rewrite Binder store from scratch
+* **predicate:** rename is VoidTagName to isVoidElement
+* **hooks:** drop support for async unsubcribers
+* **toggleable:** rewrite from scratch
+* **plugins:** rename plugin
+* **stores:** move toggleable file to stores root dir
+* **plugins:** move plugins and handlers to plugins dir
+* **component:** drop support for passing a store as a prop
+* **utils:** rewrite ref store
+* **menu:** migrate state class to factory
+* **popover:** migrate state class to factory
+* **disclosure:** migrate state class to factory
+
+### Features
+
+* **accordion:** update component ([a45f321](https://github.com/OGShawnLee/malachite-ui/commit/a45f3217a9caf82d33b5712cb5a0985ac2fac1fe))
+* add button component ([1f5a572](https://github.com/OGShawnLee/malachite-ui/commit/1f5a57251513c79b514c2b03993a19a5a39d28d1))
+* add listbox component ([ddc0028](https://github.com/OGShawnLee/malachite-ui/commit/ddc00281635bdb0700f74b8b6f64d2c09544a8a6))
+* add radio-group component ([4c069be](https://github.com/OGShawnLee/malachite-ui/commit/4c069be25364dcd7b47ebe9475d7ec3bdcd6ba89))
+* add toolbar component ([dae2a07](https://github.com/OGShawnLee/malachite-ui/commit/dae2a07866173d89a8f394696d6d4b42b8807b38))
+* **button:** add toolbar synergy ([37eb80b](https://github.com/OGShawnLee/malachite-ui/commit/37eb80bdad9795e52d26caa45cbd5e6a34a42e01))
+* **core:** rewrite Binder store from scratch ([60bc5e0](https://github.com/OGShawnLee/malachite-ui/commit/60bc5e037c8f7dd2ad8138c50abd3da05fe1c746))
+* **dialog:** update component ([610bab6](https://github.com/OGShawnLee/malachite-ui/commit/610bab6b34f44f730d6b0dba4a08d652ff4515e1))
+* **disclosure:** migrate state class to factory ([f834f0d](https://github.com/OGShawnLee/malachite-ui/commit/f834f0d024d4df28ec9a366174a8926c67f62a77))
+* **disclosure:** update component ([3278a60](https://github.com/OGShawnLee/malachite-ui/commit/3278a604a01a8d186e84bb4b76d2aa9abb921e8b))
+* **hooks:** add hasContext useContext method ([a61ff80](https://github.com/OGShawnLee/malachite-ui/commit/a61ff801d51b2152719a68f40cfa66b7cc5bd493))
+* **hooks:** add useSwitch hook ([e854c92](https://github.com/OGShawnLee/malachite-ui/commit/e854c927488bbad63005bc71d0b379e7b12c6c27))
+* **hooks:** allow passing a callback to usePair hook ([534b4a8](https://github.com/OGShawnLee/malachite-ui/commit/534b4a8615d66cae2c18de9bb789c40d038f2a31))
+* **hooks:** generate uid instead of requiring index ([3c8d701](https://github.com/OGShawnLee/malachite-ui/commit/3c8d70174c0f1eba5263306736594aa76f0b8ea8))
+* **menu:** add toolbar synergy ([413a7af](https://github.com/OGShawnLee/malachite-ui/commit/413a7af56822018b7b0a728385245a3b90114409))
+* **menu:** migrate state class to factory ([efc516a](https://github.com/OGShawnLee/malachite-ui/commit/efc516ad4cc850702e419a9dc78b56f29c9859bd))
+* **menu:** update component ([40b4c61](https://github.com/OGShawnLee/malachite-ui/commit/40b4c612086df661a8014ad4f5b55d98e40746c0))
+* **navigable:** update component ([31d6d3b](https://github.com/OGShawnLee/malachite-ui/commit/31d6d3b802c32cf4dd690e2416d88458a8a2b4df))
+* **popover:** migrate state class to factory ([c84a6b9](https://github.com/OGShawnLee/malachite-ui/commit/c84a6b987130dabcf6040f82ec879ebb8164f6d3))
+* **popover:** update Popover and PopoverGroup component ([a5adc7b](https://github.com/OGShawnLee/malachite-ui/commit/a5adc7b0b91db046e69168a9392feefa582d86e9))
+* **predicate:** add isChildless fn ([36ea2f6](https://github.com/OGShawnLee/malachite-ui/commit/36ea2f6b2d4004b4fb87ebfebe40c1d37bd47d34))
+* **predicate:** add isClient fn ([0467138](https://github.com/OGShawnLee/malachite-ui/commit/0467138342ac03455d78c2d22212438e779648ff))
+* **predicate:** add isVoidTagName predicate ([5065978](https://github.com/OGShawnLee/malachite-ui/commit/5065978668a7243f89a34d8f10778292efe90b9e))
+* **predicate:** add isWhitespace fn ([58aeecc](https://github.com/OGShawnLee/malachite-ui/commit/58aeecc2fe0ea4f6aa3f7dd27444e27fce2d918f))
+* **radio-group:** add toolbar synergy ([8063529](https://github.com/OGShawnLee/malachite-ui/commit/806352981adc5ce4b6599b03c3cd538f1f9d89d0))
+* **switch:** update component ([ffeafa0](https://github.com/OGShawnLee/malachite-ui/commit/ffeafa0564ff7132da4a99628d052742bf643d7f))
+* **tabs:** update component ([11d9975](https://github.com/OGShawnLee/malachite-ui/commit/11d9975243f9bb844cfb7c66ba2a704881dec333))
+* **utils:** rewrite ref store ([dedcd85](https://github.com/OGShawnLee/malachite-ui/commit/dedcd855385876d24f5d190a19d93f844b174116))
+
+
+### Bug Fixes
+
+* **component:** drop support for passing a store as a prop ([be27e92](https://github.com/OGShawnLee/malachite-ui/commit/be27e927c0346dc65f5fed7b9d067f9843b00e1b))
+* **core:** drop support for actions with parameters ([eeb753c](https://github.com/OGShawnLee/malachite-ui/commit/eeb753ce2f78048bb37cc806cc4c20ea22b2fa7f))
+* **core:** update defineActionComponent fn ([b2b366f](https://github.com/OGShawnLee/malachite-ui/commit/b2b366f27cf88f4db6fea127951c12e9f78b2945))
+* **hashable:** rewrite store ([d21c782](https://github.com/OGShawnLee/malachite-ui/commit/d21c782a5eb395c27b42586a9d8f2650a0dd2182))
+* **hooks:** consider only HTMLElement children ([54ce9c9](https://github.com/OGShawnLee/malachite-ui/commit/54ce9c9d0bead7e0d8d94d017436c1e68da46c96))
+* **hooks:** drop support for async unsubcribers ([a31841f](https://github.com/OGShawnLee/malachite-ui/commit/a31841f579e00fb198a809bb7f8b0f567a984455))
+* **hooks:** return unsubscriber instead of async fn ([98c2688](https://github.com/OGShawnLee/malachite-ui/commit/98c26882433fb8cbdedb65142012c2ffe10a0265))
+* **hooks:** update useClassNameResolver fn ([a7cee70](https://github.com/OGShawnLee/malachite-ui/commit/a7cee7032a3fbf2f35945b51e8e882dc7fb97fc1))
+* **render:** handle void elements properly ([1e5f2e2](https://github.com/OGShawnLee/malachite-ui/commit/1e5f2e29c6908462dd51f0c74802d0033b2ce6a2))
+* **render:** rewrite component ([75d5082](https://github.com/OGShawnLee/malachite-ui/commit/75d5082e266862da923e62fe24201cea08fa64f1))
+* **stores:** rewrite navigable from scratch ([3be016a](https://github.com/OGShawnLee/malachite-ui/commit/3be016a5652d19063062a91a0f89530158ee985a))
+* **toggleable:** rewrite from scratch ([f280fd0](https://github.com/OGShawnLee/malachite-ui/commit/f280fd0f4313b6fc9db51615bcb322f5a338c519))
+
+
+* **hooks:** remove useDataSync hook ([741d762](https://github.com/OGShawnLee/malachite-ui/commit/741d7628572f9d26a0109b7cffcc8fc317021748))
+* **hooks:** remove useValidator hook ([cc9cecc](https://github.com/OGShawnLee/malachite-ui/commit/cc9ceccbb16bf67ad42d7f4db88139c19e7cbf75))
+* **plugins:** move plugins and handlers to plugins dir ([450e370](https://github.com/OGShawnLee/malachite-ui/commit/450e37029066d8a72015b8286e2506a5670e8cca))
+* **plugins:** rename plugin ([837e706](https://github.com/OGShawnLee/malachite-ui/commit/837e706dc4ed0311342d68fb6f36fa62714e2882))
+* **predicate:** rename is VoidTagName to isVoidElement ([65172db](https://github.com/OGShawnLee/malachite-ui/commit/65172dbbc32c2d6d417c8f5fc969248771806e51))
+* **stores:** move toggleable file to stores root dir ([116391d](https://github.com/OGShawnLee/malachite-ui/commit/116391d9f1e058896fa631bb45e6edc9bce5ce6c))
+* **stores:** remove activable store ([e0e9439](https://github.com/OGShawnLee/malachite-ui/commit/e0e9439c1ef85ff31f2c99078bd639458b38162e))
+* **stores:** remove Group store ([db942c7](https://github.com/OGShawnLee/malachite-ui/commit/db942c7427542baa88a4fb3591d2e4a9a8f28323))
+* **stores:** remove notifiable store ([dc0f5d3](https://github.com/OGShawnLee/malachite-ui/commit/dc0f5d390a8e3dde11ab4747991999453aaabdff))
+* **stores:** remove Ordered store ([0975e24](https://github.com/OGShawnLee/malachite-ui/commit/0975e24aea96a5c137810f10a6b0824478396d34))
+* **stores:** remove storable store ([3b780ae](https://github.com/OGShawnLee/malachite-ui/commit/3b780aec28eff353fadfa178a53ce2614355daa1))
+* **utils:** narrow down container type to HTMLElement ([f320b4b](https://github.com/OGShawnLee/malachite-ui/commit/f320b4b6099f958c7f64971d61bc8fa9f68bc6f4))
+* **utils:** remove createStoreWrapper fn and related types ([e640ce6](https://github.com/OGShawnLee/malachite-ui/commit/e640ce606677a39d09f82ada54279de159665ec1))
+* **utils:** rename focusFirstElement fn to focusFirstChildElement ([beb8d37](https://github.com/OGShawnLee/malachite-ui/commit/beb8d376dcab10e4c58634e3698d6485b20c2614))
+* **utils:** rename getFocusableElements to getFocusableChildren ([9a89622](https://github.com/OGShawnLee/malachite-ui/commit/9a896227339ba21ce9d0f05261b6eda906080275))
+
 ## [0.8.0](https://github.com/OGShawnLee/malachite-ui/compare/v0.7.1...v0.8.0) (2022-06-19)
 
 ### ⚠ BREAKING CHANGES
