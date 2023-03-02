@@ -18,7 +18,7 @@
 	const { action, binder, context: labels } = createToolbar(id);
 
 	$: finalUse = use ? [action, ...use] : [action];
-	$: navigation.isVertical.value = vertical;
+	$: navigation.isVertical.set(vertical);
 </script>
 
 <Render

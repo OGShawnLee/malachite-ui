@@ -47,25 +47,25 @@ describe.skip('ref', () => {
 		it.skip('Should return the current value (getter)', () => {
 			const name = ref('Jack');
 
-			expect(name.value).toBe('Jack');
+			expect(name.value()).toBe('Jack');
 			expect(get(name)).toBe('Jack');
 			name.set('Robert');
-			expect(name.value).toBe('Robert');
+			expect(name.value()).toBe('Robert');
 			expect(get(name)).toBe('Robert');
 			name.update((name) => name.toUpperCase());
-			expect(name.value).toBe('ROBERT');
+			expect(name.value()).toBe('ROBERT');
 			expect(get(name)).toBe('ROBERT');
 		});
 
 		it.skip('Should set the given new value (setter)', () => {
 			const name = ref('Jack');
 
-			name.value = 'Adrian';
-			expect(name.value).toBe('Adrian');
-			name.value = 'Simon';
-			expect(name.value).toBe('Simon');
-			name.value = name.value.toUpperCase();
-			expect(name.value).toBe('SIMON');
+			name.set('Adrian');
+			expect(name.value()).toBe('Adrian');
+			name.set('Simon');
+			expect(name.value()).toBe('Simon');
+			name.set(name.value().toUpperCase());
+			expect(name.value()).toBe('SIMON');
 		});
 	});
 });

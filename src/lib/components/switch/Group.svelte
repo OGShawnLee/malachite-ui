@@ -16,7 +16,7 @@
 
 	const { isChecked, isPassive } = createSwitchGroupState({ initialChecked, isPassive: passive });
 
-	$: isPassive.value = passive;
+	$: isPassive.set(passive);
 	$: finalClassName = useClassNameResolver(className)({ isChecked: $isChecked });
 </script>
 

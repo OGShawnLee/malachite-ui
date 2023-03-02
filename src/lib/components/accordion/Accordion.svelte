@@ -23,9 +23,9 @@
 	});
 	const { action, binder } = createAccordion(id);
 
-	$: navigation.isDisabled.value = disabled;
-	$: navigation.isFinite.value = finite;
-	$: isUnique.value = unique;
+	$: navigation.isDisabled.set(disabled);
+	$: navigation.isFinite.set(finite);
+	$: isUnique.set(unique);
 	$: finalClassName = useClassNameResolver(className)({ isOpen: $isOpen });
 	$: finalUse = use ? [action, ...use] : [action];
 </script>

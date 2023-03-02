@@ -22,9 +22,9 @@
 		initialIndex: initialIndex
 	});
 
-	$: isFinite.value = finite;
-	$: isManual.value = manual;
-	$: isVertical.value = vertical;
+	$: isFinite.set(finite);
+	$: isManual.set(manual);
+	$: isVertical.set(vertical);
 </script>
 
 <Render

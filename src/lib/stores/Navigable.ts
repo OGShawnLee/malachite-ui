@@ -50,11 +50,11 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 	}
 
 	get isAutomatic() {
-		return !this.isManual.value;
+		return !this.isManual.value();
 	}
 
 	get isHorizontal() {
-		return !this.isVertical.value;
+		return !this.isVertical.value();
 	}
 
 	get size() {
@@ -62,7 +62,7 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 	}
 
 	get targetIndex() {
-		return this.targetIndexRef.value;
+		return this.targetIndexRef.value();
 	}
 
 	initNavigation(this: Navigable, element: HTMLElement, settings: Navigation.RootSettings = {}) {
@@ -71,12 +71,12 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		return useCleanup(
 			this.index.subscribe(this.manualIndex.set),
 			useListener(element, 'keydown', (event) => {
-				if (this.isDisabled.value || this.isGlobal.value) return;
+				if (this.isDisabled.value() || this.isGlobal.value()) return;
 				onKeydown(event);
 			}),
 			useWindowListener('keydown', (event) => {
-				if (this.isDisabled.value) return;
-				if (this.isGlobal.value) onKeydown(event);
+				if (this.isDisabled.value()) return;
+				if (this.isGlobal.value()) onKeydown(event);
 			}),
 			this.initialisePlugins(element, plugins)
 		);
@@ -94,17 +94,17 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		const finalItem = {
 			...item,
 			binder,
-			disabled: binder.disabled.value,
+			disabled: binder.disabled.value(),
 			index,
 			isActive: false,
 			isSelected: false
 		};
 		this.items.set(name, finalItem as T);
-		binder.isSelected.value = this.isSelectedSSR(name);
+		binder.isSelected.set(this.isSelectedSSR(name));
 		this.handleItemActiveState(index, binder, name);
 		this.handleItemSelectedState(index, binder, name);
 		onDestroy(() => {
-			const index = this.elements.findIndex((element) => element === binder.element.value);
+			const index = this.elements.findIndex((element) => element === binder.element.value());
 			this.elements.splice(index, 1);
 			this.items.delete(name);
 		});
@@ -146,7 +146,8 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		onDestroy(
 			isActive.subscribe((isActive) => {
 				this.items.update(name, (item) => {
-					item.isActive = binder.isActive.value = isActive;
+					binder.isActive.set(isActive);
+					item.isActive = binder.isActive.value();
 					return item;
 				});
 			})
@@ -169,7 +170,8 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		onDestroy(
 			isSelected.subscribe((isSelected) => {
 				this.items.update(name, (item) => {
-					item.isSelected = binder.isSelected.value = isSelected;
+					binder.isSelected.set(isSelected);
+					item.isSelected = binder.isSelected.value();
 					return item;
 				});
 			})
@@ -208,7 +210,7 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 	}
 
 	get(this: Navigable<T>, fn: (entry: { name: string; item: T }) => unknown) {
-		for (const entry of this.items.hash.value) {
+		for (const entry of this.items.hash.value()) {
 			const item = { name: entry[0], item: entry[1] };
 			if (fn(item)) return item;
 		}
@@ -221,19 +223,19 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 
 	set(this: Navigable, index: number, focus = true) {
 		if (this.isValidIndex(index)) {
-			this.index.value = index;
-			this.isWaiting.value = false;
-			if (this.isFocusEnabled.value && focus) this.elements.at(index)?.focus();
+			this.index.set(index);
+			this.isWaiting.set(false);
+			if (this.isFocusEnabled.value() && focus) this.elements.at(index)?.focus();
 		}
 	}
 
 	interact(this: Navigable, index: number | Updater<number>, focus = true) {
-		index = isNumber(index) ? index : index(this.targetIndex.value);
+		index = isNumber(index) ? index : index(this.targetIndex.value());
 		if (this.isValidIndex(index)) {
-			this.targetIndex.value = index;
-			if (!this.isManual.value) this.isWaiting.set(false);
-			if (this.isFocusEnabled.value && focus) {
-				this.elements.at(this.targetIndex.value)?.focus();
+			this.targetIndex.set(index);
+			if (!this.isManual.value()) this.isWaiting.set(false);
+			if (this.isFocusEnabled.value() && focus) {
+				this.elements.at(this.targetIndex.value())?.focus();
 			}
 		}
 	}
@@ -256,14 +258,14 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 
 	goBack(this: Navigable) {
 		this.go('BACK', (index, isOverflowed) => {
-			if (isOverflowed && this.isFinite.value) return index;
+			if (isOverflowed && this.isFinite.value()) return index;
 			return isOverflowed ? this.elements.length - 1 : index - 1;
 		});
 	}
 
 	goNext(this: Navigable) {
 		this.go('NEXT', (index, isOverflowed) => {
-			if (isOverflowed && this.isFinite.value) return index;
+			if (isOverflowed && this.isFinite.value()) return index;
 			return isOverflowed ? 0 : index + 1;
 		});
 	}
@@ -278,21 +280,21 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 
 	findValidIndex(
 		this: Navigable,
-		{ edge, direction, index = this.targetIndex.value }: Navigation.FinderSettings
+		{ edge, direction, index = this.targetIndex.value() }: Navigation.FinderSettings
 	) {
-		const defaultIndex = this.targetIndex.value;
+		const defaultIndex = this.targetIndex.value();
 		const isFocusable = Navigable.isFocusable;
 		switch (direction) {
 			case 'BACK':
 				if (edge) return findIndex(this.elements, isFocusable);
 				const previous = findLastIndex(this.elements, isFocusable, index - 1);
 				if (previous > -1) return previous;
-				return this.isFinite.value ? defaultIndex : findLastIndex(this.elements, isFocusable);
+				return this.isFinite.value() ? defaultIndex : findLastIndex(this.elements, isFocusable);
 			case 'NEXT':
 				if (edge) return findLastIndex(this.elements, isFocusable);
 				const next = findIndex(this.elements, isFocusable, index + 1);
 				if (next > -1) return next;
-				return this.isFinite.value ? defaultIndex : findIndex(this.elements, isFocusable);
+				return this.isFinite.value() ? defaultIndex : findIndex(this.elements, isFocusable);
 			case 'BOUNCE':
 				const validIndex = findIndex(this.elements, isFocusable, index + 1);
 				return validIndex > -1 ? validIndex : findIndex(this.elements, isFocusable);
@@ -302,7 +304,7 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 	handleBackKey(this: Navigable, code: KeyBack, ctrlKey = false, directionSensitive = true) {
 		if (code === 'Home') return this.goFirst();
 		if (directionSensitive) {
-			if (this.isVertical.value && code !== 'ArrowUp') return;
+			if (this.isVertical.value() && code !== 'ArrowUp') return;
 			if (this.isHorizontal && code !== 'ArrowLeft') return;
 		}
 		ctrlKey ? this.goFirst() : this.goBack();
@@ -311,7 +313,7 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 	handleNextKey(this: Navigable, code: KeyNext, ctrlKey = false, directionSensitive = true) {
 		if (code === 'End') return this.goLast();
 		if (directionSensitive) {
-			if (this.isVertical.value && code !== 'ArrowDown') return;
+			if (this.isVertical.value() && code !== 'ArrowDown') return;
 			if (this.isHorizontal && code !== 'ArrowRight') return;
 		}
 		ctrlKey ? this.goLast() : this.goNext();
@@ -330,19 +332,19 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 	}
 
 	isOverflowed(this: Navigable, direction: Navigation.Directions) {
-		if (direction === 'BACK') return this.targetIndex.value - 1 < 0;
-		return this.targetIndex.value + 1 === this.elements.length;
+		if (direction === 'BACK') return this.targetIndex.value() - 1 < 0;
+		return this.targetIndex.value() + 1 === this.elements.length;
 	}
 
 	isSelectedSSR(this: Navigable, name: string) {
-		if (this.isWaiting.value) return false;
+		if (this.isWaiting.value()) return false;
 		const { index, binder } = this.items.getSafe(name);
-		return !binder.disabled && index === this.index.value;
+		return !binder.disabled && index === this.index.value();
 	}
 
 	isSelectedRuntime(this: Navigable, element: HTMLElement, index: number) {
-		if (this.isWaiting.value || isDisabled(element)) return false;
-		return index === this.index.value;
+		if (this.isWaiting.value() || isDisabled(element)) return false;
+		return index === this.index.value();
 	}
 
 	isValidIndex(this: Navigable, index: number) {

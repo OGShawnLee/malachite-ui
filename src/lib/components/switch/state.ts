@@ -6,7 +6,7 @@ export function createSwitchState(initialValue: boolean) {
 	const { isChecked, button, descriptions, labels } = handleGroupContext(initialValue);
 	const { baseName } = useComponentNaming({
 		name: 'switch',
-		overwrite: button.name.value
+		overwrite: button.name.value()
 	});
 
 	function createSwitch(id: string | undefined) {

@@ -20,7 +20,7 @@
     group: getContext(false)
   });
 
-  $: isFocusForced.value = forceFocus;
+  $: isFocusForced.set(forceFocus);
   $: finalClassName = useClassNameResolver(className)({ isOpen: $isOpen });
 </script>
 

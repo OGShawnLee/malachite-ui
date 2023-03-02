@@ -26,18 +26,18 @@ export default class ElementBinder {
 	}
 
 	onMount(this: ElementBinder, element: HTMLElement, name: string) {
-		this.node.value = element;
-		this.disabled.value = isDisabled(element);
-		this.name.value = name;
-		this.id.value = element.id;
+		this.node.set(element);
+		this.disabled.set(isDisabled(element));
+		this.name.set(name);
+		this.id.set(element.id);
 		return useCollector({
 			beforeCollection: () => {
-				this.node.value = undefined;
-				this.name.value = undefined;
-				this.id.value = undefined;
+				this.node.set(undefined);
+				this.name.set(undefined);
+				this.id.set(undefined);
 			},
 			init: () => [
-				this.isUsingFragment.value &&
+				this.isUsingFragment.value() &&
 					usePair(this.element, this.finalName, (element, id) => {
 						if (element && id) element.id = id;
 					})

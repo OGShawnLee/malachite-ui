@@ -64,12 +64,12 @@ export function createListboxState<T>(settings: Settings<T>) {
 							case 'ArrowDown':
 								toggler.open();
 								await tick();
-								if (navigation.selected.value) return;
+								if (navigation.selected.value()) return;
 								return navigation.goFirst();
 							case 'ArrowUp':
 								toggler.open();
 								await tick();
-								if (navigation.selected.value) return;
+								if (navigation.selected.value()) return;
 								return navigation.goLast();
 						}
 					})
@@ -112,7 +112,7 @@ export function createListboxState<T>(settings: Settings<T>) {
 					}),
 					labels.handleAriaLabelledby(element),
 					navigation.active.subscribe((active) => {
-						const name = active?.binder.finalName.value;
+						const name = active?.binder.finalName.value();
 						if (active && name) element.setAttribute('aria-activedescendant', name);
 						else element.removeAttribute('aria-activedescendant');
 					})
@@ -131,7 +131,7 @@ export function createListboxState<T>(settings: Settings<T>) {
 					onInit: ({ name }) => {
 						const index = navigation.onInitItem(name, binder, { initialValue });
 						if (isInitialValueFound || isDisabled) return;
-						if (initialValue === globalValue.value) {
+						if (initialValue === globalValue.value()) {
 							navigation.index.set(index);
 							navigation.isWaiting.set(false);
 							globalValue.set(initialValue);

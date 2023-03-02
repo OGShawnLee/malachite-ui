@@ -58,7 +58,7 @@ export const useCloseFocusLeave: Toggler.Plugin = function (panel) {
 	return useWindowListener('focusin', (event) => {
 		const { target } = event;
 		if (this.isClosed || target === document || target === window || !isHTMLElement(target)) return;
-		if (this.isFocusForced.value && !isWithin(panel, target)) return this.close(event);
+		if (this.isFocusForced.value() && !isWithin(panel, target)) return this.close(event);
 		if (this.isWithinElements(target) || this.group?.isWithinElements(target)) return;
 		this.close(event);
 	});
@@ -110,16 +110,16 @@ export function useNavigationStarter(
 ): Toggler.Plugin {
 	return function (button) {
 		return useListener(button, 'keydown', async (event) => {
-			if (!isNavigationKey(event.code) || toolbar?.isVertical.value) return;
+			if (!isNavigationKey(event.code) || toolbar?.isVertical.value()) return;
 			switch (event.code) {
 				case 'ArrowDown':
-					if (navigation.isVertical.value) {
+					if (navigation.isVertical.value()) {
 						this.open();
 						await tick();
 						return navigation.goFirst();
 					}
 				case 'ArrowUp':
-					if (navigation.isVertical.value) {
+					if (navigation.isVertical.value()) {
 						this.open();
 						await tick();
 						return navigation.goLast();

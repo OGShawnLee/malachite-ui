@@ -16,7 +16,7 @@ export function createSwitchGroupState(settings: Settings) {
 	const descriptions = new ElementLabel();
 	const labels = new ElementLabel();
 	const { baseName, nameChild } = useComponentNaming('switch');
-	button.name.value = baseName;
+	button.name.set(baseName);
 
 	Context.setContext({
 		isChecked,
@@ -55,7 +55,7 @@ export function createSwitchGroupState(settings: Settings) {
 					labels.onMountLabel(name, binder),
 					useListener(element, 'click', (event) => {
 						event.preventDefault();
-						if (button.disabled.value || isPassive.value) return;
+						if (button.disabled.value() || isPassive.value()) return;
 						isChecked.toggle();
 					})
 				];

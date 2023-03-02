@@ -86,7 +86,7 @@ export function createAccordionState(settings: Settings) {
 				id: id,
 				binder: panel,
 				name: nameChild('panel'),
-				isShowing: toggler.isOpen.value,
+				isShowing: toggler.isOpen.value(),
 				onMount({ element }) {
 					element.setAttribute('role', 'region');
 					return toggler.createPanel(element, {

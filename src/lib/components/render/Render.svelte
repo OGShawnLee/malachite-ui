@@ -16,10 +16,10 @@
 
   const { finalName } = binder;
 
-  $: binder.id.value = id;
-  $: binder.disabled.value = disabled;
+  $: binder.id.set(id);
+  $: binder.disabled.set(disabled);
   $: isUsingFragment = as === 'fragment';
-  $: binder.isUsingFragment.value = isUsingFragment;
+  $: binder.isUsingFragment.set(isUsingFragment);
   $: if (isUsingFragment && element && className) {
     element.className = className;
   }

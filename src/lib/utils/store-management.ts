@@ -7,9 +7,7 @@ import { onDestroy } from 'svelte';
 export function createReadableRef<T>(ref: Ref<T>): ReadableRef<T> {
 	return {
 		subscribe: ref.subscribe,
-		get value() {
-			return ref.value;
-		}
+		value: ref.value
 	};
 }
 
@@ -26,7 +24,7 @@ export function createDerivedRef<R extends Refs, T>(
 	}
 	return {
 		subscribe: store.subscribe,
-		get value() {
+		value() {
 			if (watch) return value;
 			return fn(getRefValue(ref));
 		}
@@ -34,7 +32,7 @@ export function createDerivedRef<R extends Refs, T>(
 }
 
 function getRefValue<R extends Refs>(refs: R): StoresValues<R> {
-	if (isReadableRef(refs)) return refs.value;
+	if (isReadableRef(refs)) return refs.value();
 	return refs.map((ref) => ref.value) as StoresValues<R>;
 }
 
@@ -42,24 +40,20 @@ export function makeReadable<T>(Store: Readable<T>) {
 	return isWritable(Store) ? (derived(Store, (value) => value) as Readable<T>) : Store;
 }
 
-export function ref<T>(initialValue: T, start?: StartStopNotifier<T>): Ref<T> {
-	const store = writable(initialValue, start);
+export function ref<T>(globalValue: T, start?: StartStopNotifier<T>): Ref<T> {
+	const store = writable(globalValue, start);
 	return {
+		set(value) {
+			globalValue = value;
+			store.set(value);
+		},
 		subscribe: store.subscribe,
-		get value() {
-			return initialValue;
+		update(callback) {
+			globalValue = callback(globalValue);
+			store.set(globalValue);
 		},
-		set value(value: T) {
-			initialValue = value;
-			store.set(initialValue);
-		},
-		set(value: T) {
-			initialValue = value;
-			store.set(initialValue);
-		},
-		update(callback: (currentValue: T) => T) {
-			initialValue = callback(initialValue);
-			store.set(initialValue);
+		value() {
+			return globalValue;
 		}
 	};
 }

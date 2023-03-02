@@ -23,8 +23,8 @@
 		isWaiting: true
 	});
 
-	$: navigation.isFinite.value = !infinite;
-	$: navigation.isVertical.value = !horizontal;
+	$: navigation.isFinite.set(!infinite);
+	$: navigation.isVertical.set(!horizontal);
 	$: value = $globalValue;
 </script>
 

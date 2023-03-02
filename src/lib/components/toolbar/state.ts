@@ -12,7 +12,7 @@ export function createToolbarState(settings: Navigation.Settings) {
 	const navigation = new Navigable(settings);
 	const { baseName, nameChild } = useComponentNaming({
 		name: 'toolbar',
-		parent: group?.toolbar.name.value
+		parent: group?.toolbar.name.value()
 	});
 
 	Context.setContext({

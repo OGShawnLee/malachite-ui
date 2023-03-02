@@ -106,7 +106,7 @@ export type Plugin<T extends object> = (this: T, element: HTMLElement) => Unsubs
 export type RenderElementTagName = keyof HTMLElementTagNameMap | 'slot';
 
 export interface Ref<T> extends Writable<T> {
-	value: T;
+	value(this: void): T;
 }
 
 declare type Refs =
@@ -115,7 +115,7 @@ declare type Refs =
 	| Array<ReadableRef<any>>;
 
 export interface ReadableRef<T> extends Readable<T> {
-	readonly value: T;
+	value(): T;
 }
 
 export type StoreValue<Union> = Union extends Readable<infer Value> ? Value : Union;

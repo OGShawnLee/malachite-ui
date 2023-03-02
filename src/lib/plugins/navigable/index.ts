@@ -15,15 +15,15 @@ export function getRadioGroupNavigationHandler(
 	if (!toolbar) return handleNavigation;
 	return function (event) {
 		if (!isNavigationKey(event.code)) return;
-		const isHorizontalToolbar = !toolbar.isVertical.value;
+		const isHorizontalToolbar = !toolbar.isVertical.value();
 		switch (event.code) {
 			case 'ArrowDown':
-				if (toolbar.isVertical.value) return;
-				if (this.isVertical.value) event.preventDefault();
+				if (toolbar.isVertical.value()) return;
+				if (this.isVertical.value()) event.preventDefault();
 				return this.handleNextKey(event.code, event.ctrlKey, false);
 			case 'ArrowUp':
-				if (toolbar.isVertical.value) return;
-				if (this.isVertical.value) event.preventDefault();
+				if (toolbar.isVertical.value()) return;
+				if (this.isVertical.value()) event.preventDefault();
 				return this.handleBackKey(event.code, event.ctrlKey, false);
 			case 'ArrowLeft':
 				if (isHorizontalToolbar) return;
@@ -49,9 +49,9 @@ export const handleNavigation: Navigation.Handler = function (event) {
 	const isNavigationRoot = event.target === event.currentTarget;
 	const isNavigationElement =
 		isNavigationRoot || (isHTMLElement(event.target) && this.isNavigationElement(event.target));
-	if (!this.isGlobal.value && !isNavigationElement) return;
+	if (!this.isGlobal.value() && !isNavigationElement) return;
 
-	if (isVerticalNavigationKey(event.code) && this.isVertical.value) event.preventDefault();
+	if (isVerticalNavigationKey(event.code) && this.isVertical.value()) event.preventDefault();
 	if (isHorizontalNavigationKey(event.code) && this.isHorizontal) event.preventDefault();
 
 	switch (event.code) {
@@ -60,7 +60,7 @@ export const handleNavigation: Navigation.Handler = function (event) {
 		case 'End':
 			if (event.code === 'End') {
 				event.preventDefault();
-				if (this.isGlobal.value) return;
+				if (this.isGlobal.value()) return;
 			}
 			return this.handleNextKey(event.code, event.ctrlKey);
 		case 'ArrowLeft':
@@ -68,13 +68,13 @@ export const handleNavigation: Navigation.Handler = function (event) {
 		case 'Home':
 			if (event.code === 'Home') {
 				event.preventDefault();
-				if (this.isGlobal.value) return;
+				if (this.isGlobal.value()) return;
 			}
 			return this.handleBackKey(event.code, event.ctrlKey);
 		case 'Enter':
 		case 'Space':
-			if (this.isFocusEnabled.value) return;
-			const element = this.at(this.manualIndex.value);
+			if (this.isFocusEnabled.value()) return;
+			const element = this.at(this.manualIndex.value());
 			if (element) {
 				if (event.code === 'Enter') event.preventDefault();
 				element.click();

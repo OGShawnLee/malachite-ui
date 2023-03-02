@@ -8,14 +8,5 @@ export default function useSwitch(initialValue: boolean): Switch {
 		isChecked.update((isChecked) => !isChecked);
 	}
 
-	return {
-		...isChecked,
-		toggle,
-		get value() {
-			return isChecked.value;
-		},
-		set value(value: boolean) {
-			isChecked.value = value;
-		}
-	};
+	return { ...isChecked, toggle };
 }

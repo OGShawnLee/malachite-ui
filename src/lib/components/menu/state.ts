@@ -77,7 +77,7 @@ export function createMenuState(settings: Navigation.Settings) {
 						onOpen: () => element.focus()
 					}),
 					navigation.active.subscribe((item) => {
-						const name = item?.binder.finalName.value;
+						const name = item?.binder.finalName.value();
 						if (name) element.setAttribute('aria-activedescendant', name);
 						else element.removeAttribute('aria-activedescendant');
 					})

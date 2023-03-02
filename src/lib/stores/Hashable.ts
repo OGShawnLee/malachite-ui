@@ -44,7 +44,7 @@ export default class Hashable<K, V> {
 	}
 
 	get size() {
-		return this.hash.value.size;
+		return this.hash.value().size;
 	}
 
 	clear(this: Hashable<K, V>) {
@@ -66,7 +66,7 @@ export default class Hashable<K, V> {
 	}
 
 	get(this: Hashable<K, V>, key: K) {
-		return this.hash.value.get(key);
+		return this.hash.value().get(key);
 	}
 
 	getSafe(this: Hashable<K, V>, key: K) {
@@ -75,12 +75,12 @@ export default class Hashable<K, V> {
 	}
 
 	has(this: Hashable<K, V>, key: K) {
-		return this.hash.value.has(key);
+		return this.hash.value().has(key);
 	}
 
 	set(this: Hashable<K, V>, key: K, value: V) {
 		this.hash.update((hash) => hash.set(key, value));
-		return this.hash.value.size;
+		return this.hash.value().size;
 	}
 
 	update(this: Hashable<K, V>, key: K, callback: (value: V) => V) {

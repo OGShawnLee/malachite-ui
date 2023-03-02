@@ -15,9 +15,9 @@ describe('method -> toggle', () => {
 
 	it('Should toggle the store value', () => {
 		const isChecked = useSwitch(false);
-		expect(isChecked.value).toBe(false);
+		expect(isChecked.value()).toBe(false);
 		isChecked.toggle();
-		expect(isChecked.value).toBe(true);
+		expect(isChecked.value()).toBe(true);
 	});
 });
 
@@ -28,15 +28,15 @@ describe('getter and setter -> value', () => {
 
 	it('Should return the current store value', () => {
 		const isChecked = useSwitch(false);
-		expect(isChecked.value).toBe(false);
+		expect(isChecked.value()).toBe(false);
 		isChecked.toggle();
-		expect(isChecked.value).toBe(true);
+		expect(isChecked.value()).toBe(true);
 	});
 
 	it('Should set the current store value', () => {
 		const isChecked = useSwitch(false);
-		expect(isChecked.value).toBe(false);
-		isChecked.value = true;
-		expect(isChecked.value).toBe(true);
+		expect(isChecked.value()).toBe(false);
+		isChecked.set(true);
+		expect(isChecked.value()).toBe(true);
 	});
 });

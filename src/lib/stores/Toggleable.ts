@@ -17,8 +17,8 @@ export class Toggleable {
 	protected readonly groupClient?: ReturnType<ToggleableGroup['createClient']>;
 
 	constructor({ isFocusForced = false, isOpen = false, group }: Toggler.Settings = {}) {
-		this.isFocusForced.value = isFocusForced;
-		this.isOpen.value = isOpen;
+		this.isFocusForced.set(isFocusForced);
+		this.isOpen.set(isOpen);
 		this.group = group;
 		this.groupClient = this.group?.createClient(this);
 		onDestroy(
@@ -33,29 +33,29 @@ export class Toggleable {
 	}
 
 	get isClosed() {
-		return this.isOpen.value === false;
+		return this.isOpen.value() === false;
 	}
 
 	close(this: Toggleable, event?: Event | HTMLElement) {
-		this.isOpen.value = false;
+		this.isOpen.set(false);
 		this.handleFocus(event);
 	}
 
 	open(this: Toggleable) {
-		this.isOpen.value = true;
+		this.isOpen.set(true);
 	}
 
 	toggle(this: Toggleable) {
-		this.isOpen.value = !this.isOpen.value;
+		this.isOpen.update((isOpen) => !isOpen);
 	}
 
 	createButton(this: Toggleable, element: HTMLElement, settings: Toggler.ButtonOptions = {}) {
 		const { plugins, isToggler = true } = settings;
-		this.button.value = element;
+		this.button.set(element);
 		element.setAttribute('type', 'button');
 		return useCollector({
 			beforeCollection: () => {
-				this.button.value = undefined;
+				this.button.set(undefined);
 			},
 			init: () => [
 				isToggler && useListener(element, 'click', () => this.toggle()),
@@ -71,10 +71,10 @@ export class Toggleable {
 
 	createPanel(this: Toggleable, element: HTMLElement, settings?: Toggler.PanelOptions) {
 		const plugins = [useHidePanelFocusOnClose, ...(settings?.plugins ?? [])];
-		this.panel.value = element;
+		this.panel.set(element);
 		return useCollector({
 			beforeCollection: () => {
-				this.panel.value = undefined;
+				this.panel.set(undefined);
 			},
 			init: () => [
 				settings?.onOpen && this.isOpen.subscribe((isOpen) => isOpen && settings.onOpen?.(element)),
@@ -85,22 +85,23 @@ export class Toggleable {
 	}
 
 	protected handleFocus(this: Toggleable, event?: Event | HTMLElement) {
-		if (isNullish(event)) return this.button.value?.focus();
+		if (isNullish(event)) return this.button.value()?.focus();
 		if (event instanceof Event) {
 			const target = event.target;
 			if (isHTMLElement(target) && this.isValidFocusTarget(target)) return;
-			this.button.value?.focus();
+			this.button.value()?.focus();
 		} else {
 			if (this.isValidFocusTarget(event)) event.focus();
-			else this.button.value?.focus();
+			else this.button.value()?.focus();
 		}
 	}
 
 	protected async handleFocusForce(this: Toggleable, isOpen: boolean) {
 		await tick();
-		if (this.isFocusForced.value && isOpen && this.panel.value) {
-			focusFirstChildElement(this.panel.value, {
-				fallback: this.button.value
+		const panel = this.panel.value();
+		if (this.isFocusForced.value() && isOpen && panel) {
+			focusFirstChildElement(panel, {
+				fallback: this.button.value()
 			});
 		}
 	}
@@ -115,13 +116,13 @@ export class Toggleable {
 
 	protected isValidFocusTarget(this: Toggleable, target: HTMLElement) {
 		if (!isFocusable(target)) return false;
-		const panel = this.panel.value;
+		const panel = this.panel.value();
 		return panel ? !isWithin(panel, target) : true;
 	}
 
 	isWithinElements(this: Toggleable, element: HTMLElement) {
-		const button = this.button.value;
-		const panel = this.panel.value;
+		const button = this.button.value();
+		const panel = this.panel.value();
 		return (button && isWithin(button, element)) || (panel && isWithin(panel, element));
 	}
 }
@@ -146,7 +147,11 @@ export class ToggleableGroup {
 	}
 
 	createClient(this: ToggleableGroup, toggler: Toggleable) {
-		const item = { isOpen: toggler.isOpen.value, toggler, close: () => toggler.isOpen.set(false) };
+		const item = {
+			isOpen: toggler.isOpen.value(),
+			toggler,
+			close: () => toggler.isOpen.set(false)
+		};
 		this.items.set(toggler, item);
 
 		function createButton(this: ToggleableGroup, element: HTMLElement) {
@@ -163,7 +168,7 @@ export class ToggleableGroup {
 						});
 
 						if (isOpen) {
-							if (this.isUnique.value && this.currentOpenItem !== item)
+							if (this.isUnique.value() && this.currentOpenItem !== item)
 								this.currentOpenItem?.close();
 							this.currentOpenItem = item;
 						}

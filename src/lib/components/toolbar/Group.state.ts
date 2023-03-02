@@ -6,7 +6,7 @@ export function createToolbarGroupState() {
 	const { baseName, nameChild } = useComponentNaming({ name: 'toolbar' });
 	const labels = new ElementLabel();
 	const toolbar = new ElementBinder();
-	toolbar.name.value = baseName;
+	toolbar.name.set(baseName);
 
 	Context.setContext({ createToolbarLabel, labels, toolbar });
 

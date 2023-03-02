@@ -57,7 +57,7 @@ export function createDialogState(initialValue: boolean, initialFocus: Ref<Nulla
 						onOpen: async () => {
 							await tick();
 							focusFirstChildElement(element, {
-								initialFocus: initialFocus.value
+								initialFocus: initialFocus.value()
 							});
 						},
 						plugins: [

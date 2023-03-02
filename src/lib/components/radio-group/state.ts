@@ -99,7 +99,7 @@ export function createRadioGroupState<T>(settings: Settings<T>) {
 				onInit: ({ binder, name }) => {
 					const index = navigation.onInitItem(name, binder, { value: initialValue });
 					if (isInitialValueFound) return;
-					if (initialValue === globalValue.value || isSelected) {
+					if (initialValue === globalValue.value() || isSelected) {
 						navigation.index.set(index);
 						navigation.isWaiting.set(false);
 						isInitialValueFound = true;

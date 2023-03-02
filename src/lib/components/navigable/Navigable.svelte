@@ -25,9 +25,9 @@
 	const { action, binder } = createNavigable(id);
 
 	$: actions = use ? [action, ...use] : [action];
-	$: navigation.isFinite.value = finite;
-	$: navigation.isGlobal.value = global;
-	$: navigation.isVertical.value = vertical;
+	$: navigation.isFinite.set(finite);
+	$: navigation.isGlobal.set(global);
+	$: navigation.isVertical.set(vertical);
 </script>
 
 <Render

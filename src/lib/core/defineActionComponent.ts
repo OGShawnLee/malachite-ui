@@ -12,8 +12,8 @@ export default function defineActionComponent<T = void>(config: {
 }): ActionComponent<T> {
 	const { binder = new ElementBinder(), name, onMount, id, isShowing = true } = config;
 	if (isShowing) {
-		binder.name.value = name;
-		binder.id.value = id;
+		binder.name.set(name);
+		binder.id.set(id);
 	}
 	const context = config.onInit?.({ binder, name }) as T;
 	return {
