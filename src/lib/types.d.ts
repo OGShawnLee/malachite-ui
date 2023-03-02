@@ -32,6 +32,8 @@ interface ComponentInitialiserStrict<T = void> {
 	(id: string | undefined, binder: ElementBinder): ActionComponent<T>;
 }
 
+type Computed<T> = Pick<Ref<T>, 'subscribe' | 'value'>;
+
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
 export type ExtractContext<C, K extends keyof C> = OmitAllThisParameter<Pick<C, K>>;

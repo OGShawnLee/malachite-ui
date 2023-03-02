@@ -1,8 +1,26 @@
-import type { ReadableRef, Ref, Refs, StoresValues } from '$lib/types';
+import type { Computed, ReadableRef, Ref, Refs, StoresValues } from '$lib/types';
 import type { Readable, StartStopNotifier } from 'svelte/store';
 import { derived, writable } from 'svelte/store';
 import { isReadableRef, isWritable } from '$lib/predicate';
 import { onDestroy } from 'svelte';
+
+export function computed<T, C>(reference: Ref<T>, compute: (value: T) => C): Computed<C> {
+	const store = ref(compute(reference.value()));
+	const initialSet = reference.set;
+	reference.set = (value) => {
+		initialSet(value);
+		store.set(compute(value));
+	};
+	reference.update = (callback) => {
+		const newValue = callback(reference.value());
+		initialSet(newValue);
+		store.set(compute(newValue));
+	};
+	return {
+		subscribe: store.subscribe,
+		value: store.value
+	};
+}
 
 export function createReadableRef<T>(ref: Ref<T>): ReadableRef<T> {
 	return {

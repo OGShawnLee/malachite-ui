@@ -1,8 +1,8 @@
 import type { ElementBinder } from '$lib/core';
-import type { KeyBack, KeyNext, Navigation, Plugin, ReadableRef, Ref } from '$lib/types';
+import type { Computed, KeyBack, KeyNext, Navigation, Plugin, ReadableRef, Ref } from '$lib/types';
 import type { Updater } from 'svelte/store';
 import Hashable from './Hashable';
-import { findIndex, findLastIndex, ref } from '$lib/utils';
+import { computed, findIndex, findLastIndex, ref } from '$lib/utils';
 import { handleNavigation } from '$lib/plugins';
 import { hasTagName, isAround, isDisabled, isFocusable, isNumber, isWithin } from '$lib/predicate';
 import { onDestroy } from 'svelte';
@@ -13,7 +13,7 @@ import { createDerivedRef } from '$lib/utils';
 export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 	readonly index: Ref<number>;
 	readonly manualIndex: Ref<number>;
-	readonly targetIndexRef: ReadableRef<Ref<number>>;
+	readonly targetIndexRef: Computed<Ref<number>>;
 	readonly isDisabled: Ref<boolean>;
 	readonly isFinite: Ref<boolean>;
 	readonly isGlobal: Ref<boolean>;
@@ -36,7 +36,7 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		this.isManual = ref(settings.isManual ?? false);
 		this.isVertical = ref(settings.isVertical ?? false);
 		this.isWaiting = ref(settings.isWaiting ?? false);
-		this.targetIndexRef = createDerivedRef(this.isManual, (isManual) => {
+		this.targetIndexRef = computed(this.isManual, (isManual) => {
 			return isManual ? this.manualIndex : this.index;
 		});
 		this.active = createDerivedRef([this.items.values, this.isWaiting], ([items, isWaiting]) => {
