@@ -8,7 +8,6 @@ import { hasTagName, isAround, isDisabled, isFocusable, isNumber, isWithin } fro
 import { onDestroy } from 'svelte';
 import { derived } from 'svelte/store';
 import { useCleanup, useCollector, useListener, useWindowListener } from '$lib/hooks';
-import { createDerivedRef } from '$lib/utils';
 
 export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 	readonly index: Ref<number>;
@@ -21,7 +20,7 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 	readonly isVertical: Ref<boolean>;
 	readonly isWaiting: Ref<boolean>;
 	readonly isFocusEnabled: Ref<boolean>;
-	protected readonly items = new Hashable<string, T>({ entries: false, keys: false });
+	protected readonly items = new Hashable<string, T>();
 	protected readonly elements: HTMLElement[] = [];
 	readonly active: ReadableRef<T | undefined>;
 	readonly selected: ReadableRef<T | undefined>;
@@ -39,11 +38,11 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		this.targetIndexRef = computed(this.isManual, (isManual) => {
 			return isManual ? this.manualIndex : this.index;
 		});
-		this.active = createDerivedRef([this.items.values, this.isWaiting], ([items, isWaiting]) => {
+		this.active = computed([this.items.values, this.isWaiting], ([items, isWaiting]) => {
 			if (isWaiting) return;
 			return items.find((item) => item.isActive);
 		});
-		this.selected = createDerivedRef([this.items.values, this.isWaiting], ([items, isWaiting]) => {
+		this.selected = computed([this.items.values, this.isWaiting], ([items, isWaiting]) => {
 			if (isWaiting) return;
 			return items.find((item) => item.isSelected);
 		});

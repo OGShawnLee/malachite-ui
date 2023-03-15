@@ -136,7 +136,7 @@ interface Item {
 export class ToggleableGroup {
 	protected currentOpenItem?: Item;
 	protected elements: HTMLElement[] = [];
-	protected items = new Hashable<Toggleable, Item>({ entries: false, keys: false });
+	protected items = new Hashable<Toggleable, Item>();
 	readonly isOpen = derived(this.items.values, (items) => {
 		return items.some((item) => item.isOpen);
 	});

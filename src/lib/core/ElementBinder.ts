@@ -1,5 +1,5 @@
 import type { Nullable } from '$lib/types';
-import { createDerivedRef, createReadableRef, ref } from '$lib/utils';
+import { computed, createReadableRef, ref } from '$lib/utils';
 import { useCollector, usePair } from '$lib/hooks';
 import { isDisabled, isString, isValidHTMLElementID } from '$lib/predicate';
 
@@ -17,7 +17,7 @@ export default class ElementBinder {
 	readonly isActive = ref(false);
 	readonly isSelected = ref(false);
 	readonly isUsingFragment = ref(true);
-	readonly finalName = createDerivedRef([this.id, this.name], ([id, name]) => {
+	readonly finalName = computed([this.id, this.name], ([id, name]) => {
 		return isString(id) && isValidHTMLElementID(id) ? id : name;
 	});
 

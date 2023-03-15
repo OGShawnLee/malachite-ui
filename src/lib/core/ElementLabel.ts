@@ -1,20 +1,15 @@
-import type { ReadableRef } from '$lib/types';
 import type ElementBinder from './ElementBinder';
 import { Hashable } from '$lib/stores';
-import { clearString, createDerivedRef } from '$lib/utils';
+import { clearString } from '$lib/utils';
 import { onDestroy } from 'svelte';
 import { useCollector } from '$lib/hooks';
+import { computed } from '$lib/utils';
 
 export default class ElementLabel {
-	readonly finalName: ReadableRef<string | undefined>;
-	protected readonly items: Hashable<string, string | undefined>;
-
-	constructor() {
-		this.items = new Hashable({ keys: false, entries: false });
-		this.finalName = createDerivedRef(this.items.values, (labels) => {
-			if (labels.length) return clearString(labels.join(' '));
-		});
-	}
+	protected readonly items = new Hashable<string, string | undefined>();
+	readonly finalName = computed(this.items.values, (labels) => {
+		if (labels.length) return clearString(labels.join(' '));
+	});
 
 	onInitLabel(this: ElementLabel, name: string, id: string | undefined) {
 		this.items.set(name, id ?? name);

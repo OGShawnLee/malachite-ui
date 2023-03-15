@@ -1,43 +1,11 @@
-import type { ReadableRef } from '$lib/types';
 import type { Unsubscriber } from 'svelte/store';
-import { createDerivedRef } from '$lib/utils';
-import { ref } from '$lib/utils';
-
-interface Settings {
-	entries?: boolean;
-	keys?: boolean;
-	values?: boolean;
-}
+import { computed, ref } from '$lib/utils';
 
 export default class Hashable<K, V> {
 	readonly hash = ref(new Map<K, V>());
-	readonly entries: ReadableRef<[K, V][]>;
-	readonly keys: ReadableRef<K[]>;
-	readonly values: ReadableRef<V[]>;
-
-	constructor(watch?: Settings) {
-		this.entries = createDerivedRef(
-			this.hash,
-			(hash) => {
-				return [...hash.entries()];
-			},
-			watch?.entries
-		);
-		this.keys = createDerivedRef(
-			this.hash,
-			(hash) => {
-				return [...hash.keys()];
-			},
-			watch?.keys
-		);
-		this.values = createDerivedRef(
-			this.hash,
-			(hash) => {
-				return [...hash.values()];
-			},
-			watch?.values
-		);
-	}
+	readonly entries = computed(this.hash, (hash) => Array.from(hash.entries()));
+	readonly keys = computed(this.hash, (hash) => Array.from(hash.keys()));
+	readonly values = computed(this.hash, (hash) => Array.from(hash.values()));
 
 	get subscribe() {
 		return this.hash.subscribe;
