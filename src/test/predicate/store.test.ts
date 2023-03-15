@@ -1,5 +1,54 @@
 import * as store from '$lib/predicate/store';
+import type { Computed, Ref } from '$lib/types';
+import { computed, ref } from '$lib/utils';
 import { derived, readable, writable } from 'svelte/store';
+
+describe('isComputed', () => {
+	const { isComputed } = store;
+	it('Should return whether or not the given value is a computed store', () => {
+		const firstName = ref('Big');
+		const fullName = computed(firstName, (name) => name + ' Ounce');
+		expect(isComputed(fullName)).toBe(true);
+		expect(isComputed(firstName)).toBe(false);
+		expect(isComputed(writable('Big Ounce, the Prairie Dog.'))).toBe(false);
+		expect(isComputed(readable('Big Ounce, the Prairie Dog.'))).toBe(false);
+		expect(isComputed('Not even a store.')).toBe(false);
+		expect(isComputed(420)).toBe(false);
+	});
+
+	it('Should validate each field type', () => {
+		const imposter: Record<keyof Computed<any>, string> = {
+			subscribe: 'Not a function.',
+			value: 'Not a function.',
+			$$onSet: 'Not a function.'
+		};
+		expect(isComputed(imposter)).toBe(false);
+	});
+});
+
+describe('isComputed', () => {
+	const { isRef } = store;
+	it('Should return whether or not the given value is a ref store', () => {
+		const firstName = ref('Big');
+		const fullName = computed(firstName, (name) => name + ' Ounce');
+		expect(isRef(fullName)).toBe(false);
+		expect(isRef(firstName)).toBe(true);
+		expect(isRef(writable('Big Ounce, the Prairie Dog.'))).toBe(false);
+		expect(isRef(readable('Big Ounce, the Prairie Dog.'))).toBe(false);
+		expect(isRef('Not even a store.')).toBe(false);
+		expect(isRef(420)).toBe(false);
+	});
+
+	it('Should validate each field type', () => {
+		const imposter: Record<keyof Ref<any>, string> = {
+			subscribe: 'Not a function.',
+			value: 'Not a function.',
+			set: 'Not a function.',
+			update: 'Not a function.'
+		};
+		expect(isRef(imposter)).toBe(false);
+	});
+});
 
 describe.skip('isStore', () => {
 	const { isStore } = store;
