@@ -4,21 +4,44 @@ import { derived, writable } from 'svelte/store';
 import { isReadableRef, isWritable } from '$lib/predicate';
 import { onDestroy } from 'svelte';
 
-export function computed<T, C>(reference: Ref<T>, compute: (value: T) => C): Computed<C> {
+export function computed<T, C>(
+	reference: Ref<T> | Computed<T>,
+	compute: (value: T) => C
+): Computed<C> {
 	const store = ref(compute(reference.value()));
-	const initialSet = reference.set;
-	reference.set = (value) => {
-		initialSet(value);
-		store.set(compute(value));
-	};
-	reference.update = (callback) => {
-		const newValue = callback(reference.value());
-		initialSet(newValue);
-		store.set(compute(newValue));
-	};
+
+	let onSet: (value: C) => void = () => {};
+
+	if ('set' in reference) {
+		const initialSet = reference.set;
+		reference.set = (value) => {
+			initialSet(value);
+			const newValue = compute(value);
+			store.set(newValue);
+			onSet(newValue);
+		};
+		reference.update = (callback) => {
+			const value = callback(reference.value());
+			initialSet(value);
+			const newValue = compute(value);
+			store.set(newValue);
+			onSet(newValue);
+		};
+	} else {
+		reference.$$onSet = (value) => {
+			store.set(compute(value));
+		};
+	}
+
 	return {
 		subscribe: store.subscribe,
-		value: store.value
+		value: store.value,
+		set $$onSet(callback) {
+			onSet = callback;
+		},
+		get $$onSet() {
+			return onSet;
+		}
 	};
 }
 

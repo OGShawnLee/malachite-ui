@@ -32,7 +32,11 @@ interface ComponentInitialiserStrict<T = void> {
 	(id: string | undefined, binder: ElementBinder): ActionComponent<T>;
 }
 
-type Computed<T> = Pick<Ref<T>, 'subscribe' | 'value'>;
+interface Computed<T> extends Readable<T> {
+	value(this: void): T;
+	// Used internally by other computed stores
+	$$onSet(value: T): void;
+}
 
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 

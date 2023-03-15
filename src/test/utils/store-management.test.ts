@@ -6,6 +6,59 @@ import { useCleaner } from '@test-utils';
 const { add, destroy } = useCleaner();
 afterEach(() => destroy());
 
+describe('computed', () => {
+	const { computed, ref } = store;
+	it('Should return a valid readable store', () => {
+		const count = ref(10);
+		const double = computed(count, (count) => count * 2);
+		expect(isStore(double)).toBe(true);
+	});
+
+	describe('value()', () => {
+		const count = ref(10);
+		const double = computed(count, (count) => count * 2);
+		it('Should have a value method', () => {
+			expect(double).toHaveProperty('value');
+			expect(double.value).toBeTypeOf('function');
+		});
+
+		it('Should return the current ref value', () => {
+			expect(double.value()).toBe(20);
+			count.set(20);
+			expect(double.value()).toBe(40);
+			count.set(40);
+			expect(double.value()).toBe(80);
+		});
+	});
+
+	it('Should compute when created', () => {
+		const count = ref(10);
+		const double = computed(count, (count) => count * 2);
+		expect(double.value()).toBe(20);
+	});
+
+	it('Should compute when the original store value is updated', () => {
+		const name = ref('Vincent');
+		const fullName = computed(name, (name) => name + ' Law');
+		expect(fullName.value()).toBe('Vincent Law');
+		name.set('Raul');
+		expect(fullName.value()).toBe('Raul Law');
+		name.update((name) => name.toUpperCase());
+		expect(fullName.value()).toBe('RAUL Law');
+	});
+
+	it('Should work with another computed store', () => {
+		const count = ref(2);
+		const double = computed(count, (count) => count * 2);
+		const quadruple = computed(double, (double) => double * 2);
+		expect(quadruple.value()).toBe(8);
+		count.set(10);
+		expect(quadruple.value()).toBe(40);
+		count.update((count) => count * 2);
+		expect(quadruple.value()).toBe(80);
+	});
+});
+
 describe.skip('makeReadable', () => {
 	const { makeReadable } = store;
 
@@ -35,37 +88,26 @@ describe.skip('makeReadable', () => {
 	});
 });
 
-describe.skip('ref', () => {
-	const { ref } = store;
-
-	it.skip('Should return a valid writable store', () => {
+describe('ref', () => {
+	const ref = store.ref;
+	it('Should return a valid writable store', () => {
 		const name = ref('Jack');
 		expect(isWritable(name)).toBe(true);
 	});
 
-	describe.skip('#value', () => {
-		it.skip('Should return the current value (getter)', () => {
-			const name = ref('Jack');
-
-			expect(name.value()).toBe('Jack');
-			expect(get(name)).toBe('Jack');
-			name.set('Robert');
-			expect(name.value()).toBe('Robert');
-			expect(get(name)).toBe('Robert');
-			name.update((name) => name.toUpperCase());
-			expect(name.value()).toBe('ROBERT');
-			expect(get(name)).toBe('ROBERT');
+	describe('value()', () => {
+		const count = ref(10);
+		it('Should have a value method', () => {
+			expect(count).toHaveProperty('value');
+			expect(count.value).toBeTypeOf('function');
 		});
 
-		it.skip('Should set the given new value (setter)', () => {
-			const name = ref('Jack');
-
-			name.set('Adrian');
-			expect(name.value()).toBe('Adrian');
-			name.set('Simon');
-			expect(name.value()).toBe('Simon');
-			name.set(name.value().toUpperCase());
-			expect(name.value()).toBe('SIMON');
+		it('Should return the current ref value', () => {
+			expect(count.value()).toBe(10);
+			count.set(20);
+			expect(count.value()).toBe(20);
+			count.set(40);
+			expect(count.value()).toBe(40);
 		});
 	});
 });
