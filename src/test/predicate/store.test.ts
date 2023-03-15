@@ -1,5 +1,6 @@
 import * as store from '$lib/predicate/store';
 import type { Computed, Ref } from '$lib/types';
+import type { Writable } from 'svelte/store';
 import { computed, ref } from '$lib/utils';
 import { derived, readable, writable } from 'svelte/store';
 
@@ -73,24 +74,30 @@ describe('isStore', () => {
 	});
 });
 
-describe.skip('isWritable', () => {
+describe('isWritable', () => {
 	const { isWritable } = store;
-	it.skip('Should return true if value is a writable store', () => {
-		expect(isWritable(writable(0))).toBe(true);
+	it('Should return whether or not the given value is store', () => {
+		const count = writable(0);
+		expect(isWritable(count)).toBe(true);
+		const double = derived(count, (count) => count * 2);
+		expect(isWritable(double)).toBe(false);
+		const time = readable('2 days');
+		expect(isWritable(time)).toBe(false);
+		const name = ref('James');
+		expect(isWritable(name)).toBe(true);
+		const bigName = computed(name, (name) => name.toUpperCase());
+		expect(isWritable(bigName)).toBe(false);
+		expect(isWritable(10)).toBe(false);
+		expect(isWritable({})).toBe(false);
+		expect(isWritable('Not a store')).toBe(false);
 	});
 
-	it.skip('Should return false if value is not a writable store', () => {
-		expect(isWritable(readable(0))).toBe(false);
-		expect(isWritable(derived(writable(0), () => {}))).toBe(false);
-
-		const values = [0, 'string', false, true, {}, [], null, undefined, () => {}];
-		for (const value of values) {
-			expect(isWritable(value)).toBe(false);
-		}
-	});
-
-	it.skip("Should return false if the 'store' methods are not actual functions", () => {
-		const FakeWritable = { subscribe: 'Sike!', set: 'Sike!', update: 400 };
-		expect(isWritable(FakeWritable)).toBe(false);
+	it('Should verify each method type', () => {
+		const imposter: Record<keyof Writable<any>, string> = {
+			set: 'Not a function',
+			subscribe: 'Not a function',
+			update: 'Not a function'
+		};
+		expect(isWritable(imposter)).toBe(false);
 	});
 });
