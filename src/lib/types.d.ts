@@ -32,6 +32,18 @@ interface ComponentInitialiserStrict<T = void> {
 	(id: string | undefined, binder: ElementBinder): ActionComponent<T>;
 }
 
+type Composables =
+	| Ref<any>
+	| Computed<any>
+	| [Ref<any> | Computed<any>, ...Array<Ref<any> | Computed<any>>]
+	| Array<Ref<any> | Computed<any>>;
+
+type ComposablesValues<T> = T extends Ref<infer U> | Computed<infer U>
+	? U
+	: {
+			[K in keyof T]: T[K] extends Ref<infer U> | Computed<infer U> ? U : never;
+	  };
+
 interface Computed<T> extends Readable<T> {
 	value(this: void): T;
 	// Used internally by other computed stores

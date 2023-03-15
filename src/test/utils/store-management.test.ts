@@ -57,6 +57,50 @@ describe('computed', () => {
 		count.update((count) => count * 2);
 		expect(quadruple.value()).toBe(80);
 	});
+
+	it('Should work with an array of composables', () => {
+		const count = ref(2);
+		const double = computed(count, (count) => count * 2);
+		const quadruple = computed(double, (double) => double * 2);
+		const doubleStr = computed([count, double], ([count, double]) => {
+			return `${count} x 2 = ${double}`;
+		});
+		const megaNumberStr = computed(
+			[double, quadruple],
+			([double, quadruple]) => `${double} x ${quadruple} = ${double * quadruple}`
+		);
+
+		expect(doubleStr.value()).toBe('2 x 2 = 4');
+		expect(megaNumberStr.value()).toBe('4 x 8 = 32');
+		count.set(4);
+		expect(doubleStr.value()).toBe('4 x 2 = 8');
+		expect(megaNumberStr.value()).toBe('8 x 16 = 128');
+		count.update((count) => count * 10);
+		expect(doubleStr.value()).toBe('40 x 2 = 80');
+		expect(megaNumberStr.value()).toBe('80 x 160 = 12800');
+
+		const name = ref('Vincent');
+		const lastName = ref('Law');
+		const fullName = computed([name, lastName], ([name, lastName]) => {
+			return `${name} ${lastName}`;
+		});
+		const uppercase = computed(fullName, (fullName) => fullName.toUpperCase());
+
+		expect(fullName.value()).toBe('Vincent Law');
+		expect(uppercase.value()).toBe('VINCENT LAW');
+		name.set('James');
+		expect(fullName.value()).toBe('James Law');
+		expect(uppercase.value()).toBe('JAMES LAW');
+		lastName.set('Cena');
+		expect(fullName.value()).toBe('James Cena');
+		expect(uppercase.value()).toBe('JAMES CENA');
+		name.update((name) => name.toLowerCase());
+		expect(fullName.value()).toBe('james Cena');
+		expect(uppercase.value()).toBe('JAMES CENA');
+		lastName.update((lastName) => lastName.toLowerCase());
+		expect(fullName.value()).toBe('james cena');
+		expect(uppercase.value()).toBe('JAMES CENA');
+	});
 });
 
 describe.skip('makeReadable', () => {

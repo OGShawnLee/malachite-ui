@@ -15,10 +15,12 @@ export {
 	isWithin
 } from './dom';
 export {
+	isComputed,
 	isElementBinder,
 	isElementLabel,
 	isNotStore,
 	isReadableRef,
+	isRef,
 	isStore,
 	isWritable
 } from './store';

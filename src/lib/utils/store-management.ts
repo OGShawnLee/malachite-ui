@@ -1,34 +1,71 @@
-import type { Computed, ReadableRef, Ref, Refs, StoresValues } from '$lib/types';
+import type {
+	Composables,
+	ComposablesValues,
+	Computed,
+	ReadableRef,
+	Ref,
+	Refs,
+	StoresValues
+} from '$lib/types';
 import type { Readable, StartStopNotifier } from 'svelte/store';
 import { derived, writable } from 'svelte/store';
-import { isReadableRef, isWritable } from '$lib/predicate';
+import { isComputed, isReadableRef, isRef, isWritable } from '$lib/predicate';
 import { onDestroy } from 'svelte';
 
-export function computed<T, C>(
-	reference: Ref<T> | Computed<T>,
-	compute: (value: T) => C
+export function computed<T extends Composables, C>(
+	composables: T,
+	compute: (value: ComposablesValues<T>) => C
 ): Computed<C> {
-	const store = ref(compute(reference.value()));
+	const value = getComposableValue(composables);
+	const store = ref(compute(value));
 
 	let onSet: (value: C) => void = () => {};
 
-	if ('set' in reference) {
-		const initialSet = reference.set;
-		reference.set = (value) => {
+	if (isRef(composables)) {
+		const initialSet = composables.set;
+		composables.set = (value) => {
 			initialSet(value);
 			const newValue = compute(value);
 			store.set(newValue);
 			onSet(newValue);
 		};
-		reference.update = (callback) => {
-			const value = callback(reference.value());
+		composables.update = (callback) => {
+			const value = callback(composables.value());
 			initialSet(value);
 			const newValue = compute(value);
 			store.set(newValue);
 			onSet(newValue);
 		};
+	} else if (Array.isArray(composables)) {
+		composables.forEach((composable) => {
+			if (isComputed(composable)) {
+				const initialSet = composable.$$onSet;
+				composable.$$onSet = (value) => {
+					initialSet(value);
+					const values = getComposableValue(composables);
+					store.set(compute(values));
+				};
+			} else {
+				const initialSet = composable.set;
+				composable.set = (value) => {
+					initialSet(value);
+					const values = getComposableValue(composables);
+					const newValue = compute(values);
+					store.set(newValue);
+					onSet(newValue);
+				};
+				composable.update = (callback) => {
+					const value = callback(composable.value());
+					initialSet(value);
+					const values = getComposableValue(composables);
+					const newValue = compute(values);
+					store.set(newValue);
+					onSet(newValue);
+				};
+			}
+		});
 	} else {
-		reference.$$onSet = (value) => {
+		composables.$$onSet = (value) => {
 			store.set(compute(value));
 		};
 	}
@@ -70,6 +107,12 @@ export function createDerivedRef<R extends Refs, T>(
 			return fn(getRefValue(ref));
 		}
 	};
+}
+
+function getComposableValue<C extends Composables>(composables: C): ComposablesValues<C> {
+	if (Array.isArray(composables))
+		return composables.map((composable) => composable.value()) as ComposablesValues<C>;
+	return composables.value();
 }
 
 function getRefValue<R extends Refs>(refs: R): StoresValues<R> {

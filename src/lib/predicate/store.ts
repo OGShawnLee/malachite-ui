@@ -1,7 +1,15 @@
-import type { ReadableRef } from '$lib/types';
+import type { Computed, ReadableRef, Ref } from '$lib/types';
 import type { Readable, Writable } from 'svelte/store';
 import { ElementBinder, ElementLabel } from '$lib/core';
 import { isFunction, isInterface } from '$lib/predicate';
+
+export function isComputed(value: unknown): value is Computed<any> {
+	return isInterface<Computed<any>>(value, {
+		subscribe: isFunction,
+		value: isFunction,
+		$$onSet: isFunction
+	});
+}
 
 export function isElementBinder(value: unknown): value is ElementBinder {
 	return value instanceof ElementBinder;
@@ -23,6 +31,15 @@ export function isNotStore(val: unknown) {
 
 export function isReadableRef(value: unknown): value is ReadableRef<any> {
 	return isStore(value);
+}
+
+export function isRef(value: unknown): value is Ref<any> {
+	return isInterface<Ref<any>>(value, {
+		set: isFunction,
+		subscribe: isFunction,
+		update: isFunction,
+		value: isFunction
+	});
 }
 
 export function isWritable(val: unknown): val is Writable<any> {
