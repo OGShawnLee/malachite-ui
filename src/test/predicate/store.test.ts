@@ -50,28 +50,26 @@ describe('isComputed', () => {
 	});
 });
 
-describe.skip('isStore', () => {
+describe('isStore', () => {
 	const { isStore } = store;
-	it.skip('Should return true if value is a store', () => {
-		const First = writable(0);
-		const Second = writable(10);
-		const Derived = derived([First, Second], ([first, second]) => first + second);
-		const stores = [First, Second, Derived, readable(10)];
+	it('Should return whether or not the given value is store', () => {
+		const count = writable(0);
+		const double = derived(count, (count) => count * 2);
+		const time = readable('2 days');
+		const name = ref('James');
+		const bigName = computed(name, (name) => name.toUpperCase());
+		const stores = [count, double, time, name, bigName];
 		for (const store of stores) {
 			expect(isStore(store)).toBe(true);
 		}
+		expect(isStore(10)).toBe(false);
+		expect(isStore({})).toBe(false);
+		expect(isStore('Not a store')).toBe(false);
 	});
 
-	it.skip('Should return false if value is not a store', () => {
-		const values = [0, 'string', false, true, {}, [], null, undefined, () => {}];
-		for (const value of values) {
-			expect(isStore(value)).toBe(false);
-		}
-	});
-
-	it.skip('Should return false if the subscribe method is not an actual function', () => {
-		const FakeStore = { subscribe: 'Definitely not a function!' };
-		expect(isStore(FakeStore)).toBe(false);
+	it.skip('Should verify the subscribe method is an actual function', () => {
+		const theFakeOne = { subscribe: 'Definitely not a function!' };
+		expect(isStore(theFakeOne)).toBe(false);
 	});
 });
 
