@@ -120,8 +120,8 @@ function getRefValue<R extends Refs>(refs: R): StoresValues<R> {
 	return refs.map((ref) => ref.value) as StoresValues<R>;
 }
 
-export function readonly<T>(Store: Readable<T>) {
-	return isWritable(Store) ? (derived(Store, (value) => value) as Readable<T>) : Store;
+export function readonly<T>(store: Readable<T>): Readable<T> {
+	return { subscribe: store.subscribe };
 }
 
 export function ref<T>(globalValue: T, start?: StartStopNotifier<T>): Ref<T> {
