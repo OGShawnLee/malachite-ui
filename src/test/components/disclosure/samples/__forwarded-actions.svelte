@@ -4,7 +4,7 @@
 </script>
 
 <Disclosure>
-  <DisclosureButton use={generateActions(3)}>Toggle</DisclosureButton>
+  <DisclosureButton data-testid="disclosure-button" use={generateActions(3)}>Toggle</DisclosureButton>
   <DisclosurePanel use={generateActions(3)} data-testid="disclosure-panel">
     Disclosure panel
   </DisclosurePanel>

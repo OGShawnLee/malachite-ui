@@ -1,9 +1,7 @@
 import type { Updater } from 'svelte/store';
 import type { Collectable } from '$lib/types';
-import type { SpyInstance } from 'vitest';
-import { destroy, generate } from '$lib/utils';
+import { destroy, generate, ref } from '$lib/utils';
 import { useDOMTraversal } from '$lib/hooks';
-import { notifiable } from '$lib/stores';
 import { isAround, isHTMLElement } from '$lib/predicate';
 import { derived, writable } from 'svelte/store';
 
@@ -29,29 +27,9 @@ export function fuseElementsName(elements: Element[]) {
 		.join(' ');
 }
 
-export function generateActions<T>(
-	amount: number,
-	parameter?: T
-): [spy: SpyInstance<[HTMLElement, T], void>, argument: T][];
-
-export function generateActions(
-	amount: number
-): [spy: SpyInstance<[HTMLElement, number], void>, argument: number][];
-
-export function generateActions<T>(amount: number, parameter?: T) {
-	if (parameter)
-		return generate(amount, () => {
-			return [vi.fn(() => {}), parameter] as unknown as [
-				spy: SpyInstance<[HTMLElement, T], void>,
-				argument: number
-			];
-		});
-
-	return generate(amount, (parameter) => {
-		return [vi.fn(() => {}), parameter] as unknown as [
-			spy: SpyInstance<[HTMLElement, number], void>,
-			argument: number
-		];
+export function generateActions<T>(amount: number) {
+	return generate(amount, () => {
+		return vi.fn(() => {});
 	});
 }
 
@@ -108,7 +86,7 @@ export function useToggle(initialValue = false) {
 export function useRange(initialValue: number, config: { min?: number; max?: number } = {}) {
 	const initial = initialValue;
 	const { min = 0, max = Infinity } = config;
-	const Size = notifiable({ initialValue, notifier: (value) => (initialValue = value) });
+	const Size = ref(initialValue);
 	const Range = derived(Size, (size) => [...Array(size).keys()]);
 	const { subscribe } = Range;
 	return {

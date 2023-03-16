@@ -35,7 +35,8 @@
 </script>
 
 <script lang="ts">
-  import { type SvelteComponent, setContext } from 'svelte';
+  import type {   SvelteComponent } from 'svelte';
+  import { setContext } from 'svelte';
 
   export let children: typeof SvelteComponent;
   export let componentName: string;
