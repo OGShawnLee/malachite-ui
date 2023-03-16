@@ -127,20 +127,9 @@ export interface Ref<T> extends Writable<T> {
 	value(this: void): T;
 }
 
-declare type Refs =
-	| ReadableRef<any>
-	| [ReadableRef<any>, ...Array<ReadableRef<any>>]
-	| Array<ReadableRef<any>>;
-
 export type ReadableRef<T> = Pick<Ref<T>, 'subscribe' | 'value'>;
 
 export type StoreValue<Union> = Union extends Readable<infer Value> ? Value : Union;
-
-declare type StoresValues<T> = T extends Readable<infer U>
-	? U
-	: {
-			[K in keyof T]: T[K] extends Readable<infer U> ? U : never;
-	  };
 
 export interface Switch extends Ref<boolean> {
 	toggle(this: void): void;
