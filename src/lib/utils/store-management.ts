@@ -9,7 +9,7 @@ import type {
 } from '$lib/types';
 import type { Readable, StartStopNotifier } from 'svelte/store';
 import { derived, writable } from 'svelte/store';
-import { isComputed, isReadableRef, isRef, isWritable } from '$lib/predicate';
+import { isComputed, isReadableRef, isRef } from '$lib/predicate';
 import { onDestroy } from 'svelte';
 
 export function computed<T extends Composables, C>(
@@ -120,7 +120,11 @@ function getRefValue<R extends Refs>(refs: R): StoresValues<R> {
 	return refs.map((ref) => ref.value) as StoresValues<R>;
 }
 
-export function readonly<T>(store: Readable<T>): Readable<T> {
+export function readonly<T>(store: Ref<T>): ReadableRef<T>;
+export function readonly<T>(store: Readable<T>): Readable<T>;
+
+export function readonly<T>(store: Readable<T> | Ref<T>): Readable<T> | ReadableRef<T> {
+	if (isRef(store)) return { subscribe: store.subscribe, value: store.value };
 	return { subscribe: store.subscribe };
 }
 
