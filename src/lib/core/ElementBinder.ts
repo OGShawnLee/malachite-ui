@@ -1,5 +1,5 @@
 import type { Nullable } from '$lib/types';
-import { computed, createReadableRef, ref } from '$lib/utils';
+import { computed, readonly, ref } from '$lib/utils';
 import { useCollector, usePair } from '$lib/hooks';
 import { isDisabled, isString, isValidHTMLElementID } from '$lib/predicate';
 
@@ -22,7 +22,7 @@ export default class ElementBinder {
 	});
 
 	get element() {
-		return createReadableRef(this.node);
+		return readonly(this.node);
 	}
 
 	onMount(this: ElementBinder, element: HTMLElement, name: string) {

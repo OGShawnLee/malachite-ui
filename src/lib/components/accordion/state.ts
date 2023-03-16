@@ -4,7 +4,7 @@ import { GroupContext, ItemContext } from './context';
 import { Navigable } from '$lib/stores';
 import { ElementBinder, defineActionComponent } from '$lib/core';
 import { useComponentNaming } from '$lib/hooks';
-import { createReadableRef } from '$lib/utils';
+import { readonly } from '$lib/utils';
 import {
 	handleAriaControls,
 	handleAriaDisabled,
@@ -42,7 +42,7 @@ export function createAccordionState(settings: Settings) {
 		const toggler = new Toggleable({ group });
 
 		ItemContext.setContext({
-			isOpen: createReadableRef(toggler.isOpen),
+			isOpen: readonly(toggler.isOpen),
 			button,
 			close: toggler.close.bind(toggler),
 			panel,
@@ -97,7 +97,7 @@ export function createAccordionState(settings: Settings) {
 		}
 
 		return {
-			isOpen: createReadableRef(toggler.isOpen),
+			isOpen: readonly(toggler.isOpen),
 			close: toggler.close.bind(toggler),
 			button: createButton('').action,
 			heading: createHeading('').action,

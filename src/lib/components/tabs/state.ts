@@ -8,7 +8,7 @@ import type {
 import { Navigable } from '$lib/stores';
 import { ElementBinder, defineActionComponent } from '$lib/core';
 import { useComponentNaming, useCollector, useContext } from '$lib/hooks';
-import { createReadableRef } from '$lib/utils';
+import { readonly } from '$lib/utils';
 import { isFunction, isInterface, isNullish, isReadableRef } from '$lib/predicate';
 import { handleAriaOrientation } from '$lib/plugins';
 
@@ -17,7 +17,7 @@ export function createTabGroupState(settings: Navigation.Settings) {
 	const { nameChild } = useComponentNaming('tabs');
 
 	setContext({
-		index: createReadableRef(navigation.index),
+		index: readonly(navigation.index),
 		createPanel,
 		createPanels,
 		createTab,
@@ -28,7 +28,7 @@ export function createTabGroupState(settings: Navigation.Settings) {
 		return defineActionComponent({
 			id: id,
 			name: nameChild('tablist'),
-			onInit: () => createReadableRef(navigation.isVertical),
+			onInit: () => readonly(navigation.isVertical),
 			onMount: ({ element }) => {
 				element.role = 'tablist';
 				return [

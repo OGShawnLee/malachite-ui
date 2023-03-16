@@ -5,7 +5,7 @@ import { Navigable } from '$lib/stores';
 import { ElementBinder, defineActionComponent } from '$lib/core';
 import { useComponentNaming } from '$lib/hooks';
 import { handleAriaOrientation } from '$lib/plugins';
-import { createReadableRef } from '$lib/utils';
+import { readonly } from '$lib/utils';
 
 export function createToolbarState(settings: Navigation.Settings) {
 	const group = GroupContext.getContext(false);
@@ -18,7 +18,7 @@ export function createToolbarState(settings: Navigation.Settings) {
 	Context.setContext({
 		createToolbarItem,
 		item,
-		isVertical: createReadableRef(navigation.isVertical)
+		isVertical: readonly(navigation.isVertical)
 	});
 
 	function createToolbar(id: string | undefined) {

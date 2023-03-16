@@ -2,7 +2,7 @@ import Context from './Group.context';
 import type { Writable } from 'svelte/store';
 import { ElementBinder, ElementLabel, defineActionComponent } from '$lib/core';
 import { useComponentNaming, useListener, useSwitch } from '$lib/hooks';
-import { createReadableRef, ref } from '$lib/utils';
+import { readonly, ref } from '$lib/utils';
 
 interface Settings {
 	initialChecked: boolean; // ensures it has the right value in SSR
@@ -63,5 +63,5 @@ export function createSwitchGroupState(settings: Settings) {
 		});
 	}
 
-	return { isChecked: createReadableRef(isChecked), isPassive };
+	return { isChecked: readonly(isChecked), isPassive };
 }

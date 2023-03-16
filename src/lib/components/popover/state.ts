@@ -4,7 +4,7 @@ import { Toggleable } from '$lib/stores';
 import { defineActionComponent, ElementBinder } from '$lib/core';
 import { useComponentNaming, useContext } from '$lib/hooks';
 import { isFunction, isInterface, isReadableRef } from '$lib/predicate';
-import { createReadableRef } from '$lib/utils';
+import { readonly } from '$lib/utils';
 import {
 	handleAriaControls,
 	handleAriaExpanded,
@@ -30,7 +30,7 @@ export function createPopoverState(settings: Toggler.Settings) {
 	const { nameChild } = useComponentNaming('popover');
 
 	setContext({
-		isOpen: createReadableRef(toggler.isOpen),
+		isOpen: readonly(toggler.isOpen),
 		close: toggler.close.bind(toggler),
 		createPopoverButton,
 		createPopoverOverlay,

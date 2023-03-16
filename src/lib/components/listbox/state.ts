@@ -2,7 +2,7 @@ import type { Navigation, Nullable } from '$lib/types';
 import Context from './context';
 import { ElementBinder, ElementLabel, defineActionComponent } from '$lib/core';
 import { Navigable, Toggleable } from '$lib/stores';
-import { createReadableRef, ref } from '$lib/utils';
+import { readonly, ref } from '$lib/utils';
 import { useComponentNaming, useListener } from '$lib/hooks';
 import { isDisabled as isDisabledFn } from '$lib/predicate';
 import {
@@ -163,7 +163,7 @@ export function createListboxState<T>(settings: Settings<T>) {
 
 	return {
 		isOpen: toggler.isOpen,
-		globalValue: createReadableRef(globalValue),
+		globalValue: readonly(globalValue),
 		navigation,
 		button: createListboxButton('').action,
 		panel: createListboxPanel('').action
