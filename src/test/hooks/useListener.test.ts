@@ -1,33 +1,34 @@
+import { fireEvent } from '@testing-library/dom';
 import { useListener } from '$lib/hooks';
 import { useCleaner } from '@test-utils';
-import { fireEvent } from '@testing-library/dom';
 
 const { add, destroy } = useCleaner();
+
 afterEach(() => destroy());
 
-it.skip('Should return a function', () => {
-	const div = document.createElement('div');
-	const destroy = useListener(div, 'click', () => {});
-	expect(destroy).toBeInstanceOf(Function);
-	add(destroy());
-});
-
-it.skip('Should add the given event listener', () => {
+it('Should add the given event listener', () => {
 	const input = document.createElement('input');
-	const func = vi.fn<[FocusEvent]>(() => {});
-	add(useListener(input, 'focus', func));
+	const fn = vi.fn<[FocusEvent]>(() => {});
+	add(useListener(input, 'focus', fn));
 	fireEvent.focus(input);
-	expect(func).toBeCalledTimes(1);
-	expect(func.mock.calls[0][0]).toBeInstanceOf(FocusEvent);
+	expect(fn).toBeCalledTimes(1);
 });
 
-it.skip('Should remove the event listener after calling the returned function', () => {
-	const func = vi.fn(() => {});
-	const button = document.createElement('button');
-	const destroy = useListener(button, 'click', func);
-	fireEvent.click(button);
-	expect(func).toBeCalledTimes(1);
-	destroy();
-	fireEvent.click(button);
-	expect(func).toBeCalledTimes(1);
+it('Should return a fn', () => {
+	const input = document.createElement('input');
+	const fn = vi.fn<[FocusEvent]>(() => {});
+	const free = useListener(input, 'focus', fn);
+	expect(free).toBeTypeOf('function');
+	add(free);
+});
+
+it('Should remove the event listener after calling the returned fn', () => {
+	const input = document.createElement('input');
+	const fn = vi.fn<[FocusEvent]>(() => {});
+	const free = useListener(input, 'focus', fn);
+	fireEvent.focus(input);
+	expect(fn).toBeCalledTimes(1);
+	free();
+	fireEvent.focus(input);
+	expect(fn).toBeCalledTimes(1);
 });
