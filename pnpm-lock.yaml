@@ -5,6 +5,7 @@ specifiers:
   '@sveltejs/kit': ^1.5.0
   '@sveltejs/package': ^1.0.2
   '@sveltejs/vite-plugin-svelte': ^2.0.2
+  '@testing-library/dom': ^9.0.1
   '@testing-library/jest-dom': ^5.16.5
   '@testing-library/svelte': ^3.2.2
   '@vitest/coverage-c8': ^0.28.4
@@ -28,6 +29,7 @@ devDependencies:
   '@sveltejs/kit': 1.5.0_svelte@3.55.1+vite@4.1.1
   '@sveltejs/package': 1.0.2_4x7phaipmicbaooxtnresslofa
   '@sveltejs/vite-plugin-svelte': 2.0.2_svelte@3.55.1+vite@4.1.1
+  '@testing-library/dom': 9.0.1
   '@testing-library/jest-dom': 5.16.5
   '@testing-library/svelte': 3.2.2_svelte@3.55.1
   '@vitest/coverage-c8': 0.28.4_jsdom@21.1.0
@@ -450,6 +452,20 @@ packages:
       chalk: 4.1.2
       dom-accessibility-api: 0.5.16
       lz-string: 1.4.4
+      pretty-format: 27.5.1
+    dev: true
+
+  /@testing-library/dom/9.0.1:
+    resolution: {integrity: sha512-fTOVsMY9QLFCCXRHG3Ese6cMH5qIWwSbgxZsgeF5TNsy81HKaZ4kgehnSF8FsR3OF+numlIV2YcU79MzbnhSig==}
+    engines: {node: '>=14'}
+    dependencies:
+      '@babel/code-frame': 7.18.6
+      '@babel/runtime': 7.20.13
+      '@types/aria-query': 5.0.1
+      aria-query: 5.1.3
+      chalk: 4.1.2
+      dom-accessibility-api: 0.5.16
+      lz-string: 1.5.0
       pretty-format: 27.5.1
     dev: true
 
@@ -2243,6 +2259,11 @@ packages:
 
   /lz-string/1.4.4:
     resolution: {integrity: sha512-0ckx7ZHRPqb0oUm8zNr+90mtf9DQB60H1wMCjBtfi62Kl3a7JbHob6gA2bC+xRvZoOL+1hzUK8jeuEIQE8svEQ==}
+    hasBin: true
+    dev: true
+
+  /lz-string/1.5.0:
+    resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
     hasBin: true
     dev: true
 
