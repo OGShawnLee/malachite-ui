@@ -120,7 +120,7 @@ function getRefValue<R extends Refs>(refs: R): StoresValues<R> {
 	return refs.map((ref) => ref.value) as StoresValues<R>;
 }
 
-export function makeReadable<T>(Store: Readable<T>) {
+export function readonly<T>(Store: Readable<T>) {
 	return isWritable(Store) ? (derived(Store, (value) => value) as Readable<T>) : Store;
 }
 

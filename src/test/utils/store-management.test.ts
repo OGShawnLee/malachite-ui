@@ -103,16 +103,16 @@ describe('computed', () => {
 	});
 });
 
-describe.skip('makeReadable', () => {
-	const { makeReadable } = store;
+describe.skip('readonly', () => {
+	const { readonly } = store;
 
 	const First = writable(2);
 	const Second = readable('James');
 	const Third = derived([First, Second], (value) => value);
 
-	const Write = makeReadable(First);
-	const Read = makeReadable(Second);
-	const Derived = makeReadable(Third);
+	const Write = readonly(First);
+	const Read = readonly(Second);
+	const Derived = readonly(Third);
 
 	it.skip('Should take a store and return a readable store', () => {
 		expect(isStore(Write) && !isWritable(Write)).toBe(true);
