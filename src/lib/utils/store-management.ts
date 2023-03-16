@@ -73,13 +73,6 @@ export function computed<T extends Composables, C>(
 	};
 }
 
-export function createReadableRef<T>(ref: Ref<T>): ReadableRef<T> {
-	return {
-		subscribe: ref.subscribe,
-		value: ref.value
-	};
-}
-
 function getComposableValue<C extends Composables>(composables: C): ComposablesValues<C> {
 	if (Array.isArray(composables))
 		return composables.map((composable) => composable.value()) as ComposablesValues<C>;
