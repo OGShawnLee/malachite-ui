@@ -132,9 +132,7 @@ declare type Refs =
 	| [ReadableRef<any>, ...Array<ReadableRef<any>>]
 	| Array<ReadableRef<any>>;
 
-export interface ReadableRef<T> extends Readable<T> {
-	value(): T;
-}
+export type ReadableRef<T> = Pick<Ref<T>, 'subscribe' | 'value'>;
 
 export type StoreValue<Union> = Union extends Readable<infer Value> ? Value : Union;
 
