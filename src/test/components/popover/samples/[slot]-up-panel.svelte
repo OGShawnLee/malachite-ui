@@ -3,6 +3,6 @@
 </script>
 
 <Popover let:panel>
-  <PopoverButton>Button</PopoverButton>
+  <PopoverButton data-testid="popover-button">Button</PopoverButton>
   <div slot="up-panel" data-testid="popover-panel" use:panel>Panel</div>
 </Popover>
