@@ -56,6 +56,8 @@ export type ExtractContext<C, K extends keyof C> = OmitAllThisParameter<Pick<C, 
 
 export type ExtractContextKeys<T> = { [P in keyof T]: any };
 
+export type Maybe<T> = T | undefined;
+
 export namespace Navigation {
 	type Directions = 'BACK' | 'NEXT';
 
