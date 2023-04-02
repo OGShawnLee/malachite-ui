@@ -4,10 +4,11 @@ import { useCleanup, useListener, useWindowListener } from '$lib/hooks';
 import {
 	isDisabled,
 	isHTMLElement,
-	isHorizontalNavigationKey,
+	isHorizontalNavigationKey as isHorizontalKey,
 	isNavigationKey,
-	isVerticalNavigationKey
+	isVerticalNavigationKey as isVerticalKey
 } from '$lib/predicate';
+import { hasFocus, isEnabled } from '$lib/predicate/dom';
 
 export function getRadioGroupNavigationHandler(
 	toolbar: { isVertical: ReadableRef<boolean> } | undefined
@@ -51,8 +52,8 @@ export const handleNavigation: Navigation.Handler = function (event) {
 		isNavigationRoot || (isHTMLElement(event.target) && this.isNavigationElement(event.target));
 	if (!this.isGlobal.value() && !isNavigationElement) return;
 
-	if (isVerticalNavigationKey(event.code) && this.isVertical.value()) event.preventDefault();
-	if (isHorizontalNavigationKey(event.code) && this.isHorizontal) event.preventDefault();
+	if (isVerticalKey(event.code) && this.isVertical.value()) event.preventDefault();
+	if (isHorizontalKey(event.code) && this.isHorizontal) event.preventDefault();
 
 	switch (event.code) {
 		case 'ArrowDown':
@@ -61,7 +62,17 @@ export const handleNavigation: Navigation.Handler = function (event) {
 			if (event.code === 'End') {
 				event.preventDefault();
 				if (this.isGlobal.value()) return;
+				return this.handleNextKey(event.code, event.ctrlKey);
 			}
+
+			if (this.isFocusEnabled.value() && this.index.value() === 0) {
+				const element = this.at(0);
+				if (element && !hasFocus(element) && !event.ctrlKey && isEnabled(element)) {
+					if (this.isHorizontal && isHorizontalKey(event.code)) return element.focus();
+					if (this.isVertical.value() && isVerticalKey(event.code)) return element.focus();
+				}
+			}
+
 			return this.handleNextKey(event.code, event.ctrlKey);
 		case 'ArrowLeft':
 		case 'ArrowUp':

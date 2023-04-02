@@ -22,6 +22,10 @@ export const VOID_TAGS = {
 	wbr: true
 };
 
+export function hasFocus(element: Element) {
+	return document.activeElement === element;
+}
+
 // hasTagName
 export function hasTagName<T extends keyof HTMLElementTagNameMap>(
 	element: Element,
@@ -34,6 +38,10 @@ export function hasTagName<T extends keyof HTMLElementTagNameMap>(
 	tag: T | string
 ): element is HTMLElementTagNameMap[T] {
 	return element.tagName === tag.toUpperCase();
+}
+
+export function isEnabled(target: Nullable<EventTarget | HTMLElement>) {
+	return isNotDisabled(target);
 }
 
 export function isChildless(container: HTMLElement) {

@@ -1,6 +1,8 @@
 export * from './core';
 export {
+	hasFocus,
 	hasTagName,
+	isEnabled,
 	isChildless,
 	isClient,
 	isDisabled,
