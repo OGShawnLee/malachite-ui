@@ -1,578 +1,392 @@
 import '@testing-library/jest-dom';
 import * as samples from './samples';
-import type { SvelteComponent } from 'svelte';
-import type { Readable } from 'svelte/store';
-import { type ContextKeys, NavigableItem } from '$lib/components/navigable';
-import { act, fireEvent, render, waitFor } from '@testing-library/svelte';
-import { elementTagNames } from '$lib/components/render';
+import { NavigableItem } from '$lib';
+import { act, fireEvent, render } from '@testing-library/svelte';
 import { hasTagName } from '$lib/predicate';
-import {
-	ContextParent,
-	createContextParentRenderer,
-	generateActions,
-	isValidComponentName
-} from '@test-utils';
-import type { Nullable } from '$lib/types';
+import { ContextParent, generateActions, isValidComponentName } from '@test-utils';
+import { elementTagNames } from '$lib/components/render';
+import { createContextParentRenderer } from '@test-utils';
 
-function initComponent(
-	Component: typeof SvelteComponent,
-	props: {
-		finite?: Readable<boolean> | boolean;
-		global?: Readable<boolean> | boolean;
-		vertical?: Readable<boolean> | boolean;
-	} = {}
-) {
-	const result = render(Component, { props });
-	const external = {
-		button: result.getByText('External Button'),
-		container: result.getByText('External Container')
-	};
+const cases = [samples.ActionComponent, samples.Component];
+describe('Navigation', () => {
+	it.each(cases)('Should be horizontal by default', async (Component) => {
+		const { getAllByText, getByTestId } = render(Component);
+		const elements = getAllByText(/Item/); // 5 elements
+		const container = getByTestId('navigable');
+		await fireEvent.keyDown(container, { code: 'ArrowRight' });
+		expect(elements[0]).toHaveFocus();
+		await fireEvent.keyDown(container, { code: 'ArrowRight' });
+		expect(elements[1]).toHaveFocus();
+		await fireEvent.keyDown(container, { code: 'ArrowLeft' });
+		expect(elements[0]).toHaveFocus();
+	});
 
-	const root = result.getByTestId('root');
-	const items = result.getAllByText(/Item/);
-	return { ...result, external, root, items };
-}
+	it.each(cases)('Should not be global by default', async (Component) => {
+		render(Component);
+		await fireEvent.keyDown(document, { code: 'ArrowRight' });
+		expect(document.body).toHaveFocus();
+		await fireEvent.keyDown(document, { code: 'ArrowLeft' });
+		expect(document.body).toHaveFocus();
+		await fireEvent.keyDown(document, { code: 'ArrowDown' });
+		expect(document.body).toHaveFocus();
+		await fireEvent.keyDown(document, { code: 'ArrowUp' });
+		expect(document.body).toHaveFocus();
+	});
 
-const { ActionComponent, Behaviour, DisabledNavigation } = samples;
-describe.skip('Behaviour', () => {
-	describe.skip('Navigation', () => {
-		it.skip('Should be horizontal by default', async () => {
-			const { root, items } = initComponent(Behaviour);
+	describe.each(['Global', 'Local'])('%s', (mode) => {
+		const global = mode === 'Global';
 
-			await fireEvent.keyDown(root, { code: 'ArrowDown' });
-			expect(document.activeElement).toBe(document.body);
+		describe.each([
+			['Horizontal', 'ArrowRight', 'ArrowLeft'],
+			['Vertical', 'ArrowDown', 'ArrowUp']
+		])('%s', (orientation, nextKey, previousKey) => {
+			const vertical = orientation === 'Vertical';
 
-			await fireEvent.keyDown(root, { code: 'ArrowUp' });
-			expect(document.activeElement).toBe(document.body);
+			it.each(cases)(`Should focus the next Item by pressing ${nextKey}`, async (Component) => {
+				const { getByTestId, getAllByText } = render(Component, { props: { global, vertical } });
+				const target = global ? document : getByTestId('navigable');
+				const items = getAllByText(/Item/);
+				await fireEvent.keyDown(target, { code: nextKey });
+				expect(items[0]).toHaveFocus();
+				await fireEvent.keyDown(target, { code: nextKey });
+				expect(items[1]).toHaveFocus();
+				await fireEvent.keyDown(target, { code: nextKey });
+				expect(items[2]).toHaveFocus();
+			});
 
-			await fireEvent.keyDown(root, { code: 'ArrowLeft' });
-			expect(items[3]).toHaveFocus();
+			it.each(cases)(`Should focus the previous Item by pressing ${nextKey}`, async (Component) => {
+				const { getByTestId, getAllByText } = render(Component, { props: { global, vertical } });
+				const target = global ? document : getByTestId('navigable');
+				const items = getAllByText(/Item/);
+				await fireEvent.keyDown(target, { code: previousKey });
+				expect(items[5]).toHaveFocus();
+				await fireEvent.keyDown(target, { code: previousKey });
+				expect(items[4]).toHaveFocus();
+				await fireEvent.keyDown(target, { code: previousKey });
+				expect(items[3]).toHaveFocus();
+			});
 
-			await fireEvent.keyDown(root, { code: 'ArrowRight' });
-			expect(items[0]).toHaveFocus();
-		});
-
-		it.skip('Should be local by default', async () => {
-			const { root, items } = initComponent(Behaviour);
-
-			await fireEvent.keyDown(root, { code: 'ArrowRight' });
-			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowRight' });
-			expect(items[1]).toHaveFocus();
-
-			await fireEvent.keyDown(document, { code: 'ArrowRight' });
-			expect(items[1]).toHaveFocus();
-
-			await fireEvent.keyDown(document, { code: 'ArrowLeft' });
-			expect(items[1]).toHaveFocus();
-		});
-
-		describe.skip.each(['Global', 'Local'])('%s', (mode) => {
-			const global = mode === 'Global';
-
-			describe.skip.each([
-				['Horizontal', 'ArrowRight', 'ArrowLeft'],
-				['Vertical', 'ArrowDown', 'ArrowUp']
-			])('%s', (orientation, nextKey, previousKey) => {
-				const vertical = orientation === 'Vertical';
-
-				it.skip(`Should focus the next Item by pressing ${nextKey}`, async () => {
-					const { root, items } = initComponent(Behaviour, { global, vertical });
-					const target = global ? document : root;
-
-					await fireEvent.keyDown(target, { code: nextKey });
-					expect(items[0]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: nextKey });
-					expect(items[1]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: nextKey });
-					expect(items[2]).toHaveFocus();
-				});
-
-				it.skip(`Should focus the previous Item by pressing ${previousKey}`, async () => {
-					const { root, items } = initComponent(Behaviour, { global, vertical });
-					const target = global ? document : root;
-
-					await fireEvent.keyDown(target, { code: previousKey });
-					expect(items[3]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: previousKey });
-					expect(items[2]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: previousKey });
-					expect(items[1]).toHaveFocus();
-				});
-
-				// * VALID ITEMS INDEXES --> 1, 3, 5
-				it.skip('Should skip disabled Items', async () => {
-					const { root, items } = initComponent(DisabledNavigation, { global, vertical });
-					const target = global ? document : root;
-
-					await fireEvent.keyDown(target, { code: nextKey });
-					expect(items[1]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: nextKey });
-					expect(items[3]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: nextKey });
-					expect(items[5]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: previousKey });
-					expect(items[3]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: previousKey });
-					expect(items[1]).toHaveFocus();
-
+			it.each(cases)(
+				`Should focus last element upon pressing ${nextKey} + CtrlKey`,
+				async (Component) => {
+					const { getAllByText, getByTestId } = render(Component, {
+						props: { global, vertical }
+					});
+					const target = global ? document : getByTestId('navigable');
+					const items = getAllByText(/Item/);
 					await fireEvent.keyDown(target, { code: nextKey, ctrlKey: true });
 					expect(items[5]).toHaveFocus();
+				}
+			);
 
-					await fireEvent.keyDown(target, { code: previousKey, ctrlKey: true });
-					expect(items[1]).toHaveFocus();
+			it.each(cases)(
+				`Should focus first element upon pressing ${previousKey} + CtrlKey`,
+				async (Component) => {
+					const { getAllByText, getByTestId } = render(Component, {
+						props: { global, vertical }
+					});
+					const target = global ? document : getByTestId('navigable');
 
-					if (global) return;
-
-					await fireEvent.keyDown(target, { code: 'End' });
+					const items = getAllByText(/Item/);
+					await fireEvent.keyDown(target, { code: nextKey, ctrlKey: true });
 					expect(items[5]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: 'Home' });
-					expect(items[1]).toHaveFocus();
-				});
-
-				it.skip('Should be infinite', async () => {
-					const { root, items } = initComponent(Behaviour, { global, vertical });
-					const target = global ? document : root;
-
-					await fireEvent.keyDown(target, { code: nextKey });
+					await fireEvent.keyDown(target, { code: previousKey, ctrlKey: true });
 					expect(items[0]).toHaveFocus();
+				}
+			);
 
-					await fireEvent.keyDown(target, { code: previousKey });
-					expect(items[3]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: nextKey });
-					expect(items[0]).toHaveFocus();
+			// * valid indexes = 1,3,5
+			it.each(cases)(`Should skip disabled elements`, async (Component) => {
+				const { getByTestId, getAllByText } = render(Component, {
+					props: { disabled: true, global, vertical }
 				});
+				const target = global ? document : getByTestId('navigable');
+				const items = getAllByText(/Item/);
+				await fireEvent.keyDown(target, { code: previousKey });
+				expect(items[5]).toHaveFocus();
+				await fireEvent.keyDown(target, { code: previousKey });
+				expect(items[3]).toHaveFocus();
+				await fireEvent.keyDown(target, { code: previousKey });
+				expect(items[1]).toHaveFocus();
+				await fireEvent.keyDown(target, { code: nextKey });
+				expect(items[3]).toHaveFocus();
+				await fireEvent.keyDown(target, { code: nextKey });
+				expect(items[5]).toHaveFocus();
 
-				if (global) {
-					it.skip(`Should not get stuck after pressing ${nextKey} twice if focus was on an external element`, async () => {
-						const { items, external } = initComponent(Behaviour, { global, vertical });
-						await act(() => external.button.focus());
-						expect(external.button).toHaveFocus();
+				await fireEvent.keyDown(target, { code: previousKey, ctrlKey: true });
+				expect(items[1]).toHaveFocus();
 
+				await fireEvent.keyDown(target, { code: nextKey, ctrlKey: true });
+				expect(items[5]).toHaveFocus();
+
+				if (global) return;
+
+				await fireEvent.keyDown(target, { code: 'Home' });
+				expect(items[1]).toHaveFocus();
+
+				await fireEvent.keyDown(target, { code: 'End' });
+				expect(items[5]).toHaveFocus();
+			});
+
+			it.each(cases)('Should be infinite by default', async (Component) => {
+				const { getByTestId, getAllByText } = render(Component, {
+					props: { disabled: true, global, vertical }
+				});
+				const target = global ? document : getByTestId('navigable');
+				const items = getAllByText(/Item/);
+				await fireEvent.keyDown(target, { code: previousKey });
+				expect(items[5]).toHaveFocus();
+				await fireEvent.keyDown(target, { code: nextKey });
+				expect(items[1]).toHaveFocus();
+			});
+
+			if (global) {
+				it.each(cases)(
+					`Should not get stuck after pressing ${nextKey} twice if focus was on an external element`,
+					async (Component) => {
+						const { getAllByText, getByText } = render(Component, { props: { global, vertical } });
+						const external = getByText('External Button');
+						await act(() => external.focus());
+						expect(external).toHaveFocus();
+
+						const items = getAllByText(/Item/);
 						await fireEvent.keyDown(document, { code: nextKey });
 						expect(items[0]).toHaveFocus();
-
 						await fireEvent.keyDown(document, { code: nextKey });
 						expect(items[1]).toHaveFocus();
-					});
+					}
+				);
 
-					it.skip(`Should focus the last Item upon pressing ctrlKey + ${nextKey}`, async () => {
-						const { items } = initComponent(Behaviour, { global, vertical });
-
-						await fireEvent.keyDown(document, { code: nextKey, ctrlKey: true });
-						expect(items[3]).toHaveFocus();
-					});
-
-					it.skip('Should ignore pressing End', async () => {
-						const { items } = initComponent(Behaviour, { global, vertical });
-
-						await fireEvent.keyDown(document, { code: 'End', ctrlKey: true });
-						expect(items[3]).not.toHaveFocus();
-						expect(document.body).toHaveFocus();
-					});
-
-					it.skip(`Should focus the first Item upon pressing ctrlKey + ${previousKey}`, async () => {
-						const { items } = initComponent(Behaviour, { global, vertical });
-
-						await fireEvent.keyDown(document, { code: nextKey, ctrlKey: true });
-						expect(items[3]).toHaveFocus();
-
-						await fireEvent.keyDown(document, { code: previousKey, ctrlKey: true });
-						expect(items[0]).toHaveFocus();
-					});
-
-					it.skip('Should ignore pressing Home', async () => {
-						const { items } = initComponent(Behaviour, { global, vertical });
-
-						await fireEvent.keyDown(document, { code: 'Home', ctrlKey: true });
-						expect(items[0]).not.toHaveFocus();
-						expect(document.body).toHaveFocus();
-					});
-				} else {
-					it.skip(`Should focus the last Item upon pressing End or ctrlKey + ${nextKey}`, async () => {
-						const { root, items } = initComponent(Behaviour, { global, vertical });
-						const target = global ? document : root;
-
-						await fireEvent.keyDown(target, { code: nextKey, ctrlKey: true });
-						expect(items[3]).toHaveFocus();
-
-						await fireEvent.keyDown(target, { code: 'Home' });
-						expect(items[0]).toHaveFocus();
-
-						await fireEvent.keyDown(target, { code: 'End' });
-						expect(items[3]).toHaveFocus();
-					});
-
-					it.skip(`Should focus the first Item upon pressing Home or ctrlKey + ${previousKey}`, async () => {
-						const { root, items } = initComponent(Behaviour, { vertical });
-
-						await fireEvent.keyDown(root, { code: 'End' });
-						expect(items[3]).toHaveFocus();
-
-						await fireEvent.keyDown(root, { code: previousKey, ctrlKey: true });
-						expect(items[0]).toHaveFocus();
-
-						await fireEvent.keyDown(root, { code: 'End' });
-						expect(items[3]).toHaveFocus();
-
-						await fireEvent.keyDown(root, { code: 'Home' });
-						expect(items[0]).toHaveFocus();
-					});
-				}
-
-				it.skip('Should sync the Navigation if any of the Items are focused externally', async () => {
-					const { root, items } = initComponent(Behaviour, { global, vertical });
-
-					const target = global ? document : root;
-
-					await act(() => items[0].focus());
-					expect(items[0]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: nextKey });
-					expect(items[1]).toHaveFocus();
-
-					await act(() => items[3].focus());
-					expect(items[3]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: nextKey });
-					expect(items[0]).toHaveFocus();
+				it.each(cases)("Should ignore pressing 'Home' and 'End'", async (Component) => {
+					render(Component, { props: { global, vertical } });
+					await fireEvent.keyDown(document, { code: 'Home' });
+					expect(document.body).toHaveFocus();
+					await fireEvent.keyDown(document, { code: 'End' });
+					expect(document.body).toHaveFocus();
+				});
+			} else {
+				it.each(cases)('Should focus last element upon pressing End', async (Component) => {
+					const { getAllByText, getByTestId } = render(Component, { props: { global, vertical } });
+					const container = getByTestId('navigable');
+					const items = getAllByText(/Item/);
+					await fireEvent.keyDown(container, { code: 'End' });
+					expect(items[5]).toHaveFocus();
 				});
 
-				it.skip('Should work rendered as an Action Component / Slot Component', async () => {
-					const { items, root } = initComponent(ActionComponent, { global, vertical });
-					const target = global ? document : root;
-
-					await fireEvent.keyDown(target, { code: nextKey });
+				it.each(cases)('Should focus first element upon pressing Home', async (Component) => {
+					const { getAllByText, getByTestId } = render(Component, { props: { global, vertical } });
+					const container = getByTestId('navigable');
+					const items = getAllByText(/Item/);
+					await fireEvent.keyDown(container, { code: 'End' });
+					expect(items[5]).toHaveFocus();
+					await fireEvent.keyDown(container, { code: 'Home' });
 					expect(items[0]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: previousKey });
-					expect(items[3]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: previousKey, ctrlKey: true });
-					expect(items[0]).toHaveFocus();
-
-					await fireEvent.keyDown(target, { code: nextKey, ctrlKey: true });
-					expect(items[3]).toHaveFocus();
 				});
-			});
-		});
-	});
-
-	describe.skip('Attributes', () => {
-		describe.skip('Item', () => {
-			const { Item } = samples;
-
-			function initItem(
-				props: {
-					disabled?: Nullable<boolean>;
-					tabIndex?: Nullable<number>;
-					target?: 'ACTION' | 'COMPONENT';
-					handleClick?: (event: MouseEvent) => void;
-				} = {}
-			) {
-				const result = render(Item, { props });
-				return { ...result, root: result.getByTestId('root'), item: result.getByText('Item') };
 			}
 
-			describe.skip('tabIndex', () => {
-				describe.skip.each(['Action Component', 'Component'])('%s', (mode) => {
-					const target = mode === 'Component' ? 'COMPONENT' : 'ACTION';
-
-					it.skip('Should have tabIndex set to 0 by default', async () => {
-						const { item } = initItem({ target });
-						expect(item).toHaveAttribute('tabIndex', '0');
-					});
-
-					it.skip('Should not be set if the element is disabled', async () => {
-						const { item } = initItem({ disabled: true, target });
-						await waitFor(() => expect(item).not.toHaveAttribute('tabIndex'));
-					});
-
-					it.skip('Should be reactive and be toggled when the element is disabled', async () => {
-						const { component, item } = initItem({ tabIndex: 3, target });
-						expect(item).toHaveAttribute('tabIndex', '3');
-
-						await act(() => component.$set({ disabled: true }));
-						expect(item).not.toHaveAttribute('tabIndex');
-
-						await act(() => component.$set({ disabled: false }));
-						expect(item).toHaveAttribute('tabIndex', '3');
-					});
-
-					it.skip('Should be kept before being disabled and reapplied when the element is enabled again', async () => {
-						const { component, item } = initItem({ tabIndex: 0, target });
-						expect(item).toHaveAttribute('tabIndex', '0');
-
-						await act(() => component.$set({ disabled: true }));
-						expect(item).not.toHaveAttribute('tabIndex');
-
-						await act(() => component.$set({ disabled: false }));
-						expect(item).toHaveAttribute('tabIndex', '0');
-
-						await act(() => component.$set({ tabIndex: '3' }));
-						expect(item).toHaveAttribute('tabIndex', '3');
-
-						await act(() => component.$set({ disabled: true }));
-						await waitFor(() => expect(item).not.toHaveAttribute('tabIndex'));
-					});
-				});
-			});
-
-			it.skip('Should be able of forwarding click events', async () => {
-				const func = vi.fn<[MouseEvent]>(() => {});
-				const { item } = initItem({ handleClick: func });
-				await fireEvent.click(item);
-				expect(func).toBeCalled();
-				expect(func.mock.lastCall?.[0]).toBeInstanceOf(MouseEvent);
-			});
+			it.each(cases)(
+				'Should update the Navigation index if an element is focused externally',
+				async (Component) => {
+					const { getAllByText, getByTestId } = render(Component, { props: { global, vertical } });
+					const container = getByTestId('navigable');
+					const items = getAllByText(/Item/);
+					await act(() => items[2].focus());
+					await fireEvent.keyDown(container, { code: nextKey });
+					expect(items[3]).toHaveFocus();
+					await act(() => items[4].focus());
+					expect(items[4]).toHaveFocus();
+					await fireEvent.keyDown(container, { code: previousKey });
+					expect(items[3]).toHaveFocus();
+				}
+			);
 		});
 	});
 });
 
-const { Events } = samples;
-describe.skip('Events', () => {
-	function initComponent(props: {
-		handleBlur: (event: FocusEvent) => void;
-		handleClick?: (event: MouseEvent) => void;
-		handleFocus: (event: FocusEvent) => void;
-	}) {
-		const result = render(Events, { props });
-		return { ...result, element: result.getByText('Item') };
-	}
-
-	it.skip('Should be able of forwarding a blur listener', async () => {
-		const handleBlur = vi.fn<[FocusEvent]>(() => {});
-		// @ts-ignore
-		const { element } = initComponent({ handleBlur });
-		await act(() => element.focus());
-		await act(() => element.blur());
-		expect(handleBlur).toBeCalledTimes(1);
-
-		await act(() => element.focus());
-		await act(() => element.blur());
-		expect(handleBlur).toBeCalledTimes(2);
-		expect(handleBlur.mock.calls[0][0]).toBeInstanceOf(FocusEvent);
-	});
-
-	it.skip('Should be able of forwarding a click listener', async () => {
-		const handleClick = vi.fn<[MouseEvent]>(() => {});
-		// @ts-ignore
-		const { element } = initComponent({ handleClick });
-		await fireEvent.click(element);
-		expect(handleClick).toBeCalledTimes(1);
-
-		await fireEvent.click(element);
-		expect(handleClick).toBeCalledTimes(2);
-		expect(handleClick.mock.calls[0][0]).toBeInstanceOf(MouseEvent);
-	});
-
-	it.skip('Should be able of forwarding a focus listener', async () => {
-		const handleFocus = vi.fn<[FocusEvent]>(() => {});
-		// @ts-ignore
-		const { element } = initComponent({ handleFocus });
-		await act(() => element.focus());
-		expect(handleFocus).toBeCalledTimes(1);
-
-		await act(() => element.blur());
-
-		await act(() => element.focus());
-		expect(handleFocus).toBeCalledTimes(2);
-		expect(handleFocus.mock.calls[0][0]).toBeInstanceOf(FocusEvent);
-	});
-});
-
-describe.skip('Props', () => {
-	describe.skip('Finite', () => {
-		it.skip('Should make the navigation finite', async () => {
-			const { root, items } = initComponent(Behaviour, { finite: true });
-
-			await fireEvent.keyDown(root, { code: 'ArrowRight' });
-			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowLeft' });
-			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'End' });
-			expect(items[3]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowRight' });
-			expect(items[3]).toHaveFocus();
+describe('Props', () => {
+	describe('Finite', () => {
+		it.each(cases)('Should turn the navigation finite', async (Component) => {
+			const { getAllByText, getByTestId } = render(Component, { props: { finite: true } });
+			const container = getByTestId('navigable');
+			const items = getAllByText(/Item/);
+			await fireEvent.keyDown(container, { code: 'ArrowLeft' });
+			expect(items[5]).not.toHaveFocus();
+			await fireEvent.keyDown(container, { code: 'End' });
+			expect(items[5]).toHaveFocus();
+			await fireEvent.keyDown(container, { code: 'ArrowRight' });
+			expect(items[5]).toHaveFocus();
 		});
 
-		it.skip('Should be false by default', async () => {
-			const { root, items } = initComponent(Behaviour);
-
-			await fireEvent.keyDown(root, { code: 'ArrowRight' });
-			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowLeft' });
-			expect(items[3]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowRight' });
-			expect(items[0]).toHaveFocus();
-		});
-
-		it.skip('Should be reactive', async () => {
-			const { component, root, items } = initComponent(Behaviour, { finite: true });
-
-			await fireEvent.keyDown(root, { code: 'ArrowRight' });
-			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowLeft' });
-			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'End' });
-			expect(items[3]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowRight' });
-			expect(items[3]).toHaveFocus();
-
+		it.each(cases)('Should be reactive', async (Component) => {
+			const { component, getAllByText, getByTestId } = render(Component, {
+				props: { finite: true }
+			});
+			const container = getByTestId('navigable');
+			const items = getAllByText(/Item/);
+			await fireEvent.keyDown(container, { code: 'ArrowLeft' });
+			expect(items[5]).not.toHaveFocus();
+			await fireEvent.keyDown(container, { code: 'End' });
+			expect(items[5]).toHaveFocus();
+			await fireEvent.keyDown(container, { code: 'ArrowRight' });
+			expect(items[5]).toHaveFocus();
 			await act(() => component.$set({ finite: false }));
-
-			await fireEvent.keyDown(root, { code: 'ArrowRight' });
+			await fireEvent.keyDown(container, { code: 'ArrowRight' });
 			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowLeft' });
-			expect(items[3]).toHaveFocus();
-		});
-
-		it.skip('Should work propertly with Global and Vertical navigation', async () => {
-			const { items } = initComponent(Behaviour, { finite: true, global: true, vertical: true });
-
-			await fireEvent.keyDown(document, { code: 'ArrowDown' });
-			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(document, { code: 'ArrowUp' });
-			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(document, { code: 'ArrowDown', ctrlKey: true });
-			expect(items[3]).toHaveFocus();
-
-			await fireEvent.keyDown(document, { code: 'ArrowDown' });
-			expect(items[3]).toHaveFocus();
+			await fireEvent.keyDown(container, { code: 'ArrowLeft' });
+			expect(items[5]).toHaveFocus();
 		});
 	});
 
-	describe.skip('Global', () => {
-		it.skip('Should allow the navigation to be triggered without having to focus the Navigable element', async () => {
-			const { items } = initComponent(Behaviour, { global: true });
-
+	describe('Global', () => {
+		it.each(cases)('Should set the navigation listener on the window', async (Component) => {
+			const { getAllByText } = render(Component, { props: { global: true } });
+			const items = getAllByText(/Item/);
 			await fireEvent.keyDown(document, { code: 'ArrowRight' });
 			expect(items[0]).toHaveFocus();
-
 			await fireEvent.keyDown(document, { code: 'ArrowRight' });
 			expect(items[1]).toHaveFocus();
-
-			await fireEvent.keyDown(document, { code: 'ArrowRight', ctrlKey: true });
-			expect(items[3]).toHaveFocus();
-
-			await fireEvent.keyDown(document, { code: 'ArrowLeft', ctrlKey: true });
-			expect(items[0]).toHaveFocus();
-		});
-
-		it.skip('Should be false by default', async () => {
-			const { items } = initComponent(Behaviour);
-
-			await fireEvent.keyDown(document, { code: 'ArrowRight' });
-			expect(items[0]).not.toHaveFocus();
-			expect(document.body).toHaveFocus();
-		});
-
-		it.skip('Should be reactive', async () => {
-			const { component, items } = initComponent(Behaviour, { global: true });
-
-			await fireEvent.keyDown(document, { code: 'ArrowRight' });
-			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(document, { code: 'ArrowRight' });
-			expect(items[1]).toHaveFocus();
-
-			await act(() => component.$set({ global: false }));
-
-			await fireEvent.keyDown(document, { code: 'ArrowRight' });
-			expect(items[1]).toHaveFocus();
-
 			await fireEvent.keyDown(document, { code: 'ArrowLeft' });
-			expect(items[1]).toHaveFocus();
-
-			await act(() => component.$set({ global: true }));
-
-			await fireEvent.keyDown(document, { code: 'ArrowRight', ctrlKey: true });
-			expect(items[3]).toHaveFocus();
-
-			await fireEvent.keyDown(document, { code: 'ArrowLeft', ctrlKey: true });
 			expect(items[0]).toHaveFocus();
+		});
+
+		it.each(cases)('Should be reactive', async (Component) => {
+			const { component, getAllByText, getByTestId } = render(Component, {
+				props: { global: true }
+			});
+			const items = getAllByText(/Item/);
+			const container = getByTestId('navigable');
+			await fireEvent.keyDown(document, { code: 'ArrowRight' });
+			expect(items[0]).toHaveFocus();
+			await fireEvent.keyDown(document, { code: 'ArrowRight' });
+			expect(items[1]).toHaveFocus();
+			await act(() => component.$set({ global: false }));
+			await fireEvent.keyDown(document, { code: 'ArrowRight' });
+			expect(items[1]).toHaveFocus();
+			await fireEvent.keyDown(container, { code: 'ArrowRight' });
+			expect(items[2]).toHaveFocus();
+			await fireEvent.keyDown(container, { code: 'ArrowRight' });
+			expect(items[3]).toHaveFocus();
 		});
 	});
 
-	describe.skip('Vertical', () => {
-		it.skip('Should make the navigation move with the ArrowUp and ArrowDown keys', async () => {
-			const { root, items } = initComponent(Behaviour, { vertical: true });
-
-			await fireEvent.keyDown(root, { code: 'ArrowDown' });
+	describe('Vertical', () => {
+		it.each(cases)('Should navigate by pressing only ArrowDown and ArrowUp', async (Component) => {
+			const { getAllByText, getByTestId } = render(Component, { props: { vertical: true } });
+			const items = getAllByText(/Item/);
+			const container = getByTestId('navigable');
+			await fireEvent.keyDown(container, { code: 'ArrowRight' });
+			expect(items[0]).not.toHaveFocus();
+			await fireEvent.keyDown(container, { code: 'ArrowDown' });
 			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowDown' });
+			await fireEvent.keyDown(container, { code: 'ArrowDown' });
 			expect(items[1]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowUp' });
+			await fireEvent.keyDown(container, { code: 'ArrowUp' });
 			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowUp' });
-			expect(items[3]).toHaveFocus();
 		});
 
-		it.skip('Should be false by default', async () => {
-			const { root, items } = initComponent(Behaviour);
-
-			await fireEvent.keyDown(root, { code: 'ArrowDown' });
-			expect(items[0]).not.toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowUp' });
-			expect(items[3]).not.toHaveFocus();
-		});
-
-		it.skip('Should be reactive', async () => {
-			const { component, root, items } = initComponent(Behaviour);
-
-			await fireEvent.keyDown(root, { code: 'ArrowDown' });
-			expect(items[0]).not.toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowUp' });
-			expect(items[3]).not.toHaveFocus();
-
-			await act(() => component.$set({ vertical: true }));
-
-			await fireEvent.keyDown(root, { code: 'ArrowDown' });
+		it.each(cases)('Should be reactive', async (Component) => {
+			const { component, getAllByText, getByTestId } = render(Component, {
+				props: { vertical: true }
+			});
+			const items = getAllByText(/Item/);
+			const container = getByTestId('navigable');
+			await fireEvent.keyDown(container, { code: 'ArrowUp' });
+			expect(items[5]).toHaveFocus();
+			await fireEvent.keyDown(container, { code: 'ArrowDown' });
 			expect(items[0]).toHaveFocus();
-
-			await fireEvent.keyDown(root, { code: 'ArrowUp' });
-			expect(items[3]).toHaveFocus();
+			await act(() => component.$set({ vertical: false }));
+			await fireEvent.keyDown(container, { code: 'ArrowUp' });
+			expect(items[0]).toHaveFocus();
+			await fireEvent.keyDown(container, { code: 'ArrowRight' });
+			expect(items[1]).toHaveFocus();
+			await fireEvent.keyDown(container, { code: 'ArrowLeft' });
+			expect(items[0]).toHaveFocus();
 		});
 	});
 });
+
+// const { ActionComponent, Behaviour, DisabledNavigation } = samples;
+// 	describe.skip('Attributes', () => {
+// 		describe.skip('Item', () => {
+// 			const { Item } = samples;
+
+// 			function initItem(
+// 				props: {
+// 					disabled?: Nullable<boolean>;
+// 					tabIndex?: Nullable<number>;
+// 					target?: 'ACTION' | 'COMPONENT';
+// 					handleClick?: (event: MouseEvent) => void;
+// 				} = {}
+// 			) {
+// 				const result = render(Item, { props });
+// 				return { ...result, root: result.getByTestId('root'), item: result.getByText('Item') };
+// 			}
+
+// 			describe.skip('tabIndex', () => {
+// 				describe.skip.each(['Action Component', 'Component'])('%s', (mode) => {
+// 					const target = mode === 'Component' ? 'COMPONENT' : 'ACTION';
+
+// 					it.skip('Should have tabIndex set to 0 by default', async () => {
+// 						const { item } = initItem({ target });
+// 						expect(item).toHaveAttribute('tabIndex', '0');
+// 					});
+
+// 					it.skip('Should not be set if the element is disabled', async () => {
+// 						const { item } = initItem({ disabled: true, target });
+// 						await waitFor(() => expect(item).not.toHaveAttribute('tabIndex'));
+// 					});
+
+// 					it.skip('Should be reactive and be toggled when the element is disabled', async () => {
+// 						const { component, item } = initItem({ tabIndex: 3, target });
+// 						expect(item).toHaveAttribute('tabIndex', '3');
+
+// 						await act(() => component.$set({ disabled: true }));
+// 						expect(item).not.toHaveAttribute('tabIndex');
+
+// 						await act(() => component.$set({ disabled: false }));
+// 						expect(item).toHaveAttribute('tabIndex', '3');
+// 					});
+
+// 					it.skip('Should be kept before being disabled and reapplied when the element is enabled again', async () => {
+// 						const { component, item } = initItem({ tabIndex: 0, target });
+// 						expect(item).toHaveAttribute('tabIndex', '0');
+
+// 						await act(() => component.$set({ disabled: true }));
+// 						expect(item).not.toHaveAttribute('tabIndex');
+
+// 						await act(() => component.$set({ disabled: false }));
+// 						expect(item).toHaveAttribute('tabIndex', '0');
+
+// 						await act(() => component.$set({ tabIndex: '3' }));
+// 						expect(item).toHaveAttribute('tabIndex', '3');
+
+// 						await act(() => component.$set({ disabled: true }));
+// 						await waitFor(() => expect(item).not.toHaveAttribute('tabIndex'));
+// 					});
+// 				});
+// 			});
+
+// 			it.skip('Should be able of forwarding click events', async () => {
+// 				const func = vi.fn<[MouseEvent]>(() => {});
+// 				const { item } = initItem({ handleClick: func });
+// 				await fireEvent.click(item);
+// 				expect(func).toBeCalled();
+// 				expect(func.mock.lastCall?.[0]).toBeInstanceOf(MouseEvent);
+// 			});
+// 		});
+// 	});
+// });
 
 const { Rendering } = samples;
-describe.skip('Rendering', () => {
-	describe.skip.each([
+describe('Rendering', () => {
+	describe.each([
 		['Navigable', 'div'],
 		['Item', 'div']
 	])('%s', (name, defaultTag) => {
 		const COMPONENT_NAME = name.toLowerCase();
 		const TEST_ID = `navigable-${COMPONENT_NAME}`;
 
-		it.skip(`Should be rendered as a ${defaultTag} by default`, async () => {
+		it(`Should be rendered as a ${defaultTag} by default`, async () => {
 			const { getByTestId } = render(Rendering, {
 				props: { [COMPONENT_NAME]: { as: defaultTag, 'data-testid': TEST_ID } }
 			});
@@ -580,7 +394,7 @@ describe.skip('Rendering', () => {
 			expect(hasTagName(element, 'div')).toBe(true);
 		});
 
-		it.skip(`Should have a valid ${name} Navigable id`, () => {
+		it(`Should have a valid ${name} Navigable id`, () => {
 			const { getByTestId } = render(Rendering, {
 				props: { [COMPONENT_NAME]: { 'data-testid': TEST_ID } }
 			});
@@ -596,7 +410,7 @@ describe.skip('Rendering', () => {
 			expect(hasTagName(element, as)).toBe(true);
 		});
 
-		it.skip('Should be able of forwarding attributes', () => {
+		it('Should be able of forwarding attributes', () => {
 			const attributes = { tabIndex: '4', title: 'a navigable element' };
 			const { getByTestId } = render(Rendering, {
 				props: { [COMPONENT_NAME]: { 'data-testid': TEST_ID, rest: { ...attributes } } }
@@ -608,50 +422,50 @@ describe.skip('Rendering', () => {
 			}
 		});
 
-		it.skip('Should be able of forwarding actions', () => {
+		it('Should be able of forwarding actions', () => {
 			const actions = generateActions(3);
 			const { getByTestId } = render(Rendering, {
 				props: { [COMPONENT_NAME]: { 'data-testid': TEST_ID, use: actions } }
 			});
 			const element = getByTestId(TEST_ID);
-			for (const [action, parameter] of actions) {
-				expect(action).toBeCalledWith(element, parameter);
+			for (const action of actions) {
+				expect(action).toBeCalledWith(element);
 			}
 		});
 	});
 });
 
-describe.skip('Context', () => {
+describe('Context', () => {
 	const [init, messages] = createContextParentRenderer<ContextKeys>(ContextParent, 'navigable');
 
-	describe.skip('Unset Context', () => {
-		describe.skip('Item', () => {
-			it.skip('Should throw an error if rendered without a Navigable Context', () => {
+	describe('Unset Context', () => {
+		describe('Item', () => {
+			it('Should throw an error if rendered without a Navigable Context', () => {
 				expect(() => render(NavigableItem)).toThrow();
 			});
 
-			it.skip('Should throw an specific error', () => {
+			it('Should throw an specific error', () => {
 				expect(() => render(NavigableItem)).toThrow(messages.unset);
 			});
 		});
 	});
 
-	describe.skip('Invalid Context', () => {
-		describe.skip('Item', () => {
-			it.skip('Should throw an error if rendered with an invalid Navigable Context', () => {
-				expect(() => init.skip(NavigableItem, { initItem: null })).toThrow();
+	describe('Invalid Context', () => {
+		describe('Item', () => {
+			it('Should throw an error if rendered with an invalid Navigable Context', () => {
+				expect(() => init(NavigableItem, { initItem: null })).toThrow();
 			});
 
-			it.skip('Should throw an specific error', () => {
-				expect(() => init.skip(NavigableItem, { initItem: null })).toThrow(messages.invalid);
+			it('Should throw an specific error', () => {
+				expect(() => init(NavigableItem, { initItem: null })).toThrow(messages.invalid);
 			});
 
-			it.skip('Should validate the context value thoroughly', () => {
-				expect(() => init.skip(NavigableItem, { initItem: 'Not a Function' })).toThrow(
+			it('Should validate the context value thoroughly', () => {
+				expect(() => init(NavigableItem, { createNavigableItem: 'Not a Function' })).toThrow(
 					messages.invalid
 				);
-				// TODO: HANDLE FUNCTION ERROR
-				// expect(() => init.skip(NavigableItem, { initItem: () => "We do a litTle trolling" })).toThrow(messages.invalid);
+				// // TODO: HANDLE FUNCTION ERROR
+				// expect(() => init(NavigableItem, { createNavigableItem: () => "We do a litTle trolling" })).toThrow(messages.invalid);
 			});
 		});
 	});

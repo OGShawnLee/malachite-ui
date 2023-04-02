@@ -31,11 +31,11 @@
 			<NavigableItem class={className}>Fifth Item</NavigableItem>
 		</Navigable>
 		<Navigable class="flex justify-between" {finite} {global} {vertical}>
-			<NavigableItem class="button button--medium opacity-50" disabled>First Item</NavigableItem>
+			<NavigableItem class={className} {disabled}>First Item</NavigableItem>
 			<NavigableItem class={className}>Second Item</NavigableItem>
-			<NavigableItem class="button button--medium opacity-50" disabled>Third Item</NavigableItem>
+			<NavigableItem class={className} {disabled}>Third Item</NavigableItem>
 			<NavigableItem class={className}>Fourth Item</NavigableItem>
-			<NavigableItem class="button button--medium opacity-50" disabled>Fifth Item</NavigableItem>
+			<NavigableItem class={className} {disabled}>Fifth Item</NavigableItem>
 		</Navigable>
 	</div>
 </Page>

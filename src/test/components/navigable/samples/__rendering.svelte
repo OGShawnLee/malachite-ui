@@ -1,10 +1,10 @@
 <script lang="ts">
+  import type { Action, RenderElementTagName } from '$lib/types';
   import { Navigable, NavigableItem } from '$lib';
-  import type { Forwarder, RenderElementTagName } from '$lib/types';
 
   interface ComponentConfig {
     as?: RenderElementTagName;
-    use?: Forwarder.Actions;
+    use?: Action[];
     rest?: {};
   }
 
