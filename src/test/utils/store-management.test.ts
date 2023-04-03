@@ -155,3 +155,40 @@ describe('ref', () => {
 		});
 	});
 });
+
+describe('watch', () => {
+	const { ref, computed, watch } = store;
+
+	it('Should return void', () => {
+		const count = ref(10);
+		const result = watch(count, () => {});
+		expect(result).not.toBeDefined();
+	});
+
+	it('Should call the given callback when the store value changes', () => {
+		const count = ref(10);
+		const fn = vi.fn(() => {});
+		watch(count, fn);
+		expect(fn).not.toBeCalled();
+		count.set(20);
+		expect(fn).toBeCalledTimes(1);
+		expect(fn).toBeCalledWith(20);
+		count.update((count) => count * 2);
+		expect(fn).toBeCalledTimes(2);
+		expect(fn).toBeCalledWith(40);
+	});
+
+	it('Should work with computed', () => {
+		const count = ref(10);
+		const double = computed(count, (count) => count * 2);
+		const fn = vi.fn(() => {});
+		watch(double, fn);
+		expect(fn).not.toBeCalled();
+		count.set(5);
+		expect(fn).toBeCalledTimes(1);
+		expect(fn).toBeCalledWith(10);
+		count.set(20);
+		expect(fn).toBeCalledTimes(2);
+		expect(fn).toBeCalledWith(40);
+	});
+});

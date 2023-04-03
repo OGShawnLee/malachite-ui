@@ -104,3 +104,24 @@ export function ref<T>(globalValue: T, start?: StartStopNotifier<T>): Ref<T> {
 		}
 	};
 }
+
+export function watch<T>(composable: Computed<T> | Ref<T>, onChange: (value: T) => void) {
+	if (isComputed(composable)) {
+		const initialSet = composable.$$onSet;
+		composable.$$onSet = (value) => {
+			initialSet(value);
+			onChange(value);
+		};
+	} else {
+		const initialSet = composable.set;
+		composable.set = (value) => {
+			initialSet(value);
+			onChange(value);
+		};
+		const initialUpdate = composable.update;
+		composable.update = (callback) => {
+			initialUpdate(callback);
+			onChange(composable.value());
+		};
+	}
+}

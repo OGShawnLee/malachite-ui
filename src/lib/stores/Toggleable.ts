@@ -3,9 +3,9 @@ import type { Unsubscriber } from 'svelte/store';
 import Hashable from './Hashable';
 import { derived } from 'svelte/store';
 import { useCollector, useListener } from '$lib/hooks';
-import { focusFirstChildElement, ref } from '$lib/utils';
+import { focusFirstChildElement, ref, watch } from '$lib/utils';
 import { isFocusable, isHTMLElement, isNullish, isWithin } from '$lib/predicate';
-import { onDestroy, tick } from 'svelte';
+import { tick } from 'svelte';
 import { useHidePanelFocusOnClose } from '$lib/plugins';
 
 export class Toggleable {
@@ -21,11 +21,9 @@ export class Toggleable {
 		this.isOpen.set(isOpen);
 		this.group = group;
 		this.groupClient = this.group?.createClient(this);
-		onDestroy(
-			this.isOpen.subscribe((isOpen) => {
-				this.handleFocusForce(isOpen);
-			})
-		);
+		watch(this.isOpen, (isOpen) => {
+			this.handleFocusForce(isOpen);
+		});
 	}
 
 	get subscribe() {
