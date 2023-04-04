@@ -65,7 +65,7 @@ export const handleNavigation: Navigation.Handler = function (event) {
 				return this.handleNextKey(event.code, event.ctrlKey);
 			}
 
-			if (this.isFocusEnabled.value() && this.index.value() === 0) {
+			if (this.isFocusEnabled.value() && this.targetIndex.value() === 0) {
 				const element = this.at(0);
 				if (element && !hasFocus(element) && !event.ctrlKey && isEnabled(element)) {
 					if (this.isHorizontal && isHorizontalKey(event.code)) return element.focus();
