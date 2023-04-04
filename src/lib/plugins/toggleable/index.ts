@@ -124,6 +124,12 @@ export function useNavigationStarter(
 						await tick();
 						return navigation.goLast();
 					}
+				case 'Enter':
+				case 'Space':
+					event.preventDefault();
+					this.open();
+					await tick();
+					navigation.goFirst();
 			}
 		});
 	};

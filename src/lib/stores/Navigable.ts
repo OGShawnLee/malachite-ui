@@ -2,7 +2,7 @@ import type { ElementBinder } from '$lib/core';
 import type { Computed, KeyBack, KeyNext, Navigation, Plugin, ReadableRef, Ref } from '$lib/types';
 import type { Updater } from 'svelte/store';
 import Hashable from './Hashable';
-import { computed, findIndex, findLastIndex, ref } from '$lib/utils';
+import { computed, findIndex, findLastIndex, ref, watch } from '$lib/utils';
 import { handleNavigation } from '$lib/plugins';
 import { hasTagName, isAround, isDisabled, isFocusable, isNumber, isWithin } from '$lib/predicate';
 import { onDestroy } from 'svelte';
@@ -14,6 +14,7 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 	readonly manualIndex: Ref<number>;
 	readonly targetIndexRef: Computed<Ref<number>>;
 	readonly isDisabled: Ref<boolean>;
+	readonly hasSelected: Ref<boolean>;
 	readonly isFinite: Ref<boolean>;
 	readonly isGlobal: Ref<boolean>;
 	readonly isManual: Ref<boolean>;
@@ -28,6 +29,7 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 	constructor(settings: Navigation.Settings = {}) {
 		this.index = ref(settings.initialIndex ?? 0);
 		this.manualIndex = ref(settings.initialIndex ?? 0, this.index.subscribe);
+		this.hasSelected = ref(!settings.isWaiting);
 		this.isDisabled = ref(settings.isDisabled ?? false);
 		this.isFinite = ref(settings.isFinite ?? false);
 		this.isFocusEnabled = ref(settings.isFocusEnabled ?? true);
@@ -38,12 +40,10 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		this.targetIndexRef = computed(this.isManual, (isManual) => {
 			return isManual ? this.manualIndex : this.index;
 		});
-		this.active = computed([this.items.values, this.isWaiting], ([items, isWaiting]) => {
-			if (isWaiting) return;
+		this.active = computed(this.items.values, (items) => {
 			return items.find((item) => item.isActive);
 		});
-		this.selected = computed([this.items.values, this.isWaiting], ([items, isWaiting]) => {
-			if (isWaiting) return;
+		this.selected = computed(this.items.values, (items) => {
 			return items.find((item) => item.isSelected);
 		});
 	}
@@ -68,6 +68,7 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		const { handler = handleNavigation, plugins = [] } = settings;
 		const onKeydown = handler.bind(this);
 		return useCleanup(
+			settings.onDestroy,
 			this.index.subscribe(this.manualIndex.set),
 			useListener(element, 'keydown', (event) => {
 				if (this.isDisabled.value() || this.isGlobal.value()) return;
@@ -138,10 +139,13 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		binder: ElementBinder,
 		name: string
 	) {
-		const isActive = derived([this.manualIndex, binder.disabled], ([manualIndex, isDisabled]) => {
-			if (isDisabled) return false;
-			return manualIndex === index;
-		});
+		const isActive = derived(
+			[this.manualIndex, binder.disabled, this.isWaiting],
+			([manualIndex, isDisabled, isWaiting]) => {
+				if (isDisabled || isWaiting) return false;
+				return manualIndex === index;
+			}
+		);
 		onDestroy(
 			isActive.subscribe((isActive) => {
 				this.items.update(name, (item) => {
@@ -160,10 +164,10 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		name: string
 	) {
 		const isSelected = derived(
-			[this.index, binder.disabled, this.isWaiting],
-			([globalIndex, isDisabled, isWaiting]) => {
-				if (isWaiting || isDisabled) return false;
-				return globalIndex === index;
+			[this.index, binder.disabled, this.hasSelected],
+			([globalIndex, isDisabled, hasSelected]) => {
+				if (isDisabled) return false;
+				return hasSelected && globalIndex === index;
 			}
 		);
 		onDestroy(
@@ -224,6 +228,7 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		if (this.isValidIndex(index)) {
 			this.index.set(index);
 			this.isWaiting.set(false);
+			this.hasSelected.set(true);
 			if (this.isFocusEnabled.value() && focus) this.elements.at(index)?.focus();
 		}
 	}
@@ -232,7 +237,7 @@ export default class Navigable<T extends Navigation.Item = Navigation.Item> {
 		index = isNumber(index) ? index : index(this.targetIndex.value());
 		if (this.isValidIndex(index)) {
 			this.targetIndex.set(index);
-			if (!this.isManual.value()) this.isWaiting.set(false);
+			this.isWaiting.set(false);
 			if (this.isFocusEnabled.value() && focus) {
 				this.elements.at(this.targetIndex.value())?.focus();
 			}

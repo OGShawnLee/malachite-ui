@@ -79,6 +79,7 @@ export namespace Navigation {
 	}
 
 	export interface RootSettings {
+		onDestroy?: () => void;
 		handler?: Handler;
 		plugins?: Plugin<Navigable>[];
 	}

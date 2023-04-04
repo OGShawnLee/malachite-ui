@@ -65,6 +65,8 @@ export const handleNavigation: Navigation.Handler = function (event) {
 				return this.handleNextKey(event.code, event.ctrlKey);
 			}
 
+			if (this.isWaiting.value()) return this.goFirst();
+
 			if (this.isFocusEnabled.value() && this.targetIndex.value() === 0) {
 				const element = this.at(0);
 				if (element && !hasFocus(element) && !event.ctrlKey && isEnabled(element)) {
@@ -81,10 +83,11 @@ export const handleNavigation: Navigation.Handler = function (event) {
 				event.preventDefault();
 				if (this.isGlobal.value()) return;
 			}
+			if (this.isWaiting.value()) return this.goLast();
 			return this.handleBackKey(event.code, event.ctrlKey);
 		case 'Enter':
 		case 'Space':
-			if (this.isFocusEnabled.value()) return;
+			if (this.isFocusEnabled.value() || this.isWaiting.value()) return;
 			const element = this.at(this.manualIndex.value());
 			if (element) {
 				if (event.code === 'Enter') event.preventDefault();
@@ -94,11 +97,16 @@ export const handleNavigation: Navigation.Handler = function (event) {
 };
 
 export const useHoverMove: Plugin<Navigable> = function (element) {
-	return useListener(element, 'mousemove', (event) => {
-		if (!isHTMLElement(event.target) || isDisabled(event.target)) return;
-		const index = this.findIndex((element) => element === event.target);
-		if (index > -1) this.interact(index, false);
-	});
+	return useCleanup(
+		useListener(element, 'mousemove', (event) => {
+			if (!isHTMLElement(event.target) || isDisabled(event.target)) return;
+			const index = this.findIndex((element) => element === event.target);
+			if (index > -1) this.interact(index, false);
+		}),
+		useListener(element, 'mouseleave', () => {
+			this.isWaiting.set(true);
+		})
+	);
 };
 
 export const useKeyMatch: Plugin<Navigable> = function (element) {

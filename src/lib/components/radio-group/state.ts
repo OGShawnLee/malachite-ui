@@ -102,6 +102,7 @@ export function createRadioGroupState<T>(settings: Settings<T>) {
 					if (initialValue === globalValue.value() || isSelected) {
 						navigation.index.set(index);
 						navigation.isWaiting.set(false);
+						navigation.hasSelected.set(true);
 						isInitialValueFound = true;
 					}
 				},

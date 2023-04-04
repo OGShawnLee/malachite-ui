@@ -59,8 +59,8 @@ export function createListboxState<T>(settings: Settings<T>) {
 					toggler.createButton(element, {
 						plugins: [handleAriaControls(panel), handleAriaExpanded]
 					}),
-					useListener(element, 'keydown', async ({ code }) => {
-						switch (code) {
+					useListener(element, 'keydown', async (event) => {
+						switch (event.code) {
 							case 'ArrowDown':
 								toggler.open();
 								await tick();
@@ -71,6 +71,13 @@ export function createListboxState<T>(settings: Settings<T>) {
 								await tick();
 								if (navigation.selected.value()) return;
 								return navigation.goLast();
+							case 'Enter':
+							case 'Space':
+								event.preventDefault();
+								toggler.open();
+								await tick();
+								if (navigation.selected.value()) return;
+								navigation.goFirst();
 						}
 					})
 				];
@@ -104,7 +111,8 @@ export function createListboxState<T>(settings: Settings<T>) {
 				element.role = 'listbox';
 				return [
 					navigation.initNavigation(element, {
-						plugins: [handleAriaOrientation, usePreventTabbing, useHoverMove, useKeyMatch]
+						plugins: [handleAriaOrientation, usePreventTabbing, useHoverMove, useKeyMatch],
+						onDestroy: () => navigation.isWaiting.set(true)
 					}),
 					toggler.createPanel(element, {
 						plugins: [useCloseFocusLeave, useCloseClickOutside, useCloseEscapeKey],
@@ -134,6 +142,7 @@ export function createListboxState<T>(settings: Settings<T>) {
 						if (initialValue === globalValue.value()) {
 							navigation.index.set(index);
 							navigation.isWaiting.set(false);
+							navigation.hasSelected.set(true);
 							globalValue.set(initialValue);
 							isInitialValueFound = true;
 						}

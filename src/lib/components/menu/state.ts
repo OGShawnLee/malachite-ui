@@ -65,7 +65,8 @@ export function createMenuState(settings: Navigation.Settings) {
 				element.tabIndex = 0;
 				return [
 					navigation.initNavigation(element, {
-						plugins: [handleAriaOrientation, useHoverMove, usePreventTabbing, useKeyMatch]
+						plugins: [handleAriaOrientation, useHoverMove, usePreventTabbing, useKeyMatch],
+						onDestroy: () => navigation.isWaiting.set(true)
 					}),
 					toggler.createPanel(element, {
 						plugins: [
