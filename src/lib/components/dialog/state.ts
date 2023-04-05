@@ -102,7 +102,7 @@ export function createDialogState(initialValue: boolean, initialFocus: Ref<Nulla
 		return defineActionComponent({
 			binder: binder,
 			id: id,
-			name: nameChild('description'),
+			name: nameChild('title'),
 			onInit: ({ name }) => {
 				titles.onInitLabel(name, id);
 			},
