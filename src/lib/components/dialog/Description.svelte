@@ -6,7 +6,7 @@
 
 	let className: string | undefined = undefined;
 
-	export let as: ComponentTagName = "span";
+	export let as: ComponentTagName = "p";
 	export let element: HTMLElement | undefined = undefined;
 	export let id: string | undefined = undefined;
 	export let use: Action[] | undefined = undefined;
