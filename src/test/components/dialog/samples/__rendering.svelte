@@ -24,7 +24,7 @@
 
 <button on:click={() => (open = !open)}> Toggle </button>
 
-<Dialog bind:open as={dialog.as} use={dialog.use} data-testid="dialog--root">
+<Dialog bind:open as={dialog.as} use={dialog.use} data-testid="dialog-container">
   <DialogOverlay as={overlay.as} use={overlay.use}>Overlay</DialogOverlay>
   <DialogContent as={content.as} use={content.use}>
     Content

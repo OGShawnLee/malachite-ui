@@ -6,13 +6,14 @@
     DialogOverlay,
     DialogTitle
   } from '$lib/components';
+  import type { Maybe } from '$lib/types';
   import { useRange } from '@test-utils';
 
-  export let Titles = useRange(1);
-  export let Descriptions = useRange(1);
-  export let open: boolean | undefined = undefined;
-  export let initialFocus: HTMLElement | undefined = undefined;
-  export let showInitialFocus = false;
+  export let descriptions = useRange(1);
+  export let titles = useRange(1);
+  export let open: Maybe<boolean> = undefined;
+  export let initialFocus: Maybe<HTMLElement> = undefined;
+  export let isShowingInitialFocus = false;
 
   function toggle() {
     open = !open;
@@ -20,28 +21,27 @@
 </script>
 
 <button on:click={toggle}> Toggle </button>
-<button>External Initial Focus</button>
+<span data-testid="binding-open"> {open} </span>
 
-<Dialog {open} {initialFocus} data-testid="dialog-root">
-  <button> Invalid First </button>
+<Dialog bind:open {initialFocus} data-testid="dialog-container">
+  <button> Invalid 1 </button>
   <DialogOverlay data-testid="dialog-overlay">
-    <button> Another Invalid First </button>
+    <button> Invalid 2 </button>
   </DialogOverlay>
-  <DialogContent let:close>
-    Dialog Content
-    {#each $Titles as index}
+  <DialogContent data-testid="dialog-content" let:close>
+    {#each $titles as index}
       <DialogTitle>
         Title {index}
       </DialogTitle>
     {/each}
-    {#each $Descriptions as index}
+    {#each $descriptions as index}
       <DialogDescription>
         Description {index}
       </DialogDescription>
     {/each}
     <footer>
       <button on:click={close}> Close Me </button>
-      {#if showInitialFocus}
+      {#if isShowingInitialFocus}
         <button bind:this={initialFocus}> Initial Focus </button>
       {/if}
     </footer>

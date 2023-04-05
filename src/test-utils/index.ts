@@ -16,15 +16,9 @@ export function appendChild<T extends Node>(child: T, container: Node = document
 }
 
 export function fuseElementsName(elements: Element[]) {
-	return elements
-		.map(({ id }) => id)
-		.sort((second, first) => {
-			const firstIndex = first.match(/\d+/g)?.[1] || 0;
-			const secondIndex = second.match(/\d+/g)?.[1] || 0;
-
-			return Number(secondIndex) - Number(firstIndex);
-		})
-		.join(' ');
+	return elements.reduce((str, element) => {
+		return (str + ' ' + element.id).trim();
+	}, '');
 }
 
 export function generateActions<T>(amount: number) {
