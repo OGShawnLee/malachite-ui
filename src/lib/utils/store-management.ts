@@ -56,7 +56,9 @@ export function computed<T extends Composables, C>(
 			}
 		});
 	} else {
+		const initialOnSet = composables.$$onSet;
 		composables.$$onSet = (value) => {
+			initialOnSet(value);
 			store.set(compute(value));
 		};
 	}
