@@ -40,6 +40,7 @@ export function createMenuState(settings: Navigation.Settings) {
 			binder: button,
 			name: nameChild('button'),
 			onMount: ({ element }) => {
+				element.ariaHasPopup = 'true';
 				return [
 					toggler.createButton(element, {
 						plugins: [
