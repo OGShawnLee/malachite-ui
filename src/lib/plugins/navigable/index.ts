@@ -65,7 +65,7 @@ export const handleNavigation: Navigation.Handler = function (event) {
 				return this.handleNextKey(event.code, event.ctrlKey);
 			}
 
-			if (this.isWaiting.value()) return this.goFirst();
+			if (this.isWaiting.value() && !event.ctrlKey) return this.goFirst();
 
 			if (this.isFocusEnabled.value() && this.targetIndex.value() === 0) {
 				const element = this.at(0);
@@ -111,12 +111,12 @@ export const useHoverMove: Plugin<Navigable> = function (element) {
 
 export const useKeyMatch: Plugin<Navigable> = function (element) {
 	return useCleanup(
-		useListener(element, 'keydown', ({ key }) => {
-			if (isNavigationKey(key)) return;
-			key = key.toLowerCase();
+		useListener(element, 'keydown', ({ code }) => {
+			if (isNavigationKey(code)) return;
+			code = code.toLowerCase();
 			const index = this.findIndex((element) => {
 				if (isDisabled(element)) return;
-				return element.textContent?.toLowerCase().trim().startsWith(key);
+				return element.textContent?.toLowerCase().trim().startsWith(code);
 			});
 			if (index > -1) this.interact(index, false);
 		})
