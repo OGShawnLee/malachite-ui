@@ -1,10 +1,10 @@
 <script lang="ts">
   import { Menu, MenuButton, MenuItem, MenuItems } from '$lib';
-  import type { Forwarder, RenderElementTagName } from '$lib/types';
+  import type { Action, RenderElementTagName } from '$lib/types';
 
   interface ComponentConfig {
     as?: RenderElementTagName;
-    use?: Forwarder.Actions;
+    use?: Action[];
     rest?: {};
   }
 
