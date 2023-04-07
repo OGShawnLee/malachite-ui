@@ -113,7 +113,10 @@ export function createListboxState<T>(settings: Settings<T>) {
 				return [
 					navigation.initNavigation(element, {
 						plugins: [handleAriaOrientation, usePreventTabbing, useHoverMove, useKeyMatch],
-						onDestroy: () => navigation.isWaiting.set(true)
+						onDestroy: () => {
+							if (navigation.hasSelected.value()) return;
+							navigation.isWaiting.set(true);
+						}
 					}),
 					toggler.createPanel(element, {
 						plugins: [useCloseFocusLeave, useCloseClickOutside, useCloseEscapeKey],
