@@ -11,14 +11,16 @@
 	export let id: string | undefined = undefined;
 	export let disabled: Nullable<boolean> = undefined;
 	export let use: Action[] | undefined = undefined;
+	export let nofocus = false
 	export { className as class };
 
-	const { isOpen, createPopoverButton } = getContext();
+	const { isOpen, createPopoverButton, noButtonFocus } = getContext();
 	const { action, binder, context: panelName } = createPopoverButton(id);
 
 	$: actions = use ? [action, ...use] : [action];
 	$: isDisabled = disabled ?? false;
 	$: finalClassName = useClassNameResolver(className)({ isDisabled, isOpen: $isOpen });
+	$: noButtonFocus.set(nofocus)
 </script>
 
 <Render

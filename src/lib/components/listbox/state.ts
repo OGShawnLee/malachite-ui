@@ -41,7 +41,8 @@ export function createListboxState<T>(settings: Settings<T>) {
 		createListboxButton,
 		createListboxOptionState,
 		createListboxPanel,
-		createListboxLabel
+		createListboxLabel,
+		noButtonFocus: toggler.noButtonFocus
 	});
 
 	function createListboxButton(id: string | undefined) {

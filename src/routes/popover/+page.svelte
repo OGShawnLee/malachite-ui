@@ -5,16 +5,17 @@
   import { fade, fly, scale, slide } from 'svelte/transition';
 
   let forceFocus = true;
-
+  let nofocus = false;
 </script>
 
 <Page title="Popover">
   <div class="flex items-center gap-3" slot="options">
     <Toggle text="Toggle Force Focus" bind:checked={forceFocus} />
+    <Toggle text="Toggle Button onClose Focus" bind:checked={nofocus} />
   </div>
   <div class="grid grid-cols-4 items-start gap-6">
     <Popover class="grid gap-6" let:close>
-      <PopoverButton class="button button--medium">Toggle</PopoverButton>
+      <PopoverButton class="button button--medium" {nofocus}>Toggle</PopoverButton>
       <div slot="panel" transition:fade>
         <PopoverPanel class="panel" static>
           <p>
@@ -26,7 +27,7 @@
       </div>
     </Popover>
     <Popover class="grid gap-6" let:close>
-      <PopoverButton class="button button--medium">Toggle</PopoverButton>
+      <PopoverButton class="button button--medium" {nofocus}>Toggle</PopoverButton>
       <div slot="panel" transition:fly={{ y: 25 }}>
         <PopoverPanel class="panel" static>
           <p>
@@ -38,7 +39,7 @@
       </div>
     </Popover>
     <Popover class="grid gap-6" {forceFocus} let:close let:overlay>
-      <PopoverButton class="button button--medium">Toggle</PopoverButton>
+      <PopoverButton class="button button--medium" {nofocus}>Toggle</PopoverButton>
       <div class="overlay" slot="overlay" use:overlay transition:fade />
       <div class="panel--modal" slot="panel" transition:scale={{ start: 1.15 }}>
         <PopoverPanel class="p-8 | grid gap-3 | bg-neutral-800" static>
@@ -51,7 +52,7 @@
       </div>
     </Popover>
     <Popover class="grid gap-6" {forceFocus} let:close let:overlay>
-      <PopoverButton class="button button--medium">Toggle</PopoverButton>
+      <PopoverButton class="button button--medium" {nofocus}>Toggle</PopoverButton>
       <div class="overlay" slot="overlay" use:overlay transition:fade />
       <div class="panel--modal" slot="panel" transition:slide>
         <PopoverPanel class="p-8 | grid gap-3 | bg-neutral-800" static>
@@ -71,7 +72,7 @@
     </output>
     <div class="grid grid-cols-4 items-start gap-6">
       <Popover class="grid gap-6" let:close>
-        <PopoverButton class="button button--medium">Toggle</PopoverButton>
+        <PopoverButton class="button button--medium" {nofocus}>Toggle</PopoverButton>
         <div slot="panel" transition:fade>
           <PopoverPanel class="panel" static>
             <p>
@@ -83,7 +84,7 @@
         </div>
       </Popover>
       <Popover class="grid gap-6" let:close>
-        <PopoverButton class="button button--medium">Toggle</PopoverButton>
+        <PopoverButton class="button button--medium" {nofocus}>Toggle</PopoverButton>
         <div slot="panel" transition:fade>
           <PopoverPanel class="panel" static>
             <p>
@@ -95,7 +96,7 @@
         </div>
       </Popover>
       <Popover class="flex flex-col gap-4.5" {forceFocus} let:close>
-        <PopoverButton class="button button--medium">Toggle</PopoverButton>
+        <PopoverButton class="button button--medium" {nofocus}>Toggle</PopoverButton>
         <PopoverOverlay class="overlay" />
         <PopoverPanel class="panel panel--modal">
           <p>
@@ -109,7 +110,7 @@
         </PopoverPanel>
       </Popover>
       <Popover class="flex flex-col gap-4.5" {forceFocus} let:close let:overlay>
-        <PopoverButton class="button button--medium">Toggle</PopoverButton>
+        <PopoverButton class="button button--medium" {nofocus}>Toggle</PopoverButton>
         <div class="overlay" slot="overlay" use:overlay transition:fade />
         <div slot="panel" transition:fade>
           <PopoverPanel class="panel panel--modal" static>

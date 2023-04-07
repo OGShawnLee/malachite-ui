@@ -1,9 +1,9 @@
-import type { ComponentInitialiser, ExtractContextKeys, Toggler } from '$lib/types';
+import type { ComponentInitialiser, ExtractContextKeys, Ref, Toggler } from '$lib/types';
 import type { Readable } from 'svelte/store';
 import { Toggleable } from '$lib/stores';
 import { defineActionComponent, ElementBinder } from '$lib/core';
 import { useComponentNaming, useContext } from '$lib/hooks';
-import { isFunction, isInterface, isReadableRef } from '$lib/predicate';
+import { isFunction, isInterface, isReadableRef, isRef } from '$lib/predicate';
 import { readonly } from '$lib/utils';
 import {
 	handleAriaControls,
@@ -19,6 +19,7 @@ interface Context {
 	createPopoverButton: ComponentInitialiser<Readable<string | undefined>>;
 	createPopoverOverlay: ComponentInitialiser;
 	createPopoverPanel: ComponentInitialiser;
+	noButtonFocus: Ref<boolean>
 }
 
 export type ContextKeys = ExtractContextKeys<Context>;
@@ -34,7 +35,8 @@ export function createPopoverState(settings: Toggler.Settings) {
 		close: toggler.close.bind(toggler),
 		createPopoverButton,
 		createPopoverOverlay,
-		createPopoverPanel
+		createPopoverPanel,
+		noButtonFocus: toggler.noButtonFocus
 	});
 
 	function createPopoverButton(id: string | undefined) {
@@ -90,7 +92,8 @@ const { getContext, setContext } = useContext({
 			close: isFunction,
 			createPopoverButton: isFunction,
 			createPopoverOverlay: isFunction,
-			createPopoverPanel: isFunction
+			createPopoverPanel: isFunction,
+			noButtonFocus: isRef
 		})
 });
 

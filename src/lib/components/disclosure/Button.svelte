@@ -11,9 +11,10 @@
 	export let id: string | undefined = undefined;
 	export let disabled: Nullable<boolean> = undefined;
 	export let use: Action[] | undefined = undefined;
+	export let nofocus = false
 	export { className as class };
 
-	const { isOpen, createDisclosureButton } = getContext();
+	const { isOpen, createDisclosureButton, noButtonFocus } = getContext();
 	const { action, binder, context: panelName } = createDisclosureButton(id);
 
 	$: actions = use ? [action, ...use] : [action];
@@ -22,6 +23,7 @@
 		isOpen: $isOpen,
 		isDisabled
 	});
+	$: noButtonFocus.set(nofocus)
 </script>
 
 <Render

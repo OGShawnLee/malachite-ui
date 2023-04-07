@@ -11,14 +11,16 @@
 	export let id: string | undefined = undefined;
 	export let disabled: Nullable<boolean> = undefined;
 	export let use: Action[] | undefined = undefined;
+	export let nofocus = false
 	export { className as class };
 
-	const { isOpen, createListboxButton } = Context.getContext();
+	const { isOpen, createListboxButton, noButtonFocus } = Context.getContext();
 	const { action, binder } = createListboxButton(id);
 
 	$: isDisabled = disabled ?? false;
 	$: finalClassName = useClassNameResolver(className)({ isDisabled, isOpen: $isOpen });
 	$: finalUse = use ? [action, ...use] : [action];
+	$: noButtonFocus.set(nofocus)
 </script>
 
 <Render

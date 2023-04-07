@@ -1,7 +1,7 @@
-import type { ComponentInitialiser, ComponentInitialiserStrict, Nullable } from '$lib/types';
+import type { ComponentInitialiser, ComponentInitialiserStrict, Nullable, Ref } from '$lib/types';
 import type { Readable } from 'svelte/store';
 import { useContext } from '$lib/hooks';
-import { isFunction, isInterface, isStore } from '$lib/predicate';
+import { isFunction, isInterface, isRef, isStore } from '$lib/predicate';
 
 interface Context<T> {
 	isOpen: Readable<boolean>;
@@ -14,6 +14,7 @@ interface Context<T> {
 		createListboxOption: ComponentInitialiserStrict;
 	};
 	createListboxPanel: ComponentInitialiser;
+	noButtonFocus: Ref<boolean>;
 }
 
 export default useContext({
@@ -24,6 +25,7 @@ export default useContext({
 			createListboxButton: isFunction,
 			createListboxLabel: isFunction,
 			createListboxOptionState: isFunction,
-			createListboxPanel: isFunction
+			createListboxPanel: isFunction,
+			noButtonFocus: isRef
 		})
 });

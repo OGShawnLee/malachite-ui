@@ -14,6 +14,7 @@
 
   let horizontal = false;
   let infinite = false;
+  let nofocus = false;
   let option: Nullable<string>;
 
   function handleClick(this: HTMLElement) {
@@ -25,13 +26,15 @@
   <div class="flex items-center gap-3" slot="options">
     <Toggle text="Toggle Infinite" bind:checked={infinite} />
     <Toggle text="Toggle Horizontal" bind:checked={horizontal} />
+    <Toggle text="Toggle Horizontal" bind:checked={horizontal} />
+    <Toggle text="Toggle Button onClose Focus" bind:checked={nofocus} /> 
   </div>
   <output class="max-w-fit px-6 py-2 | bg-neutral-800">
     {option ? `You've clicked: ${option}` : 'Click an Option'}
   </output>
   <div class="grid grid-cols-4 gap-6">
     <Menu class="flex flex-col items-start gap-3" {horizontal} {infinite} let:items>
-      <MenuButton class={{ base: 'button button--medium', open: 'text-white' }} use={[console.log]}>
+      <MenuButton class={{ base: 'button button--medium', open: 'text-white' }} {nofocus} use={[console.log]}>
         Options
       </MenuButton>
       <div
@@ -62,7 +65,7 @@
       </div>
     </Menu>
     <Menu class="flex flex-col items-start gap-3" {horizontal} {infinite}>
-      <MenuButton class={{ base: 'button button--medium', open: 'text-white' }}>Options</MenuButton>
+      <MenuButton class={{ base: 'button button--medium', open: 'text-white' }} {nofocus}>Options</MenuButton>
       <MenuItems class="w-40 | flex flex-col | bg-neutral-800 outline-none">
         <MenuItem class={className} on:click={handleClick} let:isActive>
           <i class="bx bx-archive" class:text-green-400={isActive} />
@@ -86,7 +89,7 @@
       </MenuItems>
     </Menu>
     <Menu class="flex flex-col items-start gap-3" {horizontal} {infinite}>
-      <MenuButton class={{ base: 'button button--medium', open: 'text-white' }}>Options</MenuButton>
+      <MenuButton class={{ base: 'button button--medium', open: 'text-white' }} {nofocus}>Options</MenuButton>
       <div slot="items" transition:fly|local={{ y: 15 }}>
         <MenuItems class="w-40 | grid | bg-neutral-800 outline-none" static>
           <MenuItem class={className} on:click={handleClick} let:isActive>
@@ -112,7 +115,7 @@
       </div>
     </Menu>
     <Menu class="flex flex-col items-start gap-3" {horizontal} {infinite}>
-      <MenuButton class={{ base: 'button button--medium', open: 'text-white' }}>Options</MenuButton>
+      <MenuButton class={{ base: 'button button--medium', open: 'text-white' }} {nofocus}>Options</MenuButton>
       <div slot="items" transition:fade>
         <MenuItems class="w-40 | grid | bg-neutral-800 outline-none" static>
           <MenuItem class={className} on:click={handleClick} let:isActive>

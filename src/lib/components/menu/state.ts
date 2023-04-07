@@ -1,4 +1,4 @@
-import type { ComponentInitialiser, ComponentInitialiserStrict, Navigation } from '$lib/types';
+import type { ComponentInitialiser, ComponentInitialiserStrict, Navigation, Ref } from '$lib/types';
 import ToolbarContext from '../toolbar/context';
 import { Navigable, Toggleable } from '$lib/stores';
 import { ElementBinder, defineActionComponent } from '$lib/core';
@@ -16,7 +16,7 @@ import {
 	useKeyMatch,
 	useNavigationStarter
 } from '$lib/plugins';
-import { isDisabled, isFunction, isInterface, isStore } from '$lib/predicate';
+import { isDisabled, isFunction, isInterface, isRef, isStore } from '$lib/predicate';
 import type { Readable } from 'svelte/store';
 
 export function createMenuState(settings: Navigation.Settings) {
@@ -31,7 +31,8 @@ export function createMenuState(settings: Navigation.Settings) {
 		isOpen: toggler.isOpen,
 		createMenuButton,
 		createMenuItem,
-		createMenuPanel
+		createMenuPanel,
+		noButtonFocus: toggler.noButtonFocus
 	});
 
 	function createMenuButton(id: string | undefined) {
@@ -124,6 +125,7 @@ interface Context {
 	createMenuButton: ComponentInitialiser;
 	createMenuPanel: ComponentInitialiser;
 	createMenuItem: ComponentInitialiserStrict;
+	noButtonFocus: Ref<boolean>;
 }
 
 const { getContext, setContext } = useContext({
@@ -133,7 +135,8 @@ const { getContext, setContext } = useContext({
 			isOpen: isStore,
 			createMenuButton: isFunction,
 			createMenuItem: isFunction,
-			createMenuPanel: isFunction
+			createMenuPanel: isFunction,
+			noButtonFocus: isRef
 		})
 });
 

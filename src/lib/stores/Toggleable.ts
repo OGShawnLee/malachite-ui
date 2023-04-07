@@ -11,6 +11,7 @@ import { useHidePanelFocusOnClose } from '$lib/plugins';
 export class Toggleable {
 	readonly isOpen = ref(false);
 	readonly isFocusForced = ref(false);
+	readonly noButtonFocus = ref(false);
 	protected readonly button = ref<HTMLElement | undefined>(undefined);
 	protected readonly panel = ref<HTMLElement | undefined>(undefined);
 	readonly group?: ToggleableGroup;
@@ -83,14 +84,19 @@ export class Toggleable {
 	}
 
 	protected handleFocus(this: Toggleable, event?: Event | HTMLElement) {
-		if (isNullish(event)) return this.button.value()?.focus();
+		if (isNullish(event)) {
+			if (this.noButtonFocus.value()) return;
+			return this.button.value()?.focus();
+		}
+
 		if (event instanceof Event) {
 			const target = event.target;
+			if (this.noButtonFocus.value()) return;
 			if (isHTMLElement(target) && this.isValidFocusTarget(target)) return;
 			this.button.value()?.focus();
 		} else {
 			if (this.isValidFocusTarget(event)) event.focus();
-			else this.button.value()?.focus();
+			else if (!this.noButtonFocus.value()) this.button.value()?.focus();
 		}
 	}
 

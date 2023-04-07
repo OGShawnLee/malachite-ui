@@ -7,16 +7,18 @@
   const transitions = [[fade], [fly, { y: -15 }], [scale, { start: 1.1 }], [slide]];
 
   let open = false;
+  let nofocus = false
 </script>
 
 <Page title="Disclosure">
   <div class="flex gap-6" slot="options">
     <Toggle bind:checked={open} />
+    <Toggle bind:checked={nofocus} text="Toggle Button onClose Focus"/>
   </div>
   <div class="grid grid-cols-4 gap-6">
     {#each transitions as [transition, params]}
       <Disclosure class="grid items-start gap-3" let:close {open}>
-        <DisclosureButton class="button button--medium">Toggle</DisclosureButton>
+        <DisclosureButton class="button button--medium" {nofocus}>Toggle</DisclosureButton>
         <div slot="panel" transition:transition|local={params}>
           <DisclosurePanel class="p-8 | grid gap-4.5 | bg-neutral-800 shadow-lg" static>
             <p>
