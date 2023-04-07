@@ -242,9 +242,9 @@ describe('Behaviour', () => {
 			await fireEvent.click(button);
 			const panel = getByTestId('menu-panel');
 			const items = getAllByTestId('menu-item');
-			await fireEvent.keyDown(panel, { code: '3' });
+			await fireEvent.keyDown(panel, { key: '3' });
 			expect(panel).toHaveAttribute('aria-activedescendant', items[2].id);
-			await fireEvent.keyDown(panel, { code: '6' });
+			await fireEvent.keyDown(panel, { key: '6' });
 			expect(panel).toHaveAttribute('aria-activedescendant', items[5].id);
 		});
 
@@ -255,9 +255,9 @@ describe('Behaviour', () => {
 			await fireEvent.click(button);
 			const panel = getByTestId('menu-panel');
 			const items = getAllByTestId('menu-item');
-			await fireEvent.keyDown(panel, { code: '1' });
+			await fireEvent.keyDown(panel, { key: '1' });
 			expect(panel).not.toHaveAttribute('aria-activedescendant');
-			await fireEvent.keyDown(panel, { code: '3' });
+			await fireEvent.keyDown(panel, { key: '3' });
 			expect(panel).not.toHaveAttribute('aria-activedescendant');
 		});
 	});

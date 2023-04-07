@@ -6,7 +6,8 @@ import {
 	isHTMLElement,
 	isHorizontalNavigationKey as isHorizontalKey,
 	isNavigationKey,
-	isVerticalNavigationKey as isVerticalKey
+	isVerticalNavigationKey as isVerticalKey,
+	isWhitespace
 } from '$lib/predicate';
 import { hasFocus, isEnabled } from '$lib/predicate/dom';
 
@@ -111,12 +112,12 @@ export const useHoverMove: Plugin<Navigable> = function (element) {
 
 export const useKeyMatch: Plugin<Navigable> = function (element) {
 	return useCleanup(
-		useListener(element, 'keydown', ({ code }) => {
-			if (isNavigationKey(code)) return;
-			code = code.toLowerCase();
+		useListener(element, 'keydown', ({ key }) => {
+			if (isNavigationKey(key) || isWhitespace(key)) return;
+			key = key.toLowerCase();
 			const index = this.findIndex((element) => {
 				if (isDisabled(element)) return;
-				return element.textContent?.toLowerCase().trim().startsWith(code);
+				return element.textContent?.toLowerCase().trim().startsWith(key);
 			});
 			if (index > -1) this.interact(index, false);
 		})
