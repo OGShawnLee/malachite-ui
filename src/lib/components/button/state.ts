@@ -18,6 +18,7 @@ export function createButtonState(initialValue: boolean) {
 				return [
 					toolbar?.item(element),
 					useListener(element, 'click', () => {
+						if (element.disabled) return
 						isPressed.update((isPressed) => !isPressed);
 					}),
 					isPressed.subscribe((isPressed) => {
