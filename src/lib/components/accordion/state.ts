@@ -88,7 +88,7 @@ export function createAccordionState(settings: Settings) {
 				name: nameChild('panel'),
 				isShowing: toggler.isOpen.value(),
 				onMount({ element }) {
-					element.setAttribute('role', 'region');
+					element.role = 'region';
 					return toggler.createPanel(element, {
 						plugins: [handleAriaLabelledby(button)]
 					});
