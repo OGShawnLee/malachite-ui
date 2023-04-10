@@ -7,7 +7,8 @@
 </script>
 
 <span data-testid="binding-checked-global">{checked}</span>
-<Switch data-testid="switch" bind:checked {disabled} let:isChecked let:isDisabled>
-  <span data-testid="binding-checked">{isChecked}</span>
-  <span data-testid="binding-disabled">{isDisabled}</span>
+<Switch as="fragment" bind:checked let:isChecked let:switcher>
+  <button data-testid="switch" {disabled} use:switcher>
+    <span data-testid="binding-checked">{isChecked}</span>
+  </button>
 </Switch>
