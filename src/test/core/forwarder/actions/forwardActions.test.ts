@@ -1,148 +1,137 @@
-import Component from './__forwardActions.svelte';
+import Sample from './__forwardActions.svelte';
+import { act, render } from '@testing-library/svelte';
 import { generateActions, generateSpyFunctions } from '@test-utils';
-import { act, cleanup, render } from '@testing-library/svelte';
 import { generate } from '$lib/utils';
 
-afterEach(() => cleanup());
+describe('onDestroy', () => {
+	it('Should call all the actions destroy method', async () => {
+		const destroyFunctions = generateSpyFunctions(3);
+		const actions = generate(3, (index) => {
+			return vi.fn(() => ({ destroy: destroyFunctions[index] }));
+		});
+		const { component, getByTestId } = render(Sample, { props: { actions } });
+		const element = getByTestId('element');
+		for (const action of actions) {
+			expect(action).toBeCalledTimes(1);
+			expect(action).toBeCalledWith(element);
+		}
+		await act(() => component.$set({ isShowing: false }));
+		for (const destroy of destroyFunctions) {
+			expect(destroy).toBeCalledTimes(1);
+		}
+	});
 
-describe.skip('onMount', () => {
-	it.skip('Should forward all the given actions', async () => {
+	it('Should only call the destroy method of the current actions', async () => {
+		const initialDestroyFunctions = generateSpyFunctions(3);
+		const initialActions = generate(3, (index) => {
+			return vi.fn(() => ({ destroy: initialDestroyFunctions[index] }));
+		});
+		const currentDestroyFunctions = generateSpyFunctions(3);
+		const currentActions = generate(3, (index) => {
+			return vi.fn(() => ({ destroy: currentDestroyFunctions[index] }));
+		});
+		const { component, getByTestId } = render(Sample, { props: { actions: initialActions } });
+		await act(() => component.$set({ actions: currentActions }));
+		await act(() => component.$set({ isShowing: false }));
+		for (let index = 0; index < initialActions.length; index++) {
+			const initialDestroy = initialDestroyFunctions[index];
+			const currentDestroy = currentDestroyFunctions[index];
+			expect(initialDestroy).toBeCalledTimes(1);
+			expect(currentDestroy).toBeCalledTimes(1);
+		}
+	});
+});
+
+describe('onMount', () => {
+	it('Should call all the given actions once', () => {
 		const actions = generateActions(4);
-		render(Component, { props: { use: actions } });
-		for (const [action] of actions) {
+		const { getByTestId } = render(Sample, { props: { actions } });
+		const element = getByTestId('element');
+		for (const action of actions) {
 			expect(action).toBeCalledTimes(1);
 		}
 	});
 
-	it.skip('Should pass the element and the given parameter', async () => {
-		const actions = generateActions(3, 'Twenty One');
-		const { findByText } = render(Component, { props: { use: actions } });
-		const element = await findByText('Container');
-
-		for (const [action, parameter] of actions) {
-			expect(action).toBeCalledWith(element, parameter);
+	it('Should pass the element', () => {
+		const actions = generateActions(4);
+		const { getByTestId } = render(Sample, { props: { actions } });
+		const element = getByTestId('element');
+		for (const action of actions) {
+			expect(action).toBeCalledTimes(1);
+			expect(action).toBeCalledWith(element);
 		}
 	});
 
-	it.skip('Should not call the actions if the element is not rendered', () => {
-		const actions = generateActions(3);
-		render(Component, { props: { showing: false, use: actions } });
-		for (const [action] of actions) {
+	it('Should not call the actions if the element is not rendered', () => {
+		const actions = generateActions(4);
+		render(Sample, { props: { isShowing: false, actions } });
+		for (const action of actions) {
 			expect(action).not.toBeCalled();
 		}
 	});
 
-	it.skip('Should not call the destroy and update action methods', () => {
-		const [update, destroy] = generateSpyFunctions(2);
-		const action = () => ({ update, destroy });
-		render(Component, { use: [[action]] });
-		expect(update).not.toBeCalled();
+	it('Should not call the destroy method', () => {
+		const destroy = vi.fn(() => {});
+		const action = () => ({ destroy });
+		render(Sample, { props: { actions: [action] } });
 		expect(destroy).not.toBeCalled();
 	});
 
-	it.skip('Should call the actions everytime the element is rendered', async () => {
-		const actions = generateActions(5);
-		const { component } = render(Component, { use: actions });
-
-		for (const [action] of actions) {
+	it('Should call the actions everytime the element is rendered', async () => {
+		const actions = generateActions(4);
+		const { component, getByTestId } = render(Sample, { props: { actions } });
+		const element = getByTestId('element');
+		for (const action of actions) {
 			expect(action).toBeCalledTimes(1);
 		}
 
-		await act(() => component.$set({ showing: false }));
-		await act(() => component.$set({ showing: true }));
-		for (const [action] of actions) {
+		await act(() => component.$set({ isShowing: false }));
+		await act(() => component.$set({ isShowing: true }));
+		for (const action of actions) {
 			expect(action).toBeCalledTimes(2);
 		}
 
-		await act(() => component.$set({ showing: false }));
-		await act(() => component.$set({ showing: true }));
-		for (const [action] of actions) {
+		await act(() => component.$set({ isShowing: false }));
+		await act(() => component.$set({ isShowing: true }));
+		for (const action of actions) {
 			expect(action).toBeCalledTimes(3);
 		}
 	});
 });
 
-describe.skip('onUpdate', () => {
-	it.skip('Should call all the actions update methods', async () => {
-		const functions = generateSpyFunctions(2);
-		const first = () => ({ update: functions[0] });
-		const second = () => ({ update: functions[1] });
-		const { component } = render(Component, { props: { first, second } });
-
-		await act(() => component.$set({ firstParam: 'Smith' }));
-		expect(functions[0]).toBeCalledWith('Smith');
-		await act(() => component.$set({ secondParam: 30 }));
-		expect(functions[1]).toBeCalledWith(30);
-	});
-
-	it.skip('Should not call the update method if the argument has not changed', async () => {
-		const update = generateSpyFunctions(2);
-		const first = () => ({ update: update[0] });
-		const second = () => ({ update: update[1] });
-		const { component } = render(Component, { props: { first, second } });
-
-		await act(() => component.$set({ firstParam: 'Jet' }));
-		expect(update[0]).toBeCalledTimes(1);
-
-		await act(() => component.$set({ firstParam: 'Jet' }));
-		expect(update[0]).toBeCalledTimes(1);
-
-		expect(update[1]).toBeCalledTimes(0);
-	});
-
-	it.skip('Should add and call the new actions', async () => {
-		const [one, two] = generateSpyFunctions(2);
-		const [three, four] = generateSpyFunctions(2);
-		const { component, findByText } = render(Component, { props: { use: [[one], [two]] } });
-		const element = await findByText('Container');
-
-		await act(() =>
-			component.$set({
-				use: [
-					[three, false],
-					[four, true]
-				]
-			})
-		);
-		expect(three).toBeCalledWith(element, false);
-		expect(four).toBeCalledWith(element, true);
-	});
-
-	it.skip('Should remove and run the destroy method of the removed actions', async () => {
-		const destroy = generateSpyFunctions(4);
-		const actions = generate(4, (index) => () => ({ destroy: destroy[index] }));
-		const { component } = render(Component, { use: [[actions[0]], [actions[1]]] });
-
-		await act(() => component.$set({ use: [[actions[2]], [actions[3]]] }));
-		expect(destroy[0]).toBeCalled();
-		expect(destroy[1]).toBeCalled();
-	});
-});
-
-describe.skip('onDestroy', () => {
-	it.skip('Should call all the actions destroy methods', async () => {
-		const functions = generateSpyFunctions(2);
-		const foo = () => ({ destroy: functions[0] });
-		const bar = () => ({ destroy: functions[1] });
-		const { component } = render(Component, { use: [[foo], [bar]] });
-
-		await act(() => component.$set({ showing: false }));
-		for (const destroy of functions) {
-			expect(destroy).toBeCalledTimes(1);
+describe('onUpdate', () => {
+	it('Should call all the new actions', async () => {
+		const initialActions = generateSpyFunctions(3);
+		const currentActions = generateSpyFunctions(3);
+		const { component, getByTestId } = render(Sample, { props: { actions: initialActions } });
+		await act(() => component.$set({ actions: currentActions }));
+		for (let index = 0; index < currentActions.length; index++) {
+			const currentAction = currentActions[index];
+			expect(currentAction).toBeCalledTimes(1);
 		}
 	});
 
-	it.skip('Should only call the current actions and not the removed ones during update', async () => {
-		const [fooFn, barFn] = generateSpyFunctions(4);
-		const foo = () => ({ destroy: fooFn });
-		const bar = () => ({ destroy: barFn });
-		const { component } = render(Component, { use: [[foo]] });
+	it('Should call the destroy method of deleted actions', async () => {
+		const initialDestroyFunctions = generateSpyFunctions(3);
+		const initialActions = generate(3, (index) => {
+			return vi.fn(() => ({ destroy: initialDestroyFunctions[index] }));
+		});
+		const currentActions = generateSpyFunctions(3);
+		const { component, getByTestId } = render(Sample, { props: { actions: initialActions } });
+		await act(() => component.$set({ actions: currentActions }));
+		for (let index = 0; index < currentActions.length; index++) {
+			const initialDestroy = initialDestroyFunctions[index];
+			expect(initialDestroy).toBeCalledTimes(1);
+		}
+	});
 
-		await act(() => component.$set({ use: [[bar]] }));
-		expect(fooFn).toBeCalledTimes(1);
-
-		await act(() => component.$set({ showing: false }));
-		expect(fooFn).toBeCalledTimes(1);
-		expect(barFn).toBeCalledTimes(1);
+	it('Should not call the actions again that have not been deleted', async () => {
+		const initialActions = generateSpyFunctions(3);
+		const { component, getByTestId } = render(Sample, { props: { actions: initialActions } });
+		const currentActions = generateSpyFunctions(2);
+		const preservedAction = initialActions[2];
+		currentActions.push(preservedAction);
+		await act(() => component.$set({ actions: currentActions }));
+		expect(preservedAction).toBeCalledTimes(1);
 	});
 });
