@@ -1,6 +1,7 @@
 import Context from './Group.context';
 import { ElementBinder, defineActionComponent } from '$lib/core';
 import { useComponentNaming, useListener, useSwitch } from '$lib/hooks';
+import { isDisabled } from '$lib/predicate'
 
 export function createSwitchState(initialValue: boolean) {
 	const { isChecked, button, descriptions, labels } = handleGroupContext(initialValue);
@@ -28,7 +29,10 @@ export function createSwitchState(initialValue: boolean) {
 						if (id) element.setAttribute('aria-labelledby', id);
 						else element.removeAttribute('aria-labelledby');
 					}),
-					useListener(element, 'click', isChecked.toggle)
+					useListener(element, 'click', () => {
+						if (isDisabled(element)) return
+						isChecked.toggle()
+					})
 				];
 			}
 		});
