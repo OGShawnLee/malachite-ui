@@ -1,53 +1,75 @@
 <script lang="ts">
-  import type { Readable } from 'svelte/store';
-  import {
-    Accordion,
-    AccordionButton,
-    AccordionHeader,
-    AccordionItem,
-    AccordionPanel
-  } from '$lib/components';
+  import type { Maybe } from '$lib/types';
+  import { Accordion, AccordionButton, AccordionHeader, AccordionItem, AccordionPanel } from '$lib';
 
-  export let finite: boolean | undefined = undefined;
-  export let open: boolean | undefined = undefined;
-  export let showPanel = true;
-  export let disabled = false;
+  export let disabled: Maybe<boolean> = undefined;
+  export let finite: Maybe<boolean> = undefined;
+  export let isShowingPanel: Maybe<boolean> = true;
+  export let noNavigation: Maybe<boolean> = undefined;
+  export let unique: Maybe<boolean> = undefined;
 </script>
 
-<Accordion data-testid="accordion" {finite}>
-  <AccordionItem data-testid="item" let:isOpen let:close>
-    <AccordionHeader data-testid="header">
-      <AccordionButton data-testid="button">
-        <span data-testid="item-isOpen"> {isOpen} </span>
+<Accordion data-testid="accordion-container" disabled={noNavigation} {finite} {unique}>
+  <AccordionItem data-testid="accordion-item" let:isOpen>
+    <span data-testid="binding-open-item">{isOpen}</span>
+    <AccordionHeader data-testid="accordion-header">
+      <AccordionButton data-testid="accordion-button" {disabled} let:isDisabled let:isOpen>
+        <span data-testid="binding-disabled">{isDisabled}</span>
+        <span data-testid="binding-open-button">{isOpen}</span>
       </AccordionButton>
     </AccordionHeader>
-    {#if showPanel}
-      <AccordionPanel data-testid="panel">
-        Panel 1
-        <button on:click={close}>Close Item</button>
+    {#if isShowingPanel}
+      <AccordionPanel data-testid="accordion-panel" let:close>
+        <button data-testid="button-close" on:click={close}> Close </button>
       </AccordionPanel>
     {/if}
   </AccordionItem>
-  <AccordionItem data-testid="item" {open}>
-    <AccordionHeader data-testid="header" let:isOpen>
-      <AccordionButton data-testid="button" {disabled}>
-        <span data-testid="header-isOpen"> {isOpen} </span>
+  <AccordionItem data-testid="accordion-item" let:isOpen>
+    <span data-testid="binding-open-item">{isOpen}</span>
+    <AccordionHeader data-testid="accordion-header">
+      <AccordionButton data-testid="accordion-button" let:isDisabled let:isOpen>
+        <span data-testid="binding-disabled">{isDisabled}</span>
+        <span data-testid="binding-open-button">{isOpen}</span>
       </AccordionButton>
     </AccordionHeader>
-    <AccordionPanel data-testid="panel" let:close>
-      Panel 2
-      <button on:click={close}>Close Panel</button>
+    <AccordionPanel data-testid="accordion-panel" let:close>
+      <button data-testid="button-close" on:click={close}> Close </button>
     </AccordionPanel>
   </AccordionItem>
-  <AccordionItem data-testid="item" {open}>
-    <AccordionHeader data-testid="header">
-      <AccordionButton data-testid="button" let:isOpen>
-        <span data-testid="button-isOpen"> {isOpen} </span>
+  <AccordionItem data-testid="accordion-item" let:isOpen>
+    <span data-testid="binding-open-item">{isOpen}</span>
+    <AccordionHeader data-testid="accordion-header">
+      <AccordionButton data-testid="accordion-button" {disabled} let:isDisabled let:isOpen>
+        <span data-testid="binding-disabled">{isDisabled}</span>
+        <span data-testid="binding-open-button">{isOpen}</span>
       </AccordionButton>
     </AccordionHeader>
-    <AccordionPanel data-testid="panel" let:close>
-      Panel 3
-      <button on:click={close}>Close</button>
+    <AccordionPanel data-testid="accordion-panel" let:close>
+      <button data-testid="button-close" on:click={close}> Close </button>
+    </AccordionPanel>
+  </AccordionItem>
+  <AccordionItem data-testid="accordion-item" let:isOpen>
+    <span data-testid="binding-open-item">{isOpen}</span>
+    <AccordionHeader data-testid="accordion-header">
+      <AccordionButton data-testid="accordion-button" let:isDisabled let:isOpen>
+        <span data-testid="binding-disabled">{isDisabled}</span>
+        <span data-testid="binding-open-button">{isOpen}</span>
+      </AccordionButton>
+    </AccordionHeader>
+    <AccordionPanel data-testid="accordion-panel" let:close>
+      <button data-testid="button-close" on:click={close}> Close </button>
+    </AccordionPanel>
+  </AccordionItem>
+  <AccordionItem data-testid="accordion-item" let:isOpen>
+    <span data-testid="binding-open-item">{isOpen}</span>
+    <AccordionHeader data-testid="accordion-header">
+      <AccordionButton data-testid="accordion-button" {disabled} let:isDisabled let:isOpen>
+        <span data-testid="binding-disabled">{isDisabled}</span>
+        <span data-testid="binding-open-button">{isOpen}</span>
+      </AccordionButton>
+    </AccordionHeader>
+    <AccordionPanel data-testid="accordion-panel" let:close>
+      <button data-testid="button-close" on:click={close}> Close </button>
     </AccordionPanel>
   </AccordionItem>
 </Accordion>

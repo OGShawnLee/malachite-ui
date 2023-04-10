@@ -15,7 +15,7 @@
 </script>
 
 <Accordion>
-  <AccordionItem data-testid="item" as={item.as} use={item.use} {...item.rest} open>
+  <AccordionItem data-testid="item" as={item.as} use={item.use} {...item.rest}>
     <AccordionHeader data-testid="header" as={header.as} use={header.use} {...header.rest}>
       <AccordionButton data-testid="button" as={button.as} use={button.use} {...button.rest}>
         Toggle

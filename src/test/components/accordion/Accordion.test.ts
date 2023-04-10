@@ -1,381 +1,517 @@
 import '@testing-library/jest-dom';
-import type { SvelteComponent } from 'svelte';
 import * as samples from './samples';
 import { Accordion, AccordionButton, AccordionHeader, AccordionItem, AccordionPanel } from '$lib';
-import { elementTagNames } from '$lib/components/render';
-import { hasTagName } from '$lib/predicate';
-import {
-	ContextParent,
-	createContextParentRenderer,
-	generateActions,
-	isValidComponentName
-} from '@test-utils';
 import { act, fireEvent, render } from '@testing-library/svelte';
+import { hasTagName } from '$lib/predicate';
+import { ContextParent, generateActions, isValidComponentName } from '@test-utils';
+import { elementTagNames } from '$lib/components/render';
+import { createContextParentRenderer } from '@test-utils';
 import { getContextKey } from '$lib/hooks';
 
-function initComponent(Component: typeof SvelteComponent, props = {}) {
-	const result = render(Component, { props });
-	return {
-		...result,
-		accordion: result.getByTestId('accordion'),
-		headers: result.getAllByTestId('header'),
-		buttons: result.getAllByTestId('button'),
-		getAllPanels() {
-			return result.getAllByTestId('panel');
-		},
-		getIsOpenHolders() {
-			return {
-				item: result.getByTestId('item-isOpen'),
-				header: result.getByTestId('header-isOpen'),
-				button: result.getByTestId('button-isOpen')
-			};
-		},
-		getPanel(index: number) {
-			return result.getByText(`Panel ${index}`);
-		}
-	};
-}
-
-const { Behaviour, DisabledNavigation, Rendering } = samples;
-describe.skip('Behaviour', () => {
-	it.skip('Should not render any open Item by default', () => {
-		const { getAllPanels } = initComponent(Behaviour);
-		expect(() => getAllPanels()).toThrow();
-	});
-
-	it.skip('Should render one open Item at once', async () => {
-		const { buttons, getAllPanels } = initComponent(Behaviour, { open: true });
-		let panels = getAllPanels();
-		expect(panels).toHaveLength(1);
-		expect(panels[0]).toHaveTextContent('Panel 2');
-
-		await fireEvent.click(buttons[0]);
-		panels = getAllPanels();
-		expect(panels).toHaveLength(1);
-		expect(panels[0]).toHaveTextContent('Panel 1');
-
-		await fireEvent.click(buttons[2]);
-		panels = getAllPanels();
-		expect(panels).toHaveLength(1);
-		expect(panels[0]).toHaveTextContent('Panel 3');
-	});
-
-	describe.skip('Navigation', () => {
-		it.skip('Should not work if the no Button is focused', async () => {
-			const { accordion } = initComponent(Behaviour);
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-			expect(document.body).toHaveFocus();
-			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
-			expect(document.body).toHaveFocus();
-		});
-
-		it.skip('Should be vertical', async () => {
-			const { accordion, buttons } = initComponent(Behaviour);
-			await act(() => buttons[0].focus());
-			await fireEvent.keyDown(accordion, { code: 'ArrowRight' });
-			expect(buttons[0]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowLeft' });
-			expect(buttons[0]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-			expect(buttons[1]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-			expect(buttons[2]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
-			expect(buttons[1]).toHaveFocus();
-		});
-
-		it.skip('Should move focus to the previous/next Button', async () => {
-			const { accordion, buttons } = initComponent(Behaviour);
-			await act(() => buttons[0].focus());
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-			expect(buttons[1]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
-			expect(buttons[0]).toHaveFocus();
-		});
-
-		it.skip('Should move to the previous Button by pressing ArrowUp', async () => {
-			const { accordion, buttons } = initComponent(Behaviour);
-			await act(() => buttons[0].focus());
-			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
-			expect(buttons[2]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
-			expect(buttons[1]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
-			expect(buttons[0]).toHaveFocus();
-		});
-
-		it.skip('Should move to the first Button by pressing ctrl + ArrowUp or Home', async () => {
-			const { accordion, buttons } = initComponent(Behaviour);
-			await act(() => buttons[0].focus());
-			await fireEvent.keyDown(accordion, { code: 'End' });
-			expect(buttons[2]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowUp', ctrlKey: true });
-			expect(buttons[0]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'End' });
-			await fireEvent.keyDown(accordion, { code: 'Home' });
-			expect(buttons[0]).toHaveFocus();
-		});
-
-		it.skip('Should move to the next Button by pressing ArrowDown', async () => {
-			const { accordion, buttons } = initComponent(Behaviour);
-			await act(() => buttons[0].focus());
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-			expect(buttons[1]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-			expect(buttons[2]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-			expect(buttons[0]).toHaveFocus();
-		});
-
-		it.skip('Should move to the last Button by pressing ctrl + ArrowDown or End', async () => {
-			const { accordion, buttons } = initComponent(Behaviour);
-			await act(() => buttons[0].focus());
-			await fireEvent.keyDown(accordion, { code: 'End' });
-			expect(buttons[2]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'Home' });
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown', ctrlKey: true });
-			expect(buttons[2]).toHaveFocus();
-		});
-
-		it.skip('Should skip disabled buttons', async () => {
-			const { accordion, buttons } = initComponent(DisabledNavigation);
-			await act(() => buttons[1].focus());
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-			expect(buttons[3]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
-			expect(buttons[1]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
-			expect(buttons[3]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-			expect(buttons[1]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown', ctrlKey: true });
-			expect(buttons[3]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowUp', ctrlKey: true });
-			expect(buttons[1]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'End' });
-			expect(buttons[3]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'Home' });
-			expect(buttons[1]).toHaveFocus();
-		});
-	});
-
-	describe.skip('Item', () => {
-		it.skip('Should be closed by default', () => {
-			const { buttons, getPanel } = initComponent(Behaviour);
-			expect(buttons[0].ariaExpanded).toBe('false');
-			expect(() => getPanel(0)).toThrow();
-		});
-	});
-
-	describe.skip('Button', () => {
-		it.skip('Should toggle its Panel via clicking', async () => {
-			const { buttons, getPanel } = initComponent(Behaviour);
-			await fireEvent.click(buttons[0]);
-			const panel = getPanel(1);
-			await fireEvent.click(buttons[0]);
-			expect(panel).not.toBeInTheDocument();
-		});
-	});
-
-	describe.skip('Attributes', () => {
-		describe.skip('Button', () => {
-			describe.skip('aria-disabled', () => {
-				it.skip('Should be unset by default', () => {
-					const { buttons } = initComponent(Behaviour);
-					for (const button of buttons) expect(button.ariaDisabled).toBe(null);
-				});
-
-				it.skip('Should be set to true if the Panel is visible and the Button is disabled', () => {
-					const { buttons } = initComponent(Behaviour, { open: true, disabled: true });
-					expect(buttons[1].ariaDisabled).toBe('true');
-				});
-
-				it.skip('Should be reactive', async () => {
-					const { component, buttons } = initComponent(Behaviour, { open: true, disabled: true });
-					expect(buttons[1].ariaDisabled).toBe('true');
-					await act(() => component.$set({ disabled: false }));
-					expect(buttons[1].ariaDisabled).toBe(null);
-				});
+const cases = [samples.ActionComponent, samples.Component, samples.FragmentComponent];
+describe('Attributes', () => {
+	describe('accordion-button', () => {
+		describe('aria-controls', () => {
+			it.each(cases)('Should not be set by default', (Component) => {
+				const { getAllByTestId } = render(Component);
+				const buttons = getAllByTestId('accordion-button');
+				for (const button of buttons) expect(button).not.toHaveAttribute('aria-controls');
 			});
 
-			describe.skip('aria-controls', () => {
-				it.skip('Should not be by default', () => {
-					const { buttons } = initComponent(Behaviour);
-					expect(buttons[0]).not.toHaveAttribute('aria-controls');
-				});
+			it.each(cases)(
+				'Should point to its accordion-panel when its accordion-item state is open',
+				async (Component) => {
+					const { getAllByTestId, getByTestId } = render(Component);
+					const buttons = getAllByTestId('accordion-button');
+					for await (const button of buttons) {
+						await fireEvent.click(button);
+						const panel = getByTestId('accordion-panel');
+						expect(button).toHaveAttribute('aria-controls', panel.id);
+					}
+				}
+			);
 
-				it.skip('Should point to the panel id', async () => {
-					const { buttons, getPanel } = initComponent(Behaviour);
-					await fireEvent.click(buttons[0]);
-					const panel = getPanel(1);
-					expect(buttons[0]).toHaveAttribute('aria-controls', panel.id);
+			it.each(cases)('Should be based on its accordion-panel render state', async (Component) => {
+				const { component, getAllByTestId, getByTestId } = render(Component, {
+					props: { isShowingPanel: false }
 				});
+				const button = getAllByTestId('accordion-button')[0];
+				expect(button).not.toHaveAttribute('aria-controls');
+				await fireEvent.click(button);
+				expect(button).not.toHaveAttribute('aria-controls');
+				await act(() => component.$set({ isShowingPanel: true }));
+				const panel = getByTestId('accordion-panel');
+				expect(button).toHaveAttribute('aria-controls', panel.id);
+			});
+		});
 
-				it.skip('Should be based on the Panel render state', async () => {
-					const { buttons, component, getPanel } = initComponent(Behaviour, { showPanel: false });
-					const button = buttons[0];
+		describe('aria-disabled', () => {
+			it.each(cases)('Should be false by default', (Component) => {
+				const { getAllByTestId } = render(Component);
+				const buttons = getAllByTestId('accordion-button');
+				for (const button of buttons) {
+					expect(button.ariaDisabled).toBe('false');
+				}
+			});
+
+			it.each(cases)('Should be true when item is disabled', (Component) => {
+				const { getAllByTestId } = render(Component, { props: { disabled: true } });
+				const buttons = getAllByTestId('accordion-button');
+				expect(buttons[0].ariaDisabled).toBe('true');
+				expect(buttons[2].ariaDisabled).toBe('true');
+				expect(buttons[4].ariaDisabled).toBe('true');
+			});
+
+			it('Should be reactive', async () => {
+				const { component, getAllByTestId } = render(samples.Component, {
+					props: { disabled: true }
+				});
+				const buttons = getAllByTestId('accordion-button');
+				expect(buttons[0].ariaDisabled).toBe('true');
+				expect(buttons[2].ariaDisabled).toBe('true');
+				expect(buttons[4].ariaDisabled).toBe('true');
+				await act(() => component.$set({ disabled: false }));
+				for (const button of buttons) {
+					expect(button.ariaDisabled).toBe('false');
+				}
+			});
+		});
+
+		describe('aria-expanded', () => {
+			it.each(cases)('Should be false by default', (Component) => {
+				const { getAllByTestId } = render(Component);
+				const buttons = getAllByTestId('accordion-button');
+				for (const button of buttons) expect(button.ariaExpanded).toBe('false');
+			});
+
+			it.each(cases)('Should be true when its accordion-item is open', async (Component) => {
+				const { getAllByTestId } = render(Component);
+				const buttons = getAllByTestId('accordion-button');
+				for await (const button of buttons) {
 					await fireEvent.click(button);
 					expect(button.ariaExpanded).toBe('true');
-					expect(button).not.toHaveAttribute('aria-controls');
-
-					await act(() => component.$set({ showPanel: true }));
-					const panel = getPanel(1);
-					expect(button).toHaveAttribute('aria-controls', panel.id);
-				});
+				}
 			});
 
-			describe.skip('aria-expanded', () => {
-				it.skip('Should be false by default', () => {
-					const { buttons } = initComponent(Behaviour);
-					expect(buttons[0].ariaExpanded).toBe('false');
-				});
-
-				it.skip('Should be reactive', async () => {
-					const { buttons } = initComponent(Behaviour);
-					await fireEvent.click(buttons[0]);
-					expect(buttons[0].ariaExpanded).toBe('true');
-				});
-			});
-		});
-
-		describe.skip('Header', () => {
-			describe.skip('role', () => {
-				it.each(elementTagNames)(
-					'Should be set to heading if the element is not rendered as a heading (h1-h6)',
-					(as) => {
-						const { getByTestId } = render(Rendering, { props: { header: { as } } });
-						const heading = getByTestId('header');
-						expect(hasTagName(heading, as));
-						expect(heading).toHaveAttribute('role');
-					}
-				);
-
-				it.each(['H1', 'H2', 'H3', 'H4', 'H5', 'H6'])(
-					'Should not be set if the element is a heading (%s)',
-					(as) => {
-						const { getByTestId } = render(Rendering, { props: { header: { as } } });
-						const heading = getByTestId('header');
-						expect(hasTagName(heading, as));
-						expect(heading).not.toHaveAttribute('role');
-					}
-				);
-
-				it.skip('Should be overwritten', async () => {
-					const { findByTestId } = render(Rendering, {
-						props: { header: { as: 'div', rest: { role: 'random' } } }
-					});
-					const heading = await findByTestId('header');
-					expect(heading).toHaveAttribute('role', 'heading');
-				});
-			});
-
-			describe.skip('level', () => {
-				it.skip('Should have aria-level set to 2 by default', () => {
-					const { headers } = initComponent(Behaviour);
-					for (const header of headers) {
-						expect(header.ariaLevel).toBe('2');
-					}
-				});
-
-				it.each(['H1', 'H2', 'H3', 'H4', 'H5', 'H6'])(
-					'Should automatically take the heading level from the %s tagName',
-					(tagName) => {
-						const level = tagName[1];
-						const { getByTestId } = render(Rendering, { props: { header: { as: tagName } } });
-						expect(getByTestId('header').ariaLevel).toBe(level);
-					}
-				);
-			});
-		});
-
-		describe.skip('Panel', () => {
-			describe.skip('aria-labelledby', () => {
-				it.skip('Should point to its Button id', () => {
-					const { buttons, getPanel } = initComponent(Behaviour, { open: true });
-					const panel = getPanel(2);
-					expect(panel).toHaveAttribute('aria-labelledby', buttons[1].id);
-				});
-			});
-
-			describe.skip('role', () => {
-				it.skip('Should be region as long as the amount of items is less than 6', () => {
-					const { getPanel } = initComponent(Behaviour, { open: true });
-					const panel = getPanel(2);
-					expect(panel).toHaveAttribute('role', 'region');
-				});
+			it.each(cases)('Should be reactive', async (Component) => {
+				const { getAllByTestId } = render(Component);
+				const buttons = getAllByTestId('accordion-button');
+				for await (const button of buttons) {
+					expect(button.ariaExpanded).toBe('false');
+					await fireEvent.click(button);
+					expect(button.ariaExpanded).toBe('true');
+					await fireEvent.click(button);
+					expect(button.ariaExpanded).toBe('false');
+				}
 			});
 		});
 	});
 
-	const { ActionComponent, SlotComponent } = samples;
-	it.each([
-		['Action Component', ActionComponent],
-		['SlotComponent', SlotComponent]
-	])('Should work rendered as a %s', async (name, Component) => {
-		const { accordion, buttons, getAllPanels } = initComponent(Component);
+	describe('accordion-panel', () => {
+		it.each(cases)(
+			'Should have aria-labelledby set to its accordion-button id',
+			async (Component) => {
+				const { getAllByTestId, getByTestId } = render(Component);
+				const buttons = getAllByTestId('accordion-button');
+				for await (const button of buttons) {
+					await fireEvent.click(button);
+					const panel = getByTestId('accordion-panel');
+					expect(panel).toHaveAttribute('aria-labelledby', button.id);
+				}
+			}
+		);
 
-		for (const button of buttons) {
-			const header = button.parentElement!;
-			expect(header).not.toHaveAttribute('role', 'heading');
-			expect(header.ariaLevel).toBe(header.tagName[1]);
-
-			expect(button.ariaExpanded).toBe('false');
-			expect(button).not.toHaveAttribute('aria-controls');
-
-			await fireEvent.click(button);
-			const panel = getAllPanels()[0];
-
-			expect(button.ariaExpanded).toBe('true');
-			expect(button).toHaveAttribute('aria-controls', panel.id);
-			expect(panel).toHaveAttribute('role', 'region');
-			expect(panel).toHaveAttribute('aria-labelledby', button.id);
-		}
-
-		await act(() => buttons[0].focus());
-		expect(buttons[0]).toHaveFocus();
-
-		await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-		expect(buttons[1]).toHaveFocus();
-
-		await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-		expect(buttons[2]).toHaveFocus();
-
-		await fireEvent.keyDown(accordion, { code: 'Home' });
-		expect(buttons[0]).toHaveFocus();
-
-		await fireEvent.keyDown(accordion, { code: 'End' });
-		expect(buttons[2]).toHaveFocus();
-
-		await fireEvent.keyDown(accordion, { code: 'ArrowUp', ctrlKey: true });
-		expect(buttons[0]).toHaveFocus();
-
-		await fireEvent.keyDown(accordion, { code: 'ArrowDown', ctrlKey: true });
-		expect(buttons[2]).toHaveFocus();
+		it.each(cases)('Should have role set to "region"', async (Component) => {
+			const { getAllByTestId, getByTestId } = render(Component);
+			const buttons = getAllByTestId('accordion-button');
+			for await (const button of buttons) {
+				await fireEvent.click(button);
+				const panel = getByTestId('accordion-panel');
+				expect(panel.role).toBe('region');
+			}
+		});
 	});
 });
 
-describe.skip('Rendering', () => {
-	it.skip('Should be rendered as a div by default', () => {
+describe('Behaviour', () => {
+	it.each(cases)('Should not render any accordion-panel by default', (Component) => {
+		const { getAllByTestId, getByTestId } = render(Component);
+		expect(() => getAllByTestId('accordion-panel')).toThrow();
+	});
+
+	describe('accordion-button', () => {
+		it.each(cases)('Should toggle its accordion-item state by clicking it', async (Component) => {
+			const { getAllByTestId, getByTestId } = render(Component);
+			const buttons = getAllByTestId('accordion-button');
+			for await (const button of buttons) {
+				await fireEvent.click(button);
+				const panel = getByTestId('accordion-panel');
+				expect(button).toHaveAttribute('aria-controls', panel.id);
+				expect(button.ariaExpanded).toBe('true');
+				expect(panel).toHaveAttribute('aria-labelledby', button.id);
+				await fireEvent.click(button);
+				expect(button).not.toHaveAttribute('aria-controls');
+				expect(button.ariaExpanded).toBe('false');
+				expect(panel).not.toBeInTheDocument();
+			}
+		});
+	});
+
+	describe('Navigation', () => {
+		it.each(cases)('Should be infinite by default', async (Component) => {
+			const { getAllByTestId, getByTestId } = render(Component);
+			const accordion = getByTestId('accordion-container');
+			const buttons = getAllByTestId('accordion-button');
+			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
+			expect(buttons[4]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+			expect(buttons[0]).toHaveFocus();
+		});
+
+		it.each(cases)('Should be vertical', async (Component) => {
+			const { getAllByTestId, getByTestId } = render(Component);
+			const accordion = getByTestId('accordion-container');
+			const buttons = getAllByTestId('accordion-button');
+			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
+			expect(buttons[4]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+			expect(buttons[0]).toHaveFocus();
+		});
+
+		it.each(cases)(
+			'Should focus the next accordion-button by pressing ArrowDown',
+			async (Component) => {
+				const { getAllByTestId, getByTestId } = render(Component);
+				const accordion = getByTestId('accordion-container');
+				const buttons = getAllByTestId('accordion-button');
+				await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+				expect(buttons[0]).toHaveFocus();
+				await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+				expect(buttons[1]).toHaveFocus();
+				await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+				expect(buttons[2]).toHaveFocus();
+			}
+		);
+
+		it.each(cases)(
+			'Should focus the previous accordion-button by pressing ArrowUp',
+			async (Component) => {
+				const { getAllByTestId, getByTestId } = render(Component);
+				const accordion = getByTestId('accordion-container');
+				const buttons = getAllByTestId('accordion-button');
+				await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
+				expect(buttons[4]).toHaveFocus();
+				await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
+				expect(buttons[3]).toHaveFocus();
+				await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
+				expect(buttons[2]).toHaveFocus();
+			}
+		);
+
+		it.each(cases)('Should focus the first accordion-item by pressing Home', async (Component) => {
+			const { getAllByTestId, getByTestId } = render(Component);
+			const accordion = getByTestId('accordion-container');
+			const buttons = getAllByTestId('accordion-button');
+			await fireEvent.keyDown(accordion, { code: 'End' });
+			expect(buttons[4]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'Home' });
+			expect(buttons[0]).toHaveFocus();
+		});
+
+		it.each(cases)(
+			'Should focus the first accordion-item by ArrowUp + ctrlKey',
+			async (Component) => {
+				const { getAllByTestId, getByTestId } = render(Component);
+				const accordion = getByTestId('accordion-container');
+				const buttons = getAllByTestId('accordion-button');
+				await fireEvent.keyDown(accordion, { code: 'End' });
+				expect(buttons[4]).toHaveFocus();
+				await fireEvent.keyDown(accordion, { code: 'ArrowUp', ctrlKey: true });
+				expect(buttons[0]).toHaveFocus();
+			}
+		);
+
+		it.each(cases)('Should focus the last accordion-item by pressing End', async (Component) => {
+			const { getAllByTestId, getByTestId } = render(Component);
+			const accordion = getByTestId('accordion-container');
+			const buttons = getAllByTestId('accordion-button');
+			await fireEvent.keyDown(accordion, { code: 'End' });
+			expect(buttons[4]).toHaveFocus();
+		});
+
+		it.each(cases)(
+			'Should focus the last accordion-item by pressing ArrowDown + ctrlKey',
+			async (Component) => {
+				const { getAllByTestId, getByTestId } = render(Component);
+				const accordion = getByTestId('accordion-container');
+				const buttons = getAllByTestId('accordion-button');
+				await fireEvent.keyDown(accordion, { code: 'ArrowDown', ctrlKey: true });
+				expect(buttons[4]).toHaveFocus();
+			}
+		);
+
+		it.each(cases)(
+			'Should sync navigation when an accordion-item is focused externally',
+			async (Component) => {
+				const { getAllByTestId, getByTestId } = render(Component);
+				const accordion = getByTestId('accordion-container');
+				const buttons = getAllByTestId('accordion-button');
+				await act(() => buttons[3].focus());
+				await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+				expect(buttons[4]).toHaveFocus();
+			}
+		);
+
+		// * valid indexes: 1/3
+		it.each(cases)('Should disabled accordion-items', async (Component) => {
+			const { getAllByTestId, getByTestId } = render(Component, {
+				props: { disabled: true }
+			});
+			const accordion = getByTestId('accordion-container');
+			const buttons = getAllByTestId('accordion-button');
+			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+			expect(buttons[1]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+			expect(buttons[3]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
+			expect(buttons[1]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
+			expect(buttons[3]).toHaveFocus();
+		});
+	});
+});
+
+describe('Props', () => {
+	describe('disabled', () => {
+		it.each(cases)('Should disable navigation', async (Component) => {
+			const { getAllByTestId, getByTestId } = render(Component, {
+				props: { noNavigation: true }
+			});
+			const accordion = getByTestId('accordion-container');
+			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+			expect(document.body).toHaveFocus();
+		});
+
+		it.each(cases)('Should be false by default', async (Component) => {
+			const { getAllByTestId, getByTestId } = render(Component);
+			const accordion = getByTestId('accordion-container');
+			const items = getAllByTestId('accordion-button');
+			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+			expect(items[0]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+			expect(items[1]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'Home' });
+			expect(items[0]).toHaveFocus();
+		});
+
+		it.each(cases)('Should be reactive', async (Component) => {
+			const { component, getAllByTestId, getByTestId } = render(Component, {
+				props: { noNavigation: true }
+			});
+			const accordion = getByTestId('accordion-container');
+			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+			expect(document.body).toHaveFocus();
+
+			await act(() => component.$set({ noNavigation: false }));
+			const items = getAllByTestId('accordion-button');
+			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+			expect(items[0]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'End' });
+			expect(items[4]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
+			expect(items[3]).toHaveFocus();
+		});
+	});
+
+	describe('finite', () => {
+		it.each(cases)('Should turn the navigation finite', async (Component) => {
+			const { getAllByTestId, getByTestId } = render(Component, {
+				props: { finite: true }
+			});
+			const accordion = getByTestId('accordion-container');
+			const buttons = getAllByTestId('accordion-button');
+			await fireEvent.keyDown(accordion, { code: 'End' });
+			expect(buttons[4]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+			expect(buttons[4]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'Home' });
+			expect(buttons[0]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
+			expect(buttons[0]).toHaveFocus();
+		});
+
+		it.each(cases)('Should be false by default (infinite)', async (Component) => {
+			const { getAllByTestId, getByTestId } = render(Component);
+			const accordion = getByTestId('accordion-container');
+			const buttons = getAllByTestId('accordion-button');
+			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
+			expect(buttons[4]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+			expect(buttons[0]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
+			expect(buttons[4]).toHaveFocus();
+		});
+
+		it.each(cases)('Should be reactive', async (Component) => {
+			const { component, getAllByTestId, getByTestId } = render(Component, {
+				props: { finite: true }
+			});
+			const accordion = getByTestId('accordion-container');
+			const buttons = getAllByTestId('accordion-button');
+			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
+			expect(buttons[0]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'End' });
+			expect(buttons[4]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+			expect(buttons[4]).toHaveFocus();
+
+			await act(() => component.$set({ finite: false }));
+
+			await fireEvent.keyDown(accordion, { code: 'Home' });
+			expect(buttons[0]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
+			expect(buttons[4]).toHaveFocus();
+			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
+			expect(buttons[0]).toHaveFocus();
+		});
+	});
+
+	describe('unique', () => {
+		it.each(cases)('Should allow only open panel at a time', async (Component) => {
+			const { getAllByTestId, getByTestId } = render(Component, {
+				props: { unique: true }
+			});
+			const accordion = getByTestId('accordion-container');
+			const buttons = getAllByTestId('accordion-button');
+			for (const button of buttons) {
+				await fireEvent.click(button);
+				const panels = getAllByTestId('accordion-panel');
+				expect(panels).toHaveLength(1);
+			}
+		});
+
+		it.each(cases)('Should be true by default', async (Component) => {
+			const { getAllByTestId, getByTestId } = render(Component);
+			const accordion = getByTestId('accordion-container');
+			const buttons = getAllByTestId('accordion-button');
+			for (const button of buttons) {
+				await fireEvent.click(button);
+				const panels = getAllByTestId('accordion-panel');
+				expect(panels).toHaveLength(1);
+			}
+		});
+
+		it.each(cases)(
+			'Should allow multiple open accordion-items when set to false',
+			async (Component) => {
+				const { getAllByTestId, getByTestId } = render(Component, {
+					props: { unique: false }
+				});
+				const accordion = getByTestId('accordion-container');
+				const buttons = getAllByTestId('accordion-button');
+				for (const button of buttons) await fireEvent.click(button);
+				const panels = getAllByTestId('accordion-panel');
+				expect(panels).toHaveLength(5);
+			}
+		);
+
+		it.each(cases)('Should be reactive', async (Component) => {
+			const { component, getAllByTestId, getByTestId } = render(Component, {
+				props: { unique: false }
+			});
+			const accordion = getByTestId('accordion-container');
+			const buttons = getAllByTestId('accordion-button');
+			for (const button of buttons) await fireEvent.click(button);
+			let panels = getAllByTestId('accordion-panel');
+			expect(panels).toHaveLength(5);
+
+			await act(() => component.$set({ unique: true }));
+
+			for (const button of buttons) await fireEvent.click(button);
+			for (const button of buttons) await fireEvent.click(button);
+			panels = getAllByTestId('accordion-panel');
+			expect(panels).toHaveLength(1);
+		});
+	});
+});
+
+describe('Slot Props', () => {
+	describe('close', () => {
+		it.each(cases)(
+			'Should expose the close function from accordion-item and accordion-panel scope',
+			async (Component) => {
+				const { getAllByTestId, getByTestId } = render(Component);
+				const buttons = getAllByTestId('accordion-button');
+				for (const button of buttons) {
+					await fireEvent.click(button);
+					const panel = getByTestId('accordion-panel');
+					const closeButton = getByTestId('button-close');
+					await fireEvent.click(closeButton);
+					expect(panel).not.toBeInTheDocument();
+				}
+			}
+		);
+	});
+
+	describe('isDisabled', () => {
+		it('Should expose the accordion-button disabled state', () => {
+			const { getAllByTestId } = render(samples.Component, { props: { disabled: true } });
+			const bindings = getAllByTestId('binding-disabled');
+			expect(bindings[0]).toHaveTextContent('true');
+			expect(bindings[1]).toHaveTextContent('false');
+			expect(bindings[2]).toHaveTextContent('true');
+			expect(bindings[3]).toHaveTextContent('false');
+			expect(bindings[4]).toHaveTextContent('true');
+		});
+
+		it('Should be reactive', async () => {
+			const { component, getAllByTestId } = render(samples.Component);
+			const bindings = getAllByTestId('binding-disabled');
+			for (const binding of bindings) expect(binding).toHaveTextContent('false');
+			await act(() => component.$set({ disabled: true }));
+			expect(bindings[0]).toHaveTextContent('true');
+			expect(bindings[1]).toHaveTextContent('false');
+			expect(bindings[2]).toHaveTextContent('true');
+			expect(bindings[3]).toHaveTextContent('false');
+			expect(bindings[4]).toHaveTextContent('true');
+		});
+	});
+
+	describe('isOpen', () => {
+		it.each(cases)('Should expose the accordion-item open state', (Component) => {
+			const { getAllByTestId } = render(Component);
+			const bindings = getAllByTestId('binding-open-item');
+			for (const binding of bindings) {
+				expect(binding).toHaveTextContent('false');
+			}
+		});
+
+		it.each(cases)('Should be exposed from the accordion-button scope', (Component) => {
+			const { getAllByTestId } = render(Component);
+			const bindings = getAllByTestId('binding-open-button');
+			for (const binding of bindings) {
+				expect(binding).toHaveTextContent('false');
+			}
+		});
+
+		it.each(cases)('Should be reactive', async (Component) => {
+			const { getAllByTestId } = render(Component);
+			const buttons = getAllByTestId('accordion-button');
+			const bindings = getAllByTestId('binding-open-button');
+			for (let index = 0; index < buttons.length; index++) {
+				const button = buttons[index];
+				const binding = bindings[index];
+				expect(binding).toHaveTextContent('false');
+				await fireEvent.click(button);
+				expect(binding).toHaveTextContent('true');
+			}
+		});
+	});
+});
+
+const { Rendering } = samples;
+describe('Rendering', () => {
+	it('Should be rendered as a div by default', () => {
 		const { getByTestId } = render(Accordion, { props: { 'data-testid': 'accordion' } });
 		const element = getByTestId('accordion');
 		expect(hasTagName(element, 'div')).toBe(true);
@@ -387,8 +523,8 @@ describe.skip('Rendering', () => {
 		expect(hasTagName(group, as)).toBe(true);
 	});
 
-	it.skip('Should be able of forwarding attributes', async () => {
-		const attributes = { tabIndex: '4', title: 'an accordion root' };
+	it('Should be able of forwarding attributes', async () => {
+		const attributes = { title: 'an accordion root' };
 		const { getByTestId } = render(Accordion, {
 			props: {
 				...attributes,
@@ -403,18 +539,18 @@ describe.skip('Rendering', () => {
 		}
 	});
 
-	it.skip('Should be able of forwarding actions', () => {
+	it('Should be able of forwarding actions', () => {
 		const actions = generateActions(3);
 		const { getByTestId } = render(Accordion, {
 			props: { use: actions, as: 'div', 'data-testid': 'accordion' }
 		});
 		const group = getByTestId('accordion');
-		for (const [action, parameter] of actions) {
-			expect(action).toBeCalledWith(group, parameter);
+		for (const action of actions) {
+			expect(action).toBeCalledWith(group);
 		}
 	});
 
-	describe.skip.each([
+	describe.each([
 		['Item', 'div'],
 		['Header', 'h2'],
 		['Button', 'button'],
@@ -423,14 +559,18 @@ describe.skip('Rendering', () => {
 		const lowerCaseComponent = name.toLowerCase();
 		const testId = lowerCaseComponent;
 
-		it.skip(`Should be rendered as a ${defaultTag} by default`, async () => {
+		it(`Should be rendered as a ${defaultTag} by default`, async () => {
 			const { getByTestId } = render(Rendering);
+			const button = getByTestId('button');
+			await fireEvent.click(button);
 			const element = getByTestId(testId);
 			expect(hasTagName(element, defaultTag));
 		});
 
-		it.skip(`Should have a valid ${lowerCaseComponent} accordion id`, async () => {
+		it(`Should have a valid ${lowerCaseComponent} accordion id`, async () => {
 			const { getByTestId } = render(Rendering);
+			const button = getByTestId('button');
+			await fireEvent.click(button);
 			const element = getByTestId(testId);
 
 			if (lowerCaseComponent === 'item') return;
@@ -440,18 +580,22 @@ describe.skip('Rendering', () => {
 
 		it.each(elementTagNames)('Should be able to be rendered as a %s', async (as) => {
 			const { getByTestId } = render(Rendering, { props: { [lowerCaseComponent]: { as } } });
+			const button = getByTestId('button');
+			await fireEvent.click(button);
 			const element = getByTestId(testId);
 			expect(hasTagName(element, as)).toBe(true);
 		});
 
-		it.skip('Should be able of forwarding attributes', async () => {
-			const attributes = { tabIndex: '4', title: `an accordion ${lowerCaseComponent}` };
+		it('Should be able of forwarding attributes', async () => {
+			const attributes = { title: `an accordion ${lowerCaseComponent}` };
 			const { getByTestId } = render(Rendering, {
 				props: {
 					[lowerCaseComponent]: { rest: attributes }
 				}
 			});
 
+			const button = getByTestId('button');
+			await fireEvent.click(button);
 			const element = getByTestId(testId);
 			const entriesAttributes = Object.entries(attributes);
 			for (const [attr, value] of entriesAttributes) {
@@ -459,7 +603,7 @@ describe.skip('Rendering', () => {
 			}
 		});
 
-		it.skip('Should be able of forwarding actions', async () => {
+		it('Should be able of forwarding actions', async () => {
 			const actions = generateActions(3);
 			const { getByTestId } = render(Rendering, {
 				props: {
@@ -467,145 +611,24 @@ describe.skip('Rendering', () => {
 				}
 			});
 
+			const button = getByTestId('button');
+			await fireEvent.click(button);
 			const element = getByTestId(testId);
-			for (const [action, index] of actions) {
-				expect(action).toBeCalledWith(element, index);
+			for (const action of actions) {
+				expect(action).toBeCalledWith(element);
 			}
 		});
 	});
 });
 
-describe.skip('Props', () => {
-	describe.skip('Finite', () => {
-		it.skip('Should make the navigation finite', async () => {
-			const { accordion, buttons } = initComponent(Behaviour, { finite: true });
-			await act(() => buttons[0].focus());
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
-			expect(buttons[0]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'End' });
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-			expect(buttons[2]).toHaveFocus();
-		});
-
-		it.skip('Should be set to false by default', async () => {
-			const { accordion, buttons } = initComponent(Behaviour);
-			await act(() => buttons[0].focus());
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowUp' });
-			expect(buttons[2]).toHaveFocus();
-
-			await fireEvent.keyDown(accordion, { code: 'ArrowDown' });
-			expect(buttons[0]).toHaveFocus();
-		});
-	});
-
-	describe.skip('Item', () => {
-		describe.skip('open', () => {
-			it.skip('Show change the Item state to open', () => {
-				const { buttons, getAllPanels } = initComponent(Behaviour, { open: true });
-				const panel = getAllPanels()[0];
-				expect(buttons[1].ariaExpanded).toBe('true');
-				expect(buttons[1]).toHaveAttribute('aria-controls', panel.id);
-			});
-
-			it.skip('Should only allow to open one panel', () => {
-				const { buttons, getAllPanels, getPanel } = initComponent(Behaviour, { open: true });
-				const panel = getAllPanels()[0];
-				expect(buttons[1].ariaExpanded).toBe('true');
-				expect(buttons[1]).toHaveAttribute('aria-controls', panel.id);
-				expect(buttons[2].ariaExpanded).toBe('false');
-				expect(() => getPanel(3)).toThrow();
-			});
-		});
-	});
-
-	const { Level } = samples;
-	describe.skip('Header', () => {
-		describe.skip('level', () => {
-			it.skip('Should set the given value', () => {
-				const { getByText } = render(Level, { props: { level: 3 } });
-				const header = getByText('Header 1');
-				expect(header.ariaLevel).toBe('3');
-			});
-
-			it.skip('Should be reactive', async () => {
-				const { component, getByText } = render(Level, { props: { level: 3 } });
-				const header = getByText('Header 1');
-				expect(header.ariaLevel).toBe('3');
-
-				await act(() => component.$set({ level: 6 }));
-				expect(header.ariaLevel).toBe('6');
-			});
-
-			it.skip('Should work using the action', async () => {
-				const { component, getByText } = render(Level, { props: { level: 3 } });
-				const header = getByText('Header 2');
-				expect(header.ariaLevel).toBe('3');
-
-				await act(() => component.$set({ level: 6 }));
-				expect(header.ariaLevel).toBe('6');
-			});
-		});
-	});
-});
-
-describe.skip('Slot Props', () => {
-	describe.skip('isOpen', () => {
-		describe.skip.each(['Item', 'Header', 'Button'])('%s Scope', (scope) => {
-			const target = scope.toLowerCase() as 'item' | 'header' | 'button';
-			it.skip(`Should be exposed from ${scope}`, () => {
-				const { getIsOpenHolders } = initComponent(Behaviour);
-				const holder = getIsOpenHolders()[target];
-				expect(holder).toHaveTextContent('false');
-			});
-
-			it.skip('Should be reactive', async () => {
-				const { getIsOpenHolders } = initComponent(Behaviour);
-				const holder = getIsOpenHolders()[target];
-				const button = holder.parentElement!;
-				expect(holder).toHaveTextContent('false');
-
-				await fireEvent.click(button);
-				expect(holder).toHaveTextContent('true');
-
-				await fireEvent.click(button);
-				expect(holder).toHaveTextContent('false');
-			});
-		});
-	});
-
-	describe.skip('close', () => {
-		describe.skip.each([
-			['Item', 0],
-			['Panel', 1]
-		])('%s Scope', (scope, buttonIndex) => {
-			const textContent = `Close ${scope}`;
-
-			it.skip(`Should be exposed from the ${scope} scope`, async () => {
-				const { buttons, getByText, getAllPanels } = initComponent(Behaviour);
-				const button = buttons[buttonIndex];
-
-				await fireEvent.click(button);
-				const panel = getAllPanels()[0];
-
-				const closeButton = getByText(textContent);
-				await fireEvent.click(closeButton);
-				expect(panel).not.toBeInTheDocument();
-			});
-		});
-	});
-});
-
-describe.skip('Context', () => {
-	describe.skip('Unset Context', () => {
-		describe.skip('Item', () => {
-			it.skip('Should throw if rendered without an Accordion Context', () => {
+describe('Context', () => {
+	describe('Unset Context', () => {
+		describe('Item', () => {
+			it('Should throw if rendered without an Accordion Context', () => {
 				expect(() => render(AccordionItem)).toThrow();
 			});
 
-			it.skip('Should throw an specific error', () => {
+			it('Should throw an specific error', () => {
 				expect(() => render(AccordionItem)).toThrow(
 					`Unable to Find ${getContextKey('accordion')} Context. Did you set it?`
 				);
@@ -613,11 +636,13 @@ describe.skip('Context', () => {
 		});
 
 		interface ContextKeys {
-			Open: any;
-			close: any;
+			isOpen: any;
 			button: any;
+			close: any;
 			panel: any;
-			header: any;
+			createAccordionButton: any;
+			createAccordionHeading: any;
+			createAccordionPanel: any;
 		}
 
 		const [init, message] = createContextParentRenderer<ContextKeys>(
@@ -625,50 +650,54 @@ describe.skip('Context', () => {
 			'accordion-item'
 		);
 
-		describe.skip.each([
+		describe.each([
 			['Header', AccordionHeader],
 			['Button', AccordionButton],
 			['Panel', AccordionPanel]
 		])('%', (name, Component) => {
-			it.skip('Should throw if rendered without an AccordionItem Context', () => {
+			it('Should throw if rendered without an AccordionItem Context', () => {
 				expect(() => render(Component)).toThrow();
 			});
 
-			it.skip('Should throw an specific error', () => {
+			it('Should throw an specific error', () => {
 				expect(() => render(Component)).toThrow(message.unset);
 			});
 		});
 
-		describe.skip.each([
+		describe.each([
 			['Header', AccordionHeader],
 			['Button', AccordionButton],
 			['Panel', AccordionPanel]
 		])('%', (name, Component) => {
-			it.skip('Should throw an error if rendered with an invalid Accordion Context', () => {
-				expect(() => init.skip(Component, null)).toThrow();
+			it('Should throw an error if rendered with an invalid Accordion Context', () => {
+				expect(() => init(Component, null)).toThrow();
 			});
 
-			it.skip('Should throw an specific error', () => {
-				expect(() => init.skip(Component, null)).toThrow(message.invalid);
+			it('Should throw an specific error', () => {
+				expect(() => init(Component, null)).toThrow(message.invalid);
 			});
 
-			it.skip('Should validate the context value thoroughly', () => {
+			it('Should validate the context value thoroughly', () => {
 				expect(() =>
-					init.skip(Component, {
-						Open: null,
-						close: null,
-						header: null,
+					init(Component, {
+						isOpen: null,
 						button: null,
-						panel: null
+						close: null,
+						panel: null,
+						createAccordionButton: null,
+						createAccordionHeading: null,
+						createAccordionPanel: null
 					})
 				).toThrow(message.invalid);
 				expect(() =>
-					init.skip(Component, {
-						Open: { subscribe: () => 64 },
-						close: () => 360,
-						header: {},
-						button: {},
-						panel: {}
+					init(Component, {
+						isOpen: { subscribe: () => 64 },
+						button: null,
+						close: () => {},
+						panel: null,
+						createAccordionButton: null,
+						createAccordionHeading: null,
+						createAccordionPanel: null
 					})
 				).toThrow(message.invalid);
 			});

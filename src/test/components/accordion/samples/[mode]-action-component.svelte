@@ -1,38 +1,82 @@
 <script lang="ts">
-  import { Accordion, AccordionItem } from '$lib/components';
+  import type { Maybe } from '$lib/types';
+  import { Accordion, AccordionItem } from '$lib';
 
-  export let finite: boolean | undefined = undefined;
-  export let open: boolean | undefined = undefined;
+  export let disabled: Maybe<boolean> = undefined;
+  export let finite: Maybe<boolean> = undefined;
+  export let isShowingPanel: Maybe<boolean> = true;
+  export let noNavigation: Maybe<boolean> = undefined;
+  export let unique: Maybe<boolean> = undefined;
 </script>
 
-<Accordion as="slot" {finite} let:accordion>
-  <div data-testid="accordion" use:accordion>
-    <AccordionItem data-testid="item" let:close let:header let:button let:panel>
-      <h2 data-testid="header" use:header>
-        <button data-testid="button" use:button> Button 1 </button>
+<Accordion data-testid="accordion-container" disabled={noNavigation} {finite} {unique}>
+  <AccordionItem let:button let:heading let:isOpen>
+    <span data-testid="binding-open-item">{isOpen}</span>
+    <div data-tesstid="accordion-item">
+      <h2 data-testid="accordion-header" use:heading>
+        <button data-testid="accordion-button" {disabled} use:button>
+          <span data-testid="binding-open-button">{isOpen}</span>
+        </button>
       </h2>
-      <div slot="panel" data-testid="panel" use:panel>
-        Panel 1
-        <button on:click={close}>Close Item</button>
-      </div>
-    </AccordionItem>
-    <AccordionItem data-testid="item" let:close let:header let:button let:panel {open}>
-      <h2 data-testid="header" use:header>
-        <button data-testid="button" use:button> Button 2 </button>
+    </div>
+    <svelte:fragment slot="panel" let:panel let:close>
+      {#if isShowingPanel}
+        <div data-testid="accordion-panel" use:panel>
+          <button data-testid="button-close" on:click={close}> Close </button>
+        </div>
+      {/if}
+    </svelte:fragment>
+  </AccordionItem>
+  <AccordionItem let:button let:heading let:panel let:isOpen>
+    <span data-testid="binding-open-item">{isOpen}</span>
+    <div data-tesstid="accordion-item">
+      <h2 data-testid="accordion-header" use:heading>
+        <button data-testid="accordion-button" use:button>
+          <span data-testid="binding-open-button">{isOpen}</span>
+        </button>
       </h2>
-      <div slot="panel" data-testid="panel" use:panel>
-        Panel 2
-        <button on:click={close}>Close Item</button>
-      </div>
-    </AccordionItem>
-    <AccordionItem data-testid="item" let:close let:header let:button let:panel {open}>
-      <h2 data-testid="header" use:header>
-        <button data-testid="button" use:button> Button 3 </button>
+    </div>
+    <div data-testid="accordion-panel" slot="panel" use:panel let:close>
+      <button data-testid="button-close" on:click={close}> Close </button>
+    </div>
+  </AccordionItem>
+  <AccordionItem let:button let:heading let:panel let:isOpen>
+    <span data-testid="binding-open-item">{isOpen}</span>
+    <div data-tesstid="accordion-item">
+      <h2 data-testid="accordion-header" use:heading>
+        <button data-testid="accordion-button" {disabled} use:button>
+          <span data-testid="binding-open-button">{isOpen}</span>
+        </button>
       </h2>
-      <div slot="panel" data-testid="panel" use:panel>
-        Panel 3
-        <button on:click={close}>Close Item</button>
-      </div>
-    </AccordionItem>
-  </div>
+    </div>
+    <div data-testid="accordion-panel" slot="panel" use:panel let:close>
+      <button data-testid="button-close" on:click={close}> Close </button>
+    </div>
+  </AccordionItem>
+  <AccordionItem let:button let:heading let:panel let:isOpen>
+    <span data-testid="binding-open-item">{isOpen}</span>
+    <div data-tesstid="accordion-item">
+      <h2 data-testid="accordion-header" use:heading>
+        <button data-testid="accordion-button" use:button>
+          <span data-testid="binding-open-button">{isOpen}</span>
+        </button>
+      </h2>
+    </div>
+    <div data-testid="accordion-panel" slot="panel" use:panel let:close>
+      <button data-testid="button-close" on:click={close}> Close </button>
+    </div>
+  </AccordionItem>
+  <AccordionItem let:button let:heading let:panel let:isOpen>
+    <span data-testid="binding-open-item">{isOpen}</span>
+    <div data-tesstid="accordion-item">
+      <h2 data-testid="accordion-header" use:heading>
+        <button data-testid="accordion-button" {disabled} use:button>
+          <span data-testid="binding-open-button">{isOpen}</span>
+        </button>
+      </h2>
+    </div>
+    <div data-testid="accordion-panel" slot="panel" use:panel let:close>
+      <button data-testid="button-close" on:click={close}> Close </button>
+    </div>
+  </AccordionItem>
 </Accordion>
