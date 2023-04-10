@@ -1,8 +1,5 @@
+import type { Action } from '$lib/types';
 import type { Unsubscriber } from 'svelte/store';
-
-interface Action {
-	(element: HTMLElement): void | { destroy?: Unsubscriber };
-}
 
 interface CachedAction {
 	destroy?: Unsubscriber;
