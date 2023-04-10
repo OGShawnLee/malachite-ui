@@ -3,34 +3,34 @@ import { generateSpyFunctions } from '@test-utils';
 import { generate } from '$lib/utils';
 import { isFunction } from '$lib/predicate';
 
-it.skip('Should return a function', () => {
-	const func = useCleanup();
-	expect(isFunction(func)).toBe(true);
+it('Should return a function', () => {
+	const fn = useCleanup();
+	expect(isFunction(fn)).toBe(true);
 });
 
-it.skip('Should not destroy if not called', () => {
-	const func = vi.fn(() => {});
-	useCleanup(func);
-	expect(func).not.toBeCalled();
+it('Should not call the given fn if the returned fn is not called', () => {
+	const fn = vi.fn(() => {});
+	useCleanup(fn);
+	expect(fn).not.toBeCalled();
 });
 
-it.skip('Should call multiple functions', () => {
+it('Should call all the given functions', () => {
 	const functions = generateSpyFunctions(10);
 	useCleanup(...functions)();
-	for (const func of functions) {
-		expect(func).toBeCalledTimes(1);
+	for (const fn of functions) {
+		expect(fn).toBeCalledTimes(1);
 	}
 });
 
-it.skip('Should call all the functions if given an array', () => {
+it('Should call all the functions if given an array', () => {
 	const functions = generateSpyFunctions(6);
 	useCleanup(functions)();
-	for (const func of functions) {
-		expect(func).toBeCalledTimes(1);
+	for (const fn of functions) {
+		expect(fn).toBeCalledTimes(1);
 	}
 });
 
-it.skip('Should work with action-like values', () => {
+it('Should work with action-like values', () => {
 	const [first, second] = generateSpyFunctions(2);
 	const foo = { destroy: first };
 	const bar = { destroy: second };
@@ -39,38 +39,36 @@ it.skip('Should work with action-like values', () => {
 	expect(second).toBeCalledTimes(1);
 });
 
-describe.skip('recursion', () => {
-	it.skip('Should work with functions that return functions', () => {
-		const [first, second] = generateSpyFunctions(3);
-		const func = vi.fn(() => first);
-		const anotherFunc = vi.fn(() => second);
-		useCleanup(func, anotherFunc)();
+describe('recursion', () => {
+	it('Should work with functions that return functions', () => {
+		const [first, second] = generateSpyFunctions(2);
+		const fn = vi.fn(() => first);
+		const anotherFn = vi.fn(() => second);
+		useCleanup(fn, anotherFn)();
 
-		for (const fn of [first, second, func, anotherFunc]) {
-			expect(fn).toBeCalledTimes(1);
+		for (const func of [first, second, fn, anotherFn]) {
+			expect(func).toBeCalledTimes(1);
 		}
 	});
 
-	it.skip('Should work with nested arrays', () => {
+	it('Should work with nested arrays', () => {
 		const functions = generateSpyFunctions(6);
 		const [one, two, three, four, five, six] = functions;
 		useCleanup([one, [two, three, [four, [five, [six]]]]])();
 
-		for (const func of functions) {
-			expect(func).toBeCalledTimes(1);
+		for (const fn of functions) {
+			expect(fn).toBeCalledTimes(1);
 		}
 	});
 
-	it.skip('Should work with complex structures', async () => {
-		const groups = generate(3, () => generateSpyFunctions(3));
-		const [secondGroup] = groups;
+	it('Should work with complex structures', async () => {
 		const functions = generateSpyFunctions(6);
-		const [one, two, four, five, six] = functions;
+		const groupings = generate(3, () => generateSpyFunctions(3));
+		const action = vi.fn(() => ({ destroy: functions }));
+		useCleanup(groupings, action)();
 
-		useCleanup(one, [two, [{ destroy: () => [four, five, six, secondGroup] }]])();
-
-		for (const func of [...groups.flat(), ...functions]) {
-			expect(func).toBeCalledTimes(1);
+		for (const fn of [...functions, ...groupings.flat(), action]) {
+			expect(fn).toBeCalledTimes(1);
 		}
 	});
 });
