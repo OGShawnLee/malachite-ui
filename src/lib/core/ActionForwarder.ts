@@ -22,6 +22,7 @@ class ActionForwarder {
 	protected delete(action: Action) {
 		const cached = this.cache.get(action);
 		cached?.destroy?.();
+		this.cache.delete(action)
 	}
 
 	onDestroy(this: ActionForwarder) {
@@ -29,19 +30,19 @@ class ActionForwarder {
 	}
 
 	onUpdate(this: ActionForwarder, actions: Action[]) {
-		const preservedActions = new Set<Action>();
+		const currentActions = new Set<Action>();
 		for (const action of actions) {
-			if (this.isNewAction(action)) this.add(action);
-			preservedActions.add(action);
+			if (this.isNewAction(action)) this.add(action)
+			currentActions.add(action)
 		}
 		for (const cachedAction of this.cache.keys()) {
-			if (preservedActions.has(cachedAction)) continue;
-			this.delete(cachedAction);
+			if (currentActions.has(cachedAction)) continue
+			this.delete(cachedAction)
 		}
 	}
 
 	protected isNewAction(action: Action) {
-		return this.cache.has(action);
+		return !this.cache.has(action);
 	}
 }
 
