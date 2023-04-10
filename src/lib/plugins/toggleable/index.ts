@@ -19,7 +19,7 @@ export function handleAriaDisabled(button: ElementBinder): Toggler.Plugin {
 	return function (element) {
 		return button.disabled.subscribe((isDisabled) => {
 			if (isDisabled) element.ariaDisabled = 'true';
-			element.ariaDisabled = null;
+			else element.ariaDisabled = "false";
 		});
 	};
 }
