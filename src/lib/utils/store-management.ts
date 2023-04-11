@@ -1,7 +1,7 @@
 import type { Composables, ComposablesValues, Computed, ReadableRef, Ref } from '$lib/types';
 import type { Readable, StartStopNotifier } from 'svelte/store';
 import { writable } from 'svelte/store';
-import { isComputed, isRef } from '$lib/predicate';
+import { isComputed, isRef, isReadableRef } from '$lib/predicate';
 
 export function computed<T extends Composables, C>(
 	composables: T,
@@ -85,7 +85,7 @@ export function readonly<T>(store: Ref<T>): ReadableRef<T>;
 export function readonly<T>(store: Readable<T>): Readable<T>;
 
 export function readonly<T>(store: Readable<T> | Ref<T>): Readable<T> | ReadableRef<T> {
-	if (isRef(store)) return { subscribe: store.subscribe, value: store.value };
+	if (isReadableRef(store)) return { subscribe: store.subscribe, value: store.value };
 	return { subscribe: store.subscribe };
 }
 
