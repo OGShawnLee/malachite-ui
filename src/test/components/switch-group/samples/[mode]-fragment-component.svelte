@@ -4,21 +4,25 @@
   import { useRange } from '@test-utils';
 
   export let amount = useRange(3);
-  export let disabled: Maybe<boolean> = undefined
-  export let passive: Maybe<boolean> = undefined
+  export let disabled: Maybe<boolean> = undefined 
+  export let passive: Maybe<boolean> = undefined 
 </script>
 
 <SwitchGroup data-testid="switch-group" let:isChecked>
   <span data-testid="binding-checked-group">{isChecked}</span>
   {#each $amount as index (index)}
-    <SwitchLabel data-testid="switch-label" {passive} let:isChecked>
+    <SwitchLabel as="fragment" {passive} let:label let:isChecked>
+      <label data-testid="switch-label" use:label />
       <span data-testid="binding-checked-label">{isChecked}</span>
     </SwitchLabel>
-    <SwitchDescription data-testid="switch-description" let:isChecked>
+    <SwitchDescription as="fragment" let:description let:isChecked>
+      <span data-testid="switch-description" use:description />
       <span data-testid="binding-checked-description">{isChecked}</span>
     </SwitchDescription>
   {/each}
-  <Switch data-testid="switch" {disabled} let:isChecked>
-    <span data-testid="binding-checked-switch">{isChecked}</span>
+  <Switch as="fragment" let:isChecked let:switcher>
+    <button data-testid="switch" {disabled} use:switcher>
+      <span data-testid="binding-checked-switch">{isChecked}</span>
+    </button>
   </Switch>
 </SwitchGroup>
