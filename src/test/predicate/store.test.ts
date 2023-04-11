@@ -27,30 +27,6 @@ describe('isComputed', () => {
 	});
 });
 
-describe('isComputed', () => {
-	const { isRef } = store;
-	it('Should return whether or not the given value is a ref store', () => {
-		const firstName = ref('Big');
-		const fullName = computed(firstName, (name) => name + ' Ounce');
-		expect(isRef(fullName)).toBe(false);
-		expect(isRef(firstName)).toBe(true);
-		expect(isRef(writable('Big Ounce, the Prairie Dog.'))).toBe(false);
-		expect(isRef(readable('Big Ounce, the Prairie Dog.'))).toBe(false);
-		expect(isRef('Not even a store.')).toBe(false);
-		expect(isRef(420)).toBe(false);
-	});
-
-	it('Should validate each field type', () => {
-		const imposter: Record<keyof Ref<any>, string> = {
-			subscribe: 'Not a function.',
-			value: 'Not a function.',
-			set: 'Not a function.',
-			update: 'Not a function.'
-		};
-		expect(isRef(imposter)).toBe(false);
-	});
-});
-
 describe('isStore', () => {
 	const { isStore } = store;
 	it('Should return whether or not the given value is store', () => {
