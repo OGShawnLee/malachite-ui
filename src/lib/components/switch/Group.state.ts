@@ -3,6 +3,7 @@ import type { Writable } from 'svelte/store';
 import { ElementBinder, ElementLabel, defineActionComponent } from '$lib/core';
 import { useComponentNaming, useListener, useSwitch } from '$lib/hooks';
 import { readonly, ref } from '$lib/utils';
+import { hasTagName } from '$lib/predicate';
 
 interface Settings {
 	initialChecked: boolean; // ensures it has the right value in SSR
@@ -53,6 +54,11 @@ export function createSwitchGroupState(settings: Settings) {
 			onMount: ({ binder, element, name }) => {
 				return [
 					labels.onMountLabel(name, binder),
+					hasTagName(element, 'label') &&
+						button.finalName.subscribe((id) => {
+							if (id) element.for = id;
+							else element.for = null;
+						}),
 					useListener(element, 'click', (event) => {
 						event.preventDefault();
 						if (button.disabled.value() || isPassive.value()) return;
