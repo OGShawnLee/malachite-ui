@@ -7,7 +7,6 @@
 - [Malachite UI](#malachite-ui)
   - [Table of contents](#table-of-contents)
   - [Installation](#installation)
-  - [Building](#building)
   - [Features](#features)
   - [Components](#components)
     - [Accordion](#accordion)
@@ -28,10 +27,6 @@ npm install malachite-ui -D
 ```
 pnpm add malachite-ui -D
 ```
-
-## Building
-
-Make sure to import components from `malachite-ui/components` to trigger tree-shaking. For some reason it doesn't work from `malachite-ui`.
 
 ## Features
 
@@ -74,15 +69,15 @@ Make sure to import components from `malachite-ui/components` to trigger tree-sh
     import { useClassNameResolver } from 'malachite-ui/hooks';
 
     let isDarkTheme = false;
-    const resolve = useClassNameResolver<'isChecked' | 'isDisabled'>({
+    const resolve = useClassNameResolver<'CHECKED' | 'DISABLED'>({
       base: 'switch',
       disabled: 'switch--disabled',
       checked: { on: 'switch--checked', off: 'switch--unchecked' }
     });
   </script>
 
-  <Switch as="slot" bind:checked="{isDarkTheme}" let:button let:isChecked let:isDisabled>
-    <button class="{resolve({ isChecked, isDisabled })}" use:button on:click="{toggleDarkTheme}">
+  <Switch as="fragment" bind:checked="{isDarkTheme}" let:switcher let:isChecked let:isDisabled>
+    <button class="{resolve({ isChecked, isDisabled })}" use:switcher on:click="{toggleDarkTheme}">
       <span class="sr-only"> Toggle Dark Theme </span>
     </button>
   </Switch>
@@ -91,8 +86,8 @@ Make sure to import components from `malachite-ui/components` to trigger tree-sh
   This might seem like **overkill** if you are using **simple and short classNames**, however if you are using **utility CSS frameworks** like **Tailwind CSS** and **WindiCSS** you will very likely have a **substantial amount of classNames**, in that case this really comes in handy for **better readability**.
 
   ```html
-  <AccordionItem let:isOpen let:header let:panel>
-    <h2 use:header class="h-12">
+  <AccordionItem let:isOpen let:heading let:panel>
+    <h2 use:heading class="h-12">
       <AccordionButton
         class="{{
           base: 'w-full py-2 px-0 | button-reset border-b-blue-50 outline-none transition duration-150 ease-in',
@@ -122,8 +117,8 @@ Make sure to import components from `malachite-ui/components` to trigger tree-sh
 
 ```html
 <Accordion let:accordion let:isOpen>
-  <AccordionItem let:button let:header let:panel let:close let:isOpen>
-    <AccordionHeader let:header let:isOpen>
+  <AccordionItem let:button let:heading let:panel let:close let:isOpen>
+    <AccordionHeader let:heading let:isOpen>
       <AccordionButton class="{{ base: 'button', open:'button--open' }}" let:button let:isOpen>
         First Item
       </AccordionButton>
@@ -146,10 +141,13 @@ Make sure to import components from `malachite-ui/components` to trigger tree-sh
 
 <button on:click="{() => open = !open}">Toggle</button>
 
-<dialog bind:open initialFocus="{ref}">
+<dialog bind:open initialFocus="{ref}" let:content let:overlay let:close>
   <DialogContent let:close>
+    <DialogOverlay />
     <DialogTitle> Delete Account </DialogTitle>
-    <DialogDescription> Are you sure about that? </DialogDescription>
+    <DialogDescription>
+      All your data will be permanently deleted. Are you sure about that?
+    </DialogDescription>
     <div>
       <button on:click="{nuke}">Go Ahead</button>
       <button bind:this="{ref}" on:click="{close}">Cancel</button>
@@ -180,7 +178,7 @@ Make sure to import components from `malachite-ui/components` to trigger tree-sh
     Toggle
   </MenuButton>
   <MenuItems let:items>
-    <menuitem class="{{ base: 'item', selected: 'item--selected' }}" let:item let:isSelected>
+    <menuitem class="{{ base: 'item', active: 'item--active' }}" let:item let:isActive>
       Edit
     </menuitem>
   </MenuItems>
@@ -228,9 +226,9 @@ Make sure to import components from `malachite-ui/components` to trigger tree-sh
 
 <!-- Popover Group -->
 
-<PopoverGroup let:isOpen let:areAllOpen let:areAllClosed let:overlay>
-  <PopoverOverlay let:overlay />
-  <Popover let:button let:panel let:isOpen>
+<PopoverGroup let:isOpen>
+  <Popover let:button let:overlay let:panel let:isOpen>
+    <PopoverOverlay let:overlay />
     <PopoverButton class="{{ base: 'button', open:'button--open' }}" let:button let:isOpen>
       First Item
     </PopoverButton>
@@ -239,7 +237,8 @@ Make sure to import components from `malachite-ui/components` to trigger tree-sh
       <button on:click="{close}">Close Me</button>
     </PopoverPanel>
   </Popover>
-  <Popover let:button let:panel let:isOpen>
+  <Popover let:button let:overlay let:panel let:isOpen>
+    <PopoverOverlay let:overlay />
     <PopoverButton class="{{ base: 'button', open:'button--open' }}" let:button let:isOpen>
       First Item
     </PopoverButton>
@@ -254,18 +253,14 @@ Make sure to import components from `malachite-ui/components` to trigger tree-sh
 ### Switch
 
 ```html
-<Switch checked let:button let:label let:description on:click="{toggle}">
-  <SwitchLabel class="sr-only" let:isChecked let:label> Toggle </SwitchLabel>
-  <SwitchDescription class="sr-only" let:isChecked let:descriptions>
-    Toggle Dark Theme
-  </SwitchDescription>
-</Switch>
+<label id="label for="switch">Toggle</label>
+<Switch checked id="switch" aria-labelledby="label" let:button let:isChecked on:click="{toggle}"/>
 
 <!-- Switch Group -->
 
-<SwitchGroup>
-  <SwitchLabel passive> Turn on Notifications </SwitchLabel>
-  <SwitchDescription>
+<SwitchGroup let:isChecked>
+  <SwitchLabel passive let:label let:isChecked> Turn on Notifications </SwitchLabel>
+  <SwitchDescription let:description let:isChecked>
     We will send you notifications about our latest products once a week
   </SwitchDescription>
   <Switch class="{{ base: 'switch', checked: 'switch--checked' }}" on:click="{toggle}" />
@@ -275,13 +270,13 @@ Make sure to import components from `malachite-ui/components` to trigger tree-sh
 ### Tabs
 
 ```html
-<TabGroup let:tabList let:tabPanels>
-  <TabList let:tabList>
+<TabGroup>
+  <TabList let:tablist>
     <Tab class="{{ base: 'tab', selected: 'tab--selected' }}" let:tab let:isSelected>
       First Tab
     </Tab>
   </TabList>
-  <TabPanels let:tabPanels>
+  <TabPanels let:tabpanels>
     <TabPanel let:panel> First Panel </TabPanel>
   </TabPanels>
 </TabGroup>
