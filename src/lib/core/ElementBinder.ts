@@ -12,6 +12,7 @@ import { isDisabled, isString, isValidHTMLElementID } from '$lib/predicate';
 export default class ElementBinder {
 	readonly disabled = ref<Nullable<boolean>>(undefined);
 	protected readonly node = ref<HTMLElement | undefined>(undefined);
+	readonly element = readonly(this.node);
 	readonly name = ref<string | undefined>(undefined);
 	readonly id = ref<string | undefined>(undefined);
 	readonly isActive = ref(false);
@@ -20,10 +21,6 @@ export default class ElementBinder {
 	readonly finalName = computed([this.id, this.name], ([id, name]) => {
 		return isString(id) && isValidHTMLElementID(id) ? id : name;
 	});
-
-	get element() {
-		return readonly(this.node);
-	}
 
 	onMount(this: ElementBinder, element: HTMLElement, name: string) {
 		this.node.set(element);
