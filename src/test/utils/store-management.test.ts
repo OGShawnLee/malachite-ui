@@ -1,13 +1,8 @@
-import * as store from '$lib/utils/store-management';
+import { computed, readonly, ref, watch } from '$lib/utils/store-management';
 import { derived, get, readable, writable } from 'svelte/store';
-import { isStore, isWritable } from '$lib/predicate';
-import { useCleaner } from '@test-utils';
-
-const { add, destroy } = useCleaner();
-afterEach(() => destroy());
+import { isStore, isReadableRef, isWritable } from '$lib/predicate';
 
 describe('computed', () => {
-	const { computed, ref } = store;
 	it('Should return a valid readable store', () => {
 		const count = ref(10);
 		const double = computed(count, (count) => count * 2);
@@ -103,37 +98,45 @@ describe('computed', () => {
 	});
 });
 
-describe.skip('readonly', () => {
-	const { readonly } = store;
+describe('readonly', () => {
+	const count = writable(0);
+	const double = derived(count, (count) => count * 2);
+	const name = ref('James');
+	const upperName = computed(name, (name) => name.toUpperCase());
+	const readCount = readonly(count);
+	const readDouble = readonly(double);
+	const readName = readonly(name);
+	const readUpperName = readonly(upperName);
+	const readInstances = [readCount, readDouble, readName, readUpperName];
 
-	const First = writable(2);
-	const Second = readable('James');
-	const Third = derived([First, Second], (value) => value);
-
-	const Write = readonly(First);
-	const Read = readonly(Second);
-	const Derived = readonly(Third);
-
-	it.skip('Should take a store and return a readable store', () => {
-		expect(isStore(Write) && !isWritable(Write)).toBe(true);
-		expect(isStore(Read) && !isWritable(Read)).toBe(true);
-		expect(isStore(Derived) && !isWritable(Derived)).toBe(true);
+	it('Should return an object (no null)', () => {
+		for (const read of readInstances) {
+			expect(typeof read === 'object').toBe(true);
+			expect(read !== null).toBe(true);
+		}
 	});
 
-	it.skip('Should return the original store if it is already readable', () => {
-		expect(Read).toBe(Second);
-		expect(Derived).toBe(Third);
+	it('Should return a readable store if passed svelte stores', () => {
+		expect(isStore(readCount));
+		expect(isStore(readDouble));
+		expect(isReadableRef(readCount)).toBe(false);
+		expect(isReadableRef(readDouble)).toBe(false);
 	});
 
-	it.skip('Should store the same value after the original store changes', () => {
-		First.set(200);
-		expect(get(Write)).toBe(200);
-		expect(get(Third)).toEqual([200, 'James']);
+	it('Should return a readable ref if passed a computed or a ref', () => {
+		expect(isReadableRef(readName)).toBe(true);
+		expect(isReadableRef(readUpperName)).toBe(true);
+	});
+
+	it('Should return a new object', () => {
+		expect(readCount).not.toBe(count);
+		expect(readDouble).not.toBe(double);
+		expect(readName).not.toBe(name);
+		expect(readUpperName).not.toBe(upperName);
 	});
 });
 
 describe('ref', () => {
-	const ref = store.ref;
 	it('Should return a valid writable store', () => {
 		const name = ref('Jack');
 		expect(isWritable(name)).toBe(true);
@@ -157,8 +160,6 @@ describe('ref', () => {
 });
 
 describe('watch', () => {
-	const { ref, computed, watch } = store;
-
 	it('Should return void', () => {
 		const count = ref(10);
 		const result = watch(count, () => {});
