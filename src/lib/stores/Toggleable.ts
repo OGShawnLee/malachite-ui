@@ -104,9 +104,7 @@ export class Toggleable {
 		await tick();
 		const panel = this.panel.value();
 		if (this.isFocusForced.value() && isOpen && panel) {
-			focusFirstChildElement(panel, {
-				fallback: this.button.value()
-			});
+			focusFirstChildElement(panel);
 		}
 	}
 
