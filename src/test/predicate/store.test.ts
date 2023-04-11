@@ -1,7 +1,7 @@
 import * as store from '$lib/predicate/store';
 import type { Computed, Ref } from '$lib/types';
 import type { Writable } from 'svelte/store';
-import { computed, ref } from '$lib/utils';
+import { computed, readonly, ref } from '$lib/utils';
 import { derived, readable, writable } from 'svelte/store';
 
 describe('isComputed', () => {
@@ -24,6 +24,32 @@ describe('isComputed', () => {
 			$$onSet: 'Not a function.'
 		};
 		expect(isComputed(imposter)).toBe(false);
+	});
+});
+
+describe('isReadableRef', () => {
+	const { isReadableRef } = store;
+	it('Should return true with a computed, ref, and readonly return objects', () => {
+		const count = ref(0);
+		const double = computed(count, (count) => count * 2);
+		const age = readonly(count);
+		expect(isReadableRef(count)).toBe(true);
+		expect(isReadableRef(double)).toBe(true);
+		expect(isReadableRef(age)).toBe(true);
+	});
+
+	it('Should return false with anything else', () => {
+		const count = writable(0);
+		const double = derived(count, (count) => count * 2);
+		const age = readable(count);
+		expect(isReadableRef(count)).toBe(false);
+		expect(isReadableRef(double)).toBe(false);
+		expect(isReadableRef(age)).toBe(false);
+		expect(isReadableRef('not even a store')).toBe(false);
+		expect(isReadableRef(404)).toBe(false);
+		expect(isReadableRef(null)).toBe(false);
+		expect(isReadableRef({})).toBe(false);
+		expect(isReadableRef([])).toBe(false);
 	});
 });
 

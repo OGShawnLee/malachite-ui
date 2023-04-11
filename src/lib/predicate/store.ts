@@ -30,7 +30,10 @@ export function isNotStore(val: unknown) {
 }
 
 export function isReadableRef(value: unknown): value is ReadableRef<any> {
-	return isStore(value);
+	return isInterface<ReadableRef<any>>(value, {
+		subscribe: isFunction,
+		value: isFunction
+	});
 }
 
 export function isRef(value: unknown): value is Ref<any> {
