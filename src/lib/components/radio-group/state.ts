@@ -42,6 +42,7 @@ export function createRadioGroupState<T>(settings: Settings<T>) {
 			id: id,
 			name: baseName,
 			onMount({ element }) {
+				element.role = 'radiogroup';
 				return [
 					navigation.initNavigation(element, {
 						handler: getRadioGroupNavigationHandler(toolbar)
@@ -114,6 +115,7 @@ export function createRadioGroupState<T>(settings: Settings<T>) {
 				},
 				onMount({ element, name }) {
 					element.tabIndex = 0;
+					element.role = 'radio';
 					return [
 						toolbar?.item(element),
 						navigation.initItem(element, name),
