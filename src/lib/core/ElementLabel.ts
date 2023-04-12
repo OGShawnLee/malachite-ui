@@ -4,11 +4,15 @@ import { clearString } from '$lib/utils';
 import { onDestroy } from 'svelte';
 import { useCollector } from '$lib/hooks';
 import { computed } from '$lib/utils';
+import { isWhitespace } from '$lib/predicate';
 
 export default class ElementLabel {
 	protected readonly items = new Hashable<string, string | undefined>();
 	readonly finalName = computed(this.items.values, (labels) => {
-		if (labels.length) return clearString(labels.join(' '));
+		if (labels.length) {
+			const str = clearString(labels.join(' '));
+			return isWhitespace(str) ? undefined: str;
+		}
 	});
 
 	onInitLabel(this: ElementLabel, name: string, id: string | undefined) {
