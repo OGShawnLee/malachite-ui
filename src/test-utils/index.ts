@@ -15,6 +15,12 @@ export function appendChild<T extends Node>(child: T, container: Node = document
 	return container.appendChild(child);
 }
 
+export function findByTestId(container: HTMLElement, testid: string) {
+	return useDOMTraversal(container, element => {
+		return element.getAttribute("data-testid") === testid
+	})
+}
+
 export function fuseElementsName(elements: Element[]) {
 	return elements.reduce((str, element) => {
 		return (str + ' ' + element.id).trim();
