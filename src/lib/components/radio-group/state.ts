@@ -94,15 +94,14 @@ export function createRadioGroupState<T>(settings: Settings<T>) {
 		const descriptions = new ElementLabel();
 		const labels = new ElementLabel();
 		const option = new ElementBinder();
-		const { baseName } = useComponentNaming('option');
-
+		
 		OptionContext.setContext({ labels, descriptions, parentName: option.finalName });
 
 		function createRadioGroupOption(id: string | undefined) {
 			return defineActionComponent({
 				binder: option,
 				id: id,
-				name: baseName,
+				name: nameChild("option"),
 				onInit: ({ binder, name }) => {
 					const index = navigation.onInitItem(name, binder, { value: initialValue });
 					if (isInitialValueFound) return;
