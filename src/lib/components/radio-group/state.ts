@@ -69,7 +69,7 @@ export function createRadioGroupState<T>(settings: Settings<T>) {
 	}
 
 	function createRadioGroupLabel(id: string | undefined, binder: ElementBinder) {
-		const { labels } = getDescriptionContext();
+		const { labels, parentName } = getDescriptionContext();
 		return defineActionComponent({
 			id: id,
 			binder: binder,
@@ -77,8 +77,14 @@ export function createRadioGroupState<T>(settings: Settings<T>) {
 			onInit({ name }) {
 				labels.onInitLabel(name, id);
 			},
-			onMount({ binder, name }) {
-				return labels.onMountLabel(name, binder);
+			onMount({ element, binder, name }) {
+				return [
+					labels.onMountLabel(name, binder),
+					parentName.subscribe((name) => {
+						if (name) element.for = name;
+						else element.for = null;
+					})
+				];
 			}
 		});
 	}
@@ -144,6 +150,7 @@ export function createRadioGroupState<T>(settings: Settings<T>) {
 }
 
 function getDescriptionContext() {
-	const { descriptions, labels } = OptionContext.getContext(false) || GroupContext.getContext();
-	return { descriptions, labels };
+	const { descriptions, labels, parentName } =
+		OptionContext.getContext(false) || GroupContext.getContext();
+	return { descriptions, labels, parentName };
 }
