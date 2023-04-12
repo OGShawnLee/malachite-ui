@@ -59,5 +59,5 @@
 	on:mouseup
 	on:mousewheel
 >
-	<slot radio-group={action} value={$globalValue}/>
+	<slot radiogroup={action} value={$globalValue}/>
 </Render>
