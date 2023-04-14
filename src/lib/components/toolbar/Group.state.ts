@@ -18,8 +18,14 @@ export function createToolbarGroupState() {
 				labels.onInitLabel(name, id);
 				return toolbar.finalName;
 			},
-			onMount({ name }) {
-				return labels.onMountLabel(name, binder);
+			onMount({ element, name }) {
+				return [
+					labels.onMountLabel(name, binder),
+					toolbar.finalName.subscribe((name) => {
+						if (name) element.for = name;
+						else element.for = null;
+					})
+				];
 			}
 		});
 	}
