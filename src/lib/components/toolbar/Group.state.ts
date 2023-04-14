@@ -12,6 +12,7 @@ export function createToolbarGroupState() {
 
 	function createToolbarLabel(id: string | undefined, binder: ElementBinder) {
 		return defineActionComponent({
+			binder: binder,
 			id: id,
 			name: nameChild('label'),
 			onInit({ name }) {
