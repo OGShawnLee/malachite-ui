@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Action, ComponentTagName, Nullable } from '$lib/types';
   import { ElementBinder, forward } from '$lib/core';
-  import { isVoidElement } from '$lib/predicate';
+  import { isNullish, isVoidElement } from '$lib/predicate';
 
   let className: string | undefined = undefined;
 
@@ -23,6 +23,10 @@
   $: if (isUsingFragment && element && className) {
     element.className = className;
   }
+  $: if (isNullish(as))
+    throw TypeError(
+      "No tagname to be rendered as has been provided. Please provide a tagname via the 'as' prop."
+    );
 
   function onInput(event: InputEvent) {
     value = (event.currentTarget as HTMLInputElement)?.value;
