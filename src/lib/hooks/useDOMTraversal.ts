@@ -2,8 +2,9 @@ import { isChildless } from '$lib/predicate';
 
 export default function useDOMTraversal(
 	container: HTMLElement,
-	isValidElement: (element: HTMLElement) => unknown
+	isValidElement?: (element: HTMLElement) => unknown
 ) {
+	isValidElement ??= () => true;
 	if (isChildless(container)) return isValidElement(container) ? [container] : [];
 	const children: HTMLElement[] = [];
 	if (isValidElement(container)) children.push(container);
