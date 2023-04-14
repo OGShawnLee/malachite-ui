@@ -95,8 +95,14 @@ export function createListboxState<T>(settings: Settings<T>) {
 				labels.onInitLabel(name, id);
 				return panel.finalName;
 			},
-			onMount: ({ binder, name }) => {
-				return labels.onMountLabel(name, binder);
+			onMount: ({ element, binder, name }) => {
+				return [
+					labels.onMountLabel(name, binder),
+					panel.finalName.subscribe((finalName) => {
+						if (finalName) element.for = finalName;
+						else element.for = null;
+					})
+				];
 			}
 		});
 	}
