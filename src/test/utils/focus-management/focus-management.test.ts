@@ -13,57 +13,57 @@ const containers = {
 	invalid: 'invalid-container'
 };
 
-describe.skip('focusFirstElement', () => {
-	it.skip('Should focus the first focusable element', () => {
+describe('focusFirstChildElement', () => {
+	it('Should focus the first focusable element', () => {
 		const { container } = render(Component);
-		utils.focusFirstElement(container);
+		utils.focusFirstChildElement(container);
 		const button = findElement(container, (element) => element.textContent === 'Focusable');
 		expect(button).toHaveFocus();
 	});
 
-	it.skip('Should ignore disabled and negative tabIndex elements', async () => {
+	it('Should ignore disabled and negative tabIndex elements', async () => {
 		const { findByTestId } = render(Component);
 		const container = await findByTestId(containers.invalid);
-		utils.focusFirstElement(container);
+		utils.focusFirstChildElement(container);
 		expect(document.body).toHaveFocus();
 	});
 
-	it.skip('Should only focus the first element inside the given container', async () => {
+	it('Should only focus the first element inside the given container', async () => {
 		const { findByTestId } = render(Component);
 		const container = await findByTestId(containers.nested);
-		utils.focusFirstElement(container);
+		utils.focusFirstChildElement(container);
 		expect(container.firstElementChild).toHaveFocus();
 	});
 
-	describe.skip('options', () => {
-		describe.skip('fallback', () => {
-			it.skip('Should focus the given fallback element if no focusable element is found', async () => {
+	describe('options', () => {
+		describe('fallback', () => {
+			it('Should focus the given fallback element if no focusable element is found', async () => {
 				const { container, findByTestId } = render(Component);
 				const invalidContainer = await findByTestId(containers.invalid);
 				const fallback = findElement(container, (element) => hasTagName(element, 'button'));
-				utils.focusFirstElement(invalidContainer, { fallback });
+				utils.focusFirstChildElement(invalidContainer, { fallback });
 				expect(fallback).toHaveFocus();
 			});
 		});
 
-		describe.skip('initialFocus', () => {
-			it.skip('Should always focus the initialFocus element', async () => {
+		describe('initialFocus', () => {
+			it('Should always focus the initialFocus element', async () => {
 				const { findByTestId } = render(Component);
 				const container = await findByTestId(containers.focusable);
 				const nestedContainer = await findByTestId(containers.nested);
 				const initialFocus = nestedContainer.firstElementChild;
-				utils.focusFirstElement(container, { initialFocus: initialFocus as HTMLElement });
+				utils.focusFirstChildElement(container, { initialFocus: initialFocus as HTMLElement });
 
 				expect(initialFocus).toHaveFocus();
 			});
 		});
 
-		describe.skip('predicate', () => {
-			it.skip('Should only focus the element that matches the given predicate', async () => {
+		describe('predicate', () => {
+			it('Should only focus the element that matches the given predicate', async () => {
 				const { container } = render(Component);
 				const heading = findElement(container, (element) => hasTagName(element, 'h1'));
-				utils.focusFirstElement(container, {
-					predicate: (element) => hasTagName(element, 'h1')
+				utils.focusFirstChildElement(container, {
+					isValidTarget: (element) => hasTagName(element, 'h1')
 				});
 				expect(heading).toHaveFocus();
 			});
