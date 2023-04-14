@@ -1,5 +1,6 @@
 <script lang="ts">
-  import Render from '$lib/components/render';
+  import type { RenderElementTagName } from '$lib/types';
+  import { Render }  from '$lib';
 
   export let as: RenderElementTagName = 'div';
   export let func: (element: HTMLElement) => void;

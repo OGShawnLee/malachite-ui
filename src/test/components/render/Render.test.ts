@@ -8,8 +8,8 @@ import { generateActions } from '@test-utils';
 afterEach(() => cleanup());
 
 const { BindElement, Events } = samples;
-describe.skip('attributes', () => {
-	it.skip('Should be possible to forward attributes', async () => {
+describe('Attributes', () => {
+	it('Should be possible to forward attributes', async () => {
 		const attributes: [string, number | string][] = [
 			['data-random', 'random'],
 			['tabIndex', 5],
@@ -35,7 +35,7 @@ describe.skip('attributes', () => {
 		}
 	});
 
-	it.skip('Should forward disabled', async () => {
+	it('Should forward disabled', async () => {
 		for (const as of ['button', 'input']) {
 			const { component, findByTestId } = render(Render, {
 				props: { as, 'data-testid': `render-${as}`, disabled: true }
@@ -51,8 +51,8 @@ describe.skip('attributes', () => {
 	});
 });
 
-describe.skip('bind', () => {
-	it.skip('Should be possible to bind to the element', async () => {
+describe('bind', () => {
+	it('Should be possible to bind to the element', async () => {
 		for (const as of elementTagNames) {
 			const func = vi.fn(() => {});
 			const { findByTestId } = render(BindElement, { props: { as, func } });
@@ -61,7 +61,7 @@ describe.skip('bind', () => {
 		}
 	});
 
-	it.skip('Should be possible to bind to the value', async () => {
+	it('Should be possible to bind to the value', async () => {
 		const { component, findByTestId } = render(Render, {
 			props: { as: 'input', value: 'Master Chief', 'data-testid': 'render-input' }
 		});
@@ -73,13 +73,24 @@ describe.skip('bind', () => {
 	});
 });
 
-describe.skip('rendering', () => {
-	it.skip('Should render a slot by default', () => {
-		const { findByTestId } = render(Render, { props: { 'data-testid': 'element' } });
-		async function danger() {
-			return await findByTestId('element');
+describe('Rendering', () => {
+	describe('No tagname provided', () => {
+		function danger() {
+			render(Render);
 		}
-		expect(danger()).rejects.toBeUndefined();
+
+		it('Should throw an error if not given a tagname to be rendered as', () => {
+			expect(danger).toThrow();
+		});
+
+		it('Should throw a TypeError with an specific error message', () => {
+			const danger = () => render(Render);
+			expect(danger).toThrow(
+				new TypeError(
+					"No tagname to be rendered as has been provided. Please provide a tagname via the 'as' prop."
+				)
+			);
+		});
 	});
 
 	it.each(elementTagNames)('Should be able to render a %s', async (as) => {
@@ -91,21 +102,21 @@ describe.skip('rendering', () => {
 	});
 });
 
-describe.skip('Action Forwarding', () => {
+describe('Action Forwarding', () => {
 	it.each(elementTagNames)('Should be able of forwarding actions', async (as) => {
 		const actions = generateActions(3);
 		const { findByTestId } = render(Render, {
-			props: { as, use: actions, 'data-testid': `render-${as}` }
+			props: { as, actions, 'data-testid': `render-${as}` }
 		});
 		const element = await findByTestId(`render-${as}`);
-		for (const [action, index] of actions) {
-			expect(action).toBeCalledWith(element, index);
+		for (const action of actions) {
+			expect(action).toBeCalledWith(element);
 		}
 	});
 });
 
 const {} = samples;
-describe.skip('Events', () => {
+describe('Events', () => {
 	function initComponent(props: {
 		handleBlur: (event: FocusEvent) => void;
 		handleClick?: (event: MouseEvent) => void;
@@ -115,8 +126,8 @@ describe.skip('Events', () => {
 		return { ...result, element: result.getByText('Render') };
 	}
 
-	describe.skip('Blur', () => {
-		it.skip('Should be able of forwarding a blur listener', async () => {
+	describe('Blur', () => {
+		it('Should be able of forwarding a blur listener', async () => {
 			const handleBlur = vi.fn(() => {});
 			// @ts-ignore
 			const { element } = initComponent({ handleBlur });
@@ -129,7 +140,7 @@ describe.skip('Events', () => {
 			expect(handleBlur).toBeCalledTimes(2);
 		});
 
-		it.skip('Should pass the FocusEvent', async () => {
+		it('Should pass the FocusEvent', async () => {
 			const handleBlur = vi.fn<[FocusEvent]>(() => {});
 			// @ts-ignore
 			const { element } = initComponent({ handleBlur });
@@ -139,8 +150,8 @@ describe.skip('Events', () => {
 		});
 	});
 
-	describe.skip('Click', () => {
-		it.skip('Should be able of forwarding a click listener', async () => {
+	describe('Click', () => {
+		it('Should be able of forwarding a click listener', async () => {
 			const handleClick = vi.fn(() => {});
 			// @ts-ignore
 			const { element } = initComponent({ handleClick });
@@ -150,7 +161,7 @@ describe.skip('Events', () => {
 			expect(handleClick).toBeCalledTimes(2);
 		});
 
-		it.skip('Should pass the MouseEvent', async () => {
+		it('Should pass the MouseEvent', async () => {
 			const handleClick = vi.fn<[MouseEvent]>(() => {});
 			// @ts-ignore
 			const { element } = initComponent({ handleClick });
@@ -159,8 +170,8 @@ describe.skip('Events', () => {
 		});
 	});
 
-	describe.skip('Focus', () => {
-		it.skip('Should be able of forwarding a focus listener', async () => {
+	describe('Focus', () => {
+		it('Should be able of forwarding a focus listener', async () => {
 			const handleFocus = vi.fn(() => {});
 			// @ts-ignore
 			const { element } = initComponent({ handleFocus });
@@ -173,7 +184,7 @@ describe.skip('Events', () => {
 			expect(handleFocus).toBeCalledTimes(2);
 		});
 
-		it.skip('Should pass the FocusEvent', async () => {
+		it('Should pass the FocusEvent', async () => {
 			const handleFocus = vi.fn<[FocusEvent]>(() => {});
 			// @ts-ignore
 			const { element } = initComponent({ handleFocus });
