@@ -27,13 +27,13 @@ function initComponent() {
 	return { ...result, container, external };
 }
 
-it.skip('Should return a function', () => {
+it('Should return a function', () => {
 	const func = useClickOutside(document.createElement('div'), () => {});
 	expect(func).toBeInstanceOf(Function);
 	add(func);
 });
 
-it.skip('Should call the given callback upon clicking outside of the given element', async () => {
+it('Should call the given callback upon clicking outside of the given element', async () => {
 	const { container, external } = initComponent();
 	const callback = vi.fn(() => {});
 	add(useClickOutside(container.root, callback));
@@ -41,7 +41,7 @@ it.skip('Should call the given callback upon clicking outside of the given eleme
 	expect(callback).toBeCalledTimes(1);
 });
 
-it.skip('Should not call the given callback upon clicking inside the given element', async () => {
+it('Should not call the given callback upon clicking inside the given element', async () => {
 	const { container } = initComponent();
 	const callback = vi.fn(() => {});
 	add(useClickOutside(container.root, callback));
@@ -49,7 +49,7 @@ it.skip('Should not call the given callback upon clicking inside the given eleme
 	expect(callback).not.toBeCalled();
 });
 
-it.skip('Should not call the given callback upon clicking the given element children', async () => {
+it('Should not call the given callback upon clicking the given element children', async () => {
 	const { container } = initComponent();
 	const callback = vi.fn(() => {});
 	add(useClickOutside(container.root, callback));
@@ -59,7 +59,7 @@ it.skip('Should not call the given callback upon clicking the given element chil
 	}
 });
 
-it.skip('Should pass an object: { element, event, target }: CallbackContext<HTMLElement>', async () => {
+it('Should pass an object: { element, event, target }: CallbackContext<HTMLElement>', async () => {
 	const { container, external } = initComponent();
 	const callback = vi.fn<[CallbackContext<HTMLElement>]>(() => {});
 	add(useClickOutside(container.root, callback));
@@ -74,7 +74,7 @@ it.skip('Should pass an object: { element, event, target }: CallbackContext<HTML
 	).toBe(true);
 });
 
-it.skip('Should pass the element the listener was applied to', async () => {
+it('Should pass the element the listener was applied to', async () => {
 	const { container, external } = initComponent();
 	const callback = vi.fn<[CallbackContext<HTMLElement>]>(() => {});
 	add(useClickOutside(container.root, callback));
@@ -83,8 +83,8 @@ it.skip('Should pass the element the listener was applied to', async () => {
 	expect(callback.mock.calls[0][0].element).toBe(container.root);
 });
 
-describe.skip('Multiple Elements', () => {
-	it.skip('Should be possible to add multiple elements', async () => {
+describe('Multiple Elements', () => {
+	it('Should be possible to add multiple elements', async () => {
 		const { container, external } = initComponent();
 		const callback = vi.fn<[CallbackContext<HTMLElement[]>]>(() => {});
 		add(useClickOutside(container.children, callback));
@@ -92,7 +92,7 @@ describe.skip('Multiple Elements', () => {
 		expect(callback).toBeCalledTimes(1);
 	});
 
-	it.skip('Should not call the given callback after clicking on any of the given elements', async () => {
+	it('Should not call the given callback after clicking on any of the given elements', async () => {
 		const { container } = initComponent();
 		const callback = vi.fn<[CallbackContext<HTMLElement[]>]>(() => {});
 		add(useClickOutside(container.children, callback));
@@ -102,7 +102,7 @@ describe.skip('Multiple Elements', () => {
 		}
 	});
 
-	it.skip('Should pass an object: { element, event, target }: CallbackContext<HTMLElement[]>', async () => {
+	it('Should pass an object: { element, event, target }: CallbackContext<HTMLElement[]>', async () => {
 		const { container } = initComponent();
 		const callback = vi.fn<[CallbackContext<HTMLElement[]>]>(() => {});
 		add(useClickOutside(container.children, callback));
@@ -117,7 +117,7 @@ describe.skip('Multiple Elements', () => {
 		).toBe(true);
 	});
 
-	it.skip('Should pass the elements the listener was applied to', async () => {
+	it('Should pass the elements the listener was applied to', async () => {
 		const { container, external } = initComponent();
 		const callback = vi.fn<[CallbackContext<HTMLElement[]>]>(() => {});
 		add(useClickOutside(container.children, callback));
@@ -127,7 +127,7 @@ describe.skip('Multiple Elements', () => {
 	});
 });
 
-it.skip('Should be possible to remove the listener by calling the returned function', async () => {
+it('Should be possible to remove the listener by calling the returned function', async () => {
 	const { container, external } = initComponent();
 	const callback = vi.fn<[CallbackContext<HTMLElement>]>(() => {});
 	const remove = useClickOutside(container.root, callback);
