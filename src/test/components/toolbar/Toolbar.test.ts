@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { act, fireEvent, render } from '@testing-library/svelte';
-import { Component, FragmentComponent, Rendering } from './samples';
+import { Component, FragmentComponent, Rendering, Synergy } from './samples';
 import { Toolbar, ToolbarGroup, ToolbarItem, ToolbarLabel } from '$lib';
 import { elementTagNames } from '$lib/components/render';
 import { hasTagName } from '$lib/predicate';
@@ -283,6 +283,139 @@ describe('Slot Props', () => {
 				expect(bindings[4]).toHaveTextContent('true');
 			});
 		});
+	});
+});
+
+// Button: index 0 - 2
+// MenuButton: index 3
+// RadioGroupOption: index 4 - 7
+
+describe('Synergy', () => {
+	describe.each([
+		['Horizontal', 'ArrowRight', 'ArrowLeft'],
+		['Vertical', 'ArrowDown', 'ArrowUp']
+	])('%s', (orientation, nextKey, previousKey) => {
+		const vertical = orientation === 'Vertical';
+
+		it('Should automatically include Button components in the navigation', async () => {
+			const { getAllByTestId, getByTestId } = render(Synergy, { props: { vertical } });
+			const buttons = getAllByTestId('button');
+			const toolbar = getByTestId('toolbar');
+			await fireEvent.keyDown(toolbar, { code: nextKey });
+			expect(buttons[0]).toHaveFocus();
+			await fireEvent.keyDown(toolbar, { code: nextKey });
+			expect(buttons[1]).toHaveFocus();
+			await fireEvent.keyDown(toolbar, { code: nextKey });
+			expect(buttons[2]).toHaveFocus();
+			await fireEvent.keyDown(toolbar, { code: previousKey });
+			expect(buttons[1]).toHaveFocus();
+		});
+
+		it('Should automatically include MenuButton components in the navigation', async () => {
+			const { getAllByTestId, getByTestId } = render(Synergy, { props: { vertical } });
+			const buttons = getAllByTestId('button');
+			const menuButton = getByTestId('menu-button');
+			const toolbar = getByTestId('toolbar');
+			await act(() => buttons[2].focus());
+			expect(buttons[2]).toHaveFocus();
+			await fireEvent.keyDown(toolbar, { code: nextKey });
+			expect(menuButton).toHaveFocus();
+			await fireEvent.keyDown(toolbar, { code: previousKey });
+			expect(buttons[2]).toHaveFocus();
+		});
+
+		it('Should automatically include RadioGroupOption components in the navigation', async () => {
+			const { getAllByTestId, getByTestId } = render(Synergy, { props: { vertical } });
+			const menuButton = getByTestId('menu-button');
+			const radioGroupOptions = getAllByTestId('radio-group-option');
+			const toolbar = getByTestId('toolbar');
+			await fireEvent.click(menuButton);
+			await fireEvent.click(menuButton);
+			await fireEvent.keyDown(toolbar, { code: nextKey });
+			expect(radioGroupOptions[0]).toHaveFocus();
+			await fireEvent.keyDown(toolbar, { code: nextKey });
+			expect(radioGroupOptions[1]).toHaveFocus();
+			await fireEvent.keyDown(toolbar, { code: nextKey });
+			expect(radioGroupOptions[2]).toHaveFocus();
+			await fireEvent.keyDown(toolbar, { code: previousKey });
+			expect(radioGroupOptions[1]).toHaveFocus();
+		});
+
+		it('Should automatically turn manual a RadioGroup', async () => {
+			const { getAllByTestId, getByTestId } = render(Synergy, { props: { vertical } });
+			const menuButton = getByTestId('menu-button');
+			const radioGroupOptions = getAllByTestId('radio-group-option');
+			const textAlignBinding = getByTestId('text-align-value');
+			const toolbar = getByTestId('toolbar');
+			await fireEvent.click(menuButton);
+			await fireEvent.click(menuButton);
+			await fireEvent.keyDown(toolbar, { code: nextKey });
+			expect(textAlignBinding).toHaveTextContent('text-left');
+			expect(radioGroupOptions[0]).toHaveFocus();
+			await fireEvent.keyDown(toolbar, { code: nextKey });
+			expect(radioGroupOptions[1]).toHaveFocus();
+			await fireEvent.keyDown(toolbar, { code: nextKey });
+			expect(radioGroupOptions[2]).toHaveFocus();
+			await fireEvent.keyDown(toolbar, { code: previousKey });
+			expect(radioGroupOptions[1]).toHaveFocus();
+			expect(textAlignBinding).toHaveTextContent('text-left');
+		});
+	});
+
+	it('Should allow navigating only through the RadioGroup options by pressing the opposite navigation keys', async () => {
+		const { component, getAllByTestId, getByTestId } = render(Synergy); // horizontal
+		const buttons = getAllByTestId('button');
+		const radioGroup = getByTestId('radio-group');
+		const radioGroupOptions = getAllByTestId('radio-group-option');
+		const toolbar = getByTestId('toolbar');
+		await fireEvent.keyDown(toolbar, { code: 'End' });
+		expect(radioGroupOptions[3]).toHaveFocus();
+		await fireEvent.keyDown(radioGroup, { code: 'ArrowUp', ctrlKey: true });
+		expect(radioGroupOptions[0]).toHaveFocus();
+		await fireEvent.keyDown(radioGroup, { code: 'ArrowDown', ctrlKey: true });
+		expect(radioGroupOptions[3]).toHaveFocus();
+		await fireEvent.keyDown(radioGroup, { code: 'ArrowDown' });
+		expect(radioGroupOptions[0]).toHaveFocus();
+		await fireEvent.keyDown(radioGroup, { code: 'ArrowUp' });
+		expect(radioGroupOptions[3]).toHaveFocus();
+		await fireEvent.keyDown(toolbar, { code: 'ArrowRight' });
+		expect(buttons[0]).toHaveFocus();
+
+		await act(() => component.$set({ vertical: true })); // vertical
+		await fireEvent.keyDown(toolbar, { code: 'End' });
+		expect(radioGroupOptions[3]).toHaveFocus();
+		await fireEvent.keyDown(radioGroup, { code: 'ArrowLeft', ctrlKey: true });
+		expect(radioGroupOptions[0]).toHaveFocus();
+		await fireEvent.keyDown(radioGroup, { code: 'ArrowRight', ctrlKey: true });
+		expect(radioGroupOptions[3]).toHaveFocus();
+		await fireEvent.keyDown(radioGroup, { code: 'ArrowRight' });
+		expect(radioGroupOptions[0]).toHaveFocus();
+		await fireEvent.keyDown(radioGroup, { code: 'ArrowLeft' });
+		expect(radioGroupOptions[3]).toHaveFocus();
+		await fireEvent.keyDown(toolbar, { code: 'ArrowDown' });
+		expect(buttons[0]).toHaveFocus();
+	});
+
+	it('Should allow opening a Menu by pressing vertical keys if Toolbar is horizontal', async () => {
+		const { getAllByTestId, getByTestId } = render(Synergy);
+		const danger = () => getByTestId('menu-panel');
+		const menuButton = getByTestId('menu-button');
+		await fireEvent.keyDown(menuButton, { code: 'ArrowDown' });
+		expect(danger).not.toThrow();
+		await fireEvent.click(menuButton);
+		expect(danger).toThrow();
+		await fireEvent.keyDown(menuButton, { code: 'ArrowUp' });
+		expect(danger).not.toThrow();
+	});
+
+	it('Should not allow opening a Menu by pressing vertical keys if Toolbar is vertical', async () => {
+		const { getAllByTestId, getByTestId } = render(Synergy, { props: { vertical: true } });
+		const danger = () => getByTestId('menu-panel');
+		const menuButton = getByTestId('menu-button');
+		await fireEvent.keyDown(menuButton, { code: 'ArrowDown' });
+		expect(danger).toThrow();
+		await fireEvent.keyDown(menuButton, { code: 'ArrowUp' });
+		expect(danger).toThrow();
 	});
 });
 
