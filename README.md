@@ -10,6 +10,7 @@
   - [Features](#features)
   - [Components](#components)
     - [Accordion](#accordion)
+    - [Button](#button)
     - [Dialog](#dialog)
     - [Disclosure](#disclosure)
     - [Menu](#menu)
@@ -129,6 +130,21 @@ pnpm add malachite-ui -D
     </AccordionPanel>
   </AccordionItem>
 </Accordion>
+```
+
+### Button
+
+```svelte
+<script>
+  import { Button } from 'malachite-ui';
+
+  let bold = false;
+</script>
+
+<Button bind:pressed={bold}> Turn text Bold </Button>
+<span class:font-bold={bold}>
+  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+</span>
 ```
 
 ### Dialog
