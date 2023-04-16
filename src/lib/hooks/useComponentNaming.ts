@@ -9,14 +9,14 @@ const UID_LENGTH = 8;
 interface Settings {
 	name: string;
 	parent?: string;
-	overwrite?: string;
+	overwriteWith?: string;
 }
 
 export function useComponentNaming(name: string | Expand<Settings>) {
 	const finalName = isString(name) ? name : name.name;
 	const parent = isString(name) ? undefined : name.parent;
 	let baseName = getUniqueName(finalName, 'component', parent);
-	if (isObject(name) && name.overwrite) baseName = name.overwrite;
+	if (isObject(name) && name.overwriteWith) baseName = name.overwriteWith;
 
 	function nameChild(name: string) {
 		return getUniqueName(name, 'child', baseName);
