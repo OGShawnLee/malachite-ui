@@ -1,4 +1,5 @@
 export { default as useAwait } from './useAwait';
+export { default as useCatch } from './useCatch';
 export { default as useClassNameResolver } from './useClassNameResolver';
 export * from './useCleanup';
 export * from './useClickOutside';
