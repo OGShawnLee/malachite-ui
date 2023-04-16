@@ -2,6 +2,67 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.9.0](https://github.com/OGShawnLee/malachite-ui/compare/v0.9.0-0...v0.9.0) (2023-04-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* **dialog:** render description as a p element by default
+* **utils:** remove createReadableRef fn
+* **utils:** remove createDerivedRef fn and related types
+* **utils:** rename makeReadable fn to readonly
+* **utils:** make ref value field a fn instead of getter/setter
+
+### Features
+
+* **hooks:** rename overwrite param to overwriteWith ([8864d97](https://github.com/OGShawnLee/malachite-ui/commit/8864d9752698222506785cb2b50901ab1ecff7b2))
+* **hooks:** turn useDOMTraversal predicate fn optional again ([3ab4724](https://github.com/OGShawnLee/malachite-ui/commit/3ab472430a26bd2816d7c65d4f6df286fe63389a))
+* **render:** verify 'as' prop is not nullish ([67d2826](https://github.com/OGShawnLee/malachite-ui/commit/67d28262dd2847c561df72e27be620ea1aaa6367))
+* **toggleable:** allow disabling button focus after close ([8321bfd](https://github.com/OGShawnLee/malachite-ui/commit/8321bfd3b5fd4692e1ef2f538b965444d0c274dc))
+* **types:** add maybe type ([f770708](https://github.com/OGShawnLee/malachite-ui/commit/f7707085d676da74ec70ad769b81039a4a23ac02))
+* **utils:** add computed store ([46967a8](https://github.com/OGShawnLee/malachite-ui/commit/46967a8653bf8ebbcc6ac65d2a7cd3d362e25952))
+* **utils:** add watch fn ([e910743](https://github.com/OGShawnLee/malachite-ui/commit/e910743efa9d73dd3b1cc43f43c4c9960f0351a7))
+* **utils:** enable computed to receive an array of composables ([9802610](https://github.com/OGShawnLee/malachite-ui/commit/98026104372a9f752c1a155b50e94f9c4807ca41))
+* **utils:** enable computed to receive another computed ([f2283ee](https://github.com/OGShawnLee/malachite-ui/commit/f2283ee6f41401176b904412ac9a2f8b7cbd0f65))
+* **utils:** enable readonly to take a ref ([1574759](https://github.com/OGShawnLee/malachite-ui/commit/15747597dbf8851d2da0207d42e5510e5c55adeb))
+
+
+### Bug Fixes
+
+* **accordion:** set panel role from action properly ([26ac41b](https://github.com/OGShawnLee/malachite-ui/commit/26ac41b832adef8b49b77fdcf456e89148eba9b7))
+* **button:** do not toggle if button is disabled ([817779e](https://github.com/OGShawnLee/malachite-ui/commit/817779e80c457727cf91a57f82d20b4cbb3a622b))
+* **button:** forward disabled prop ([98a9265](https://github.com/OGShawnLee/malachite-ui/commit/98a9265769006d95a68fba23725ea447d792a3a6))
+* **core:** do not call destroy method of deleted actions ([02b4386](https://github.com/OGShawnLee/malachite-ui/commit/02b4386a1c9fbcc9c8d94953b0ac5cde02aec9dd))
+* **core:** ensure compound id is undefined instead of empty string ([7a4a00f](https://github.com/OGShawnLee/malachite-ui/commit/7a4a00f90548fd20f35d4deb3e2db49bdb9767ea))
+* **dialog:** ensure title has correct title id ([fa7a6c3](https://github.com/OGShawnLee/malachite-ui/commit/fa7a6c36bae82ecc518282d682740a0501e0b1bc))
+* **dialog:** render description as a p element by default ([03db752](https://github.com/OGShawnLee/malachite-ui/commit/03db75248f3ca1e36e06f90f6863525ed7d82145))
+* **listbox:** do no reset navigation if use has selected ([3f17cc2](https://github.com/OGShawnLee/malachite-ui/commit/3f17cc2dd8bbb9db56efea3dd93e41d777af2e70))
+* **listbox:** ensure label for attribute is set from action ([d3ae56a](https://github.com/OGShawnLee/malachite-ui/commit/d3ae56aed934aad26b35883742174d5eb52ee7af))
+* **menu:** ensure aria-haspopup is set in action fn ([ecca935](https://github.com/OGShawnLee/malachite-ui/commit/ecca935b070ecdf00e7da5ce3dbbe90c998df14a))
+* **navigable:** better handling of key match ([0f8f281](https://github.com/OGShawnLee/malachite-ui/commit/0f8f2810a4bd693faf771ccff73566a45aca92ad))
+* **navigable:** do not ignore ctrlKey when waiting interaction ([7191e76](https://github.com/OGShawnLee/malachite-ui/commit/7191e7648df4d81fb167a0dbe8d8bed264a5bb49))
+* **navigable:** improve menu and listbox behaviour ([121bd94](https://github.com/OGShawnLee/malachite-ui/commit/121bd94814d60708928c1b70a8c6eff960f8049a))
+* **navigable:** start navigation at index 0 when container had no focus ([98bcbdf](https://github.com/OGShawnLee/malachite-ui/commit/98bcbdf4db163a53511437f91439fd3836adddb0))
+* **predicate:** ensure value is a readable ref instead of just a store ([bcf5aa5](https://github.com/OGShawnLee/malachite-ui/commit/bcf5aa5040d9a9c96c2a0202ac053119aeca7a28))
+* **radio-group:** ensure label for attribute is set from action ([8345084](https://github.com/OGShawnLee/malachite-ui/commit/834508417e27a8a9e2c5ab37573af413e8b5a985))
+* **radio-group:** expose group action as intended ([9b63573](https://github.com/OGShawnLee/malachite-ui/commit/9b635736dae02d84fc88087be877fa42d8d2559c))
+* **radio-group:** reference group id in option id ([5e3d53c](https://github.com/OGShawnLee/malachite-ui/commit/5e3d53cc70da96e5f6576b49cd2efc7abca95966))
+* **radio-group:** set group and option roles from action fn ([f89fb4c](https://github.com/OGShawnLee/malachite-ui/commit/f89fb4c4d1c9ee828ce03b04f7b5866d9bee6480))
+* **stores:** ensure manual navigation works properly ([b455a92](https://github.com/OGShawnLee/malachite-ui/commit/b455a922c61bb76ae20f84637b4b984d5ff10385))
+* **switch:** do not toggle when disabled ([ca0274c](https://github.com/OGShawnLee/malachite-ui/commit/ca0274cce35a7c1b3c78e1ae16e1a835fb5714ce))
+* **switch:** set 'for' attribute from action fn ([8e6a2e3](https://github.com/OGShawnLee/malachite-ui/commit/8e6a2e3c51e26fbe50a7abdbc0d61e14470d50ad))
+* **toggleable:** do not use focus fallback when focus is forced ([3548382](https://github.com/OGShawnLee/malachite-ui/commit/3548382d3668732663cfb9262ebc91af8edc97c9))
+* **toggleable:** handle aria-disabled properly ([d30addc](https://github.com/OGShawnLee/malachite-ui/commit/d30addcc2d07db302f60adf3b68db95a7e867cd2))
+* **toolbar:** ensure aria-labelledby is set when it should ([236dfbb](https://github.com/OGShawnLee/malachite-ui/commit/236dfbb6196a21b11ab2e5b1ec45be12abc2a8cb))
+* **utils:** do not override computed $$onSet fn ([4840f58](https://github.com/OGShawnLee/malachite-ui/commit/4840f582aa816ed42f9fe9e381546c7db3741ed5))
+* **utils:** make ref value field a fn instead of getter/setter ([cda0409](https://github.com/OGShawnLee/malachite-ui/commit/cda0409a52224e9c3d8971474ae4e358489d825e))
+* **utils:** remove createDerivedRef fn and related types ([f7fd42e](https://github.com/OGShawnLee/malachite-ui/commit/f7fd42eafc13dc0be3ba02e6eebadb906a4c815e))
+* **utils:** remove createReadableRef fn ([1437bf1](https://github.com/OGShawnLee/malachite-ui/commit/1437bf119061d6862c8ee225ff1c81465d281a41))
+* **utils:** return a readable ref when it should ([efcb22e](https://github.com/OGShawnLee/malachite-ui/commit/efcb22e489818e53aeeac7a7c44566359d8f2f34))
+
+
+* **utils:** rename makeReadable fn to readonly ([466bc5a](https://github.com/OGShawnLee/malachite-ui/commit/466bc5a74f712200aa1d3c3cae9f3994a29559c0))
+
 ## [0.9.0-0](https://github.com/OGShawnLee/malachite-ui/compare/v0.8.0...v0.9.0-0) (2023-02-13)
 
 
