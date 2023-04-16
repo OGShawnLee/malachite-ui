@@ -1,143 +1,97 @@
 import { useComponentNaming } from '$lib/hooks';
-import { isFunction, isInterface, isNumber, isString } from '$lib/predicate';
+import { isFunction, isInterface, isString } from '$lib/predicate';
 
-describe.skip('useComponentNaming', () => {
-	const initialResult = useComponentNaming({ name: 'menu', index: 0 });
+it('Should return an object (not null)', () => {
+	const object = useComponentNaming('button');
+	expect(object).toBeDefined();
+	expect(object).toBeTypeOf("object");
+});
 
-	it.skip('Should return an object: ({ baseName: string, index: number, nameChild: Function })', () => {
-		expect(
-			isInterface<ReturnType<typeof useComponentNaming>>(initialResult, {
-				baseName: isString,
-				index: isNumber,
-				nameChild: isFunction
-			})
-		).toBe(true);
+it('Should return an object: { baseName: string, nameChild: function }', () => {
+	const object = useComponentNaming('button');
+	expect(
+		isInterface<ReturnType<typeof useComponentNaming>>(object, {
+			baseName: isString,
+			nameChild: isFunction
+		})
+	);
+});
+
+describe('baseName', () => {
+	it('Should be unique', () => {
+		const cache = new Set<string>();
+		const size = 100;
+		for (let index = 0; index < size; index++) {
+			cache.add(useComponentNaming('button').baseName);
+		}
+		expect(cache.size).toBe(size);
 	});
 
-	describe.skip('baseName', () => {
-		it.skip('Should be a string formated as {parent}-{name}-{index}', () => {
-			expect(useComponentNaming({ name: 'menu', index: 0 }).baseName).toBe('malachite-menu-0');
-		});
+	it('Should be formated as {prefix}-{name}-{uid}', () => {
+		const { baseName } = useComponentNaming('button');
+		const parts = baseName.split('-');
+		expect(parts[0]).toBe('malachite');
+		expect(parts[1]).toBe('button');
+		expect(parts[2]).toBeTypeOf('string');
+	});
+});
 
-		it.skip('Should appear in the string returned by nameChild', () => {
-			expect(initialResult.nameChild('header')).toBe(initialResult.baseName + '-header');
+describe('nameChild', () => {
+	const { baseName, nameChild } = useComponentNaming('button');
+
+	it('Should return a string', () => {
+		const name = nameChild('label');
+		expect(name).toBeTypeOf('string');
+	});
+
+	it('Should be unique', () => {
+		const cache = new Set<string>();
+		const size = 100;
+		for (let index = 0; index < size; index++) {
+			cache.add(nameChild('label'));
+		}
+		expect(cache.size).toBe(size);
+	});
+
+	it('Should be formated as {baseName}-{name}-{uid}', () => {
+		const name = nameChild('label');
+		const included = name.includes(baseName);
+		expect(included).toBe(true);
+		const parts = name.split(baseName)[1].split('-');
+		expect(parts[1]).toBe('label');
+		expect(parts[2]).toBeTypeOf('string');
+	});
+});
+
+describe('Configuration', () => {
+	describe('name', () => {
+		it('Should change the name fragment', () => {
+			const { baseName, nameChild } = useComponentNaming({ name: 'accordion' });
+			expect(baseName.includes('accordion')).toBe(true);
+			expect(nameChild('button').includes('accordion')).toBe(true);
 		});
 	});
 
-	describe.skip('nameChild', () => {
-		it.skip('Should always return a string', () => {
-			expect(isString(initialResult.nameChild('panel'))).toBe(true);
-			expect(isString(initialResult.nameChild('panel', 0))).toBe(true);
-		});
+	describe('parent', () => {
+		it('Should be added before the name fragment', () => {
+			const { baseName, nameChild } = useComponentNaming({ name: 'item', parent: 'accordion' });
+			const fragments = baseName.split('-');
+			expect(fragments[0]).toBe('accordion');
+			expect(fragments[1]).toBe('item');
 
-		it.skip('Should return a string formated as "{baseName}-{childName}" by default', () => {
-			expect(initialResult.nameChild('panel')).toBe('malachite-menu-0-panel');
-		});
-
-		describe.skip('Parameters', () => {
-			describe.skip('childName', () => {
-				it.skip('Should determine the {childName} value', () => {
-					expect(initialResult.nameChild('button')).toBe('malachite-menu-0-button');
-					expect(initialResult.nameChild('panel')).toBe('malachite-menu-0-panel');
-					expect(initialResult.nameChild('item', 0)).toBe('malachite-menu-0-item-0');
-				});
-
-				it.skip('Should throw if it is an empty string', () => {
-					expect(() => initialResult.nameChild('    ', 0)).toThrow(
-						'childName must not be an empty string.'
-					);
-				});
-			});
-
-			describe.skip('index', () => {
-				it.skip('Should be optional', () => {
-					expect(initialResult.nameChild('button')).toBe('malachite-menu-0-button');
-					expect(initialResult.nameChild('panel')).toBe('malachite-menu-0-panel');
-					expect(initialResult.nameChild('item')).toBe('malachite-menu-0-item');
-				});
-
-				it.skip('Should turn the string format into "{baseName}-{component}-{index}"', () => {
-					expect(initialResult.nameChild('button', 5)).toBe('malachite-menu-0-button-5');
-					expect(initialResult.nameChild('panel', 10)).toBe('malachite-menu-0-panel-10');
-					expect(initialResult.nameChild('item', 15)).toBe('malachite-menu-0-item-15');
-				});
-			});
+			const childName = nameChild('label');
+			expect(childName.includes(baseName)).toBe(true);
 		});
 	});
 
-	describe.skip('Parameters', () => {
-		describe.skip('Configuration', () => {
-			describe.skip('parent', () => {
-				const { baseName, nameChild } = useComponentNaming({
-					parent: 'sapphire-ui',
-					name: 'disclosure',
-					index: 0
-				});
-
-				it.skip('Should determine the prefix of the baseName', () => {
-					expect(baseName).toBe('sapphire-ui-disclosure-0');
-					expect(nameChild('button')).toBe('sapphire-ui-disclosure-0-button');
-				});
-
-				it.skip('Should default to the name of the library (malachite)', () => {
-					expect(initialResult.baseName).toBe('malachite-menu-0');
-				});
-
-				describe.skip('Whitespace', () => {
-					it.skip('Should throw an error if it is an empty string', () => {
-						expect(() => useComponentNaming({ name: '    ', index: 0 })).toThrow(
-							'name must not be an empty string.'
-						);
-					});
-
-					it.skip('Should handle whitespace', () => {
-						const { baseName } = useComponentNaming({ name: `    accordion`, index: 0 });
-						expect(baseName).toBe('malachite-accordion-0');
-					});
-
-					it.skip('Should separate the name with dashes if it contains multiple words', () => {
-						const { baseName } = useComponentNaming({ name: `    accordion   element`, index: 0 });
-						expect(baseName).toBe('malachite-accordion-element-0');
-					});
-				});
-
-				it.skip('Should not include any prefix if the given value is null', () => {
-					const { baseName, nameChild } = useComponentNaming({
-						parent: null,
-						name: 'menu',
-						index: 0
-					});
-					expect(baseName).toBe('menu-0');
-					expect(nameChild('button')).toBe('menu-0-button');
-				});
+	describe('overwriteWith', () => {
+		it('Should overwrite baseName string completely', () => {
+			const { baseName, nameChild } = useComponentNaming({
+				name: 'item',
+				parent: 'accordion',
+				overwriteWith: 'wombo-combo'
 			});
-
-			describe.skip('name', () => {
-				it.skip('Should be included in baseName', () => {
-					expect(initialResult.baseName).toContain('menu');
-				});
-
-				it.skip('Should throw if it is an empty string', () => {
-					expect(() => useComponentNaming({ name: `     		`, index: 0 })).toThrow(
-						'name must not be an empty string.'
-					);
-				});
-			});
-
-			describe.skip('index', () => {
-				it.skip('Should determine the number used at the end of the baseName', () => {
-					expect(initialResult.baseName).toBe('malachite-menu-0');
-					expect(initialResult.nameChild('button')).toBe('malachite-menu-0-button');
-				});
-
-				it.skip('Should always add 0 to the given index', () => {
-					expect(initialResult.index).toBe(0);
-				});
-
-				it.skip('Should be returned', () => {
-					expect(initialResult.index).toBe(0);
-				});
-			});
+			expect(baseName).toBe('wombo-combo');
 		});
 	});
 });
