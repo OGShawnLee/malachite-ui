@@ -1,5 +1,5 @@
 import type { ActionComponent, Collectable } from '$lib/types';
-import { ElementBinder } from '$lib/core';
+import ElementBinder from './ElementBinder';
 import { useCollector } from '$lib/hooks';
 
 export default function defineActionComponent<T = void>(config: {

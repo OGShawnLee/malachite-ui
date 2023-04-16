@@ -1,4 +1,4 @@
-import { defineActionComponent } from '$lib/core';
+import defineActionComponent from './defineActionComponent';
 import { isNumber, isString } from '$lib/predicate';
 
 export const LIBRARY_NAME = 'malachite';

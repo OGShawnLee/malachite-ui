@@ -1,5 +1,5 @@
 import type { NavigationKey, Nullable } from '$lib/types';
-import { isNullish } from '$lib/predicate';
+import { isNullish } from '$lib/predicate/core';
 
 // area, base, br, col, command, embed, hr, img, input, keygen, link, meta, param, source, track, wbr
 
