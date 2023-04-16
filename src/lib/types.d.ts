@@ -132,6 +132,8 @@ export interface Ref<T> extends Writable<T> {
 
 export type ReadableRef<T> = Pick<Ref<T>, 'subscribe' | 'value'>;
 
+export type Result<T, E = unknown> = { failed: false; data: T } | { failed: true; error: E };
+
 export type StoreValue<Union> = Union extends Readable<infer Value> ? Value : Union;
 
 export interface Switch extends Ref<boolean> {
