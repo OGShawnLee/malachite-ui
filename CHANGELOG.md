@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.1](https://github.com/OGShawnLee/malachite-ui/compare/v0.9.0...v0.9.1) (2023-04-18)
+
+
+### Features
+
+* **hooks:** add useAwait hook ([208ce41](https://github.com/OGShawnLee/malachite-ui/commit/208ce41978b8bb7a81ab2d87d0ff8c88d3275920))
+* **hooks:** add useCatch hook ([6588d29](https://github.com/OGShawnLee/malachite-ui/commit/6588d29a6a9f6390a59a6a8e22dd91bd9dba3ee0))
+
+
+### Bug Fixes
+
+* **toggleable:** do not always mutate button type attribute ([e3089ad](https://github.com/OGShawnLee/malachite-ui/commit/e3089ad82337a83cf976747c0de27d837f6e0a19))
+
 ## [0.9.0](https://github.com/OGShawnLee/malachite-ui/compare/v0.9.0-0...v0.9.0) (2023-04-16)
 
 
