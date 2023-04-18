@@ -115,6 +115,20 @@ describe('Behaviour', () => {
 	});
 
 	describe('Attributes', () => {
+		it.each(cases)(
+			'Should not modify the type of the element that opened the Dialog',
+			async (Component) => {
+				const { getByTestId, getByText } = render(Component);
+				const button = getByText('Toggle');
+				expect(button.type).toBe('submit');
+				await fireEvent.click(button);
+				const content = getByTestId('dialog-content');
+				expect(button.type).toBe('submit');
+				await fireEvent.click(button);
+				expect(content).not.toBeInTheDocument();
+			}
+		);
+
 		describe('DialogContent', () => {
 			it.each(cases)('Should have aria-dialog set to true', async (Component) => {
 				const { getByTestId, getByText } = render(Component);

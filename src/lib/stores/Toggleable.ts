@@ -51,7 +51,7 @@ export class Toggleable {
 	createButton(this: Toggleable, element: HTMLElement, settings: Toggler.ButtonOptions = {}) {
 		const { plugins, isToggler = true } = settings;
 		this.button.set(element);
-		element.setAttribute('type', 'button');
+		if (isToggler) element.setAttribute('type', 'button');
 		return useCollector({
 			beforeCollection: () => {
 				this.button.set(undefined);

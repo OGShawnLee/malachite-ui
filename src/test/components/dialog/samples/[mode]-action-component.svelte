@@ -20,7 +20,7 @@
   }
 </script>
 
-<button on:click={toggle}> Toggle </button>
+<button type="submit" on:click={toggle}> Toggle </button>
 <span data-testid="binding-open"> {open} </span>
 
 <Dialog
