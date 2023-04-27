@@ -1,3 +1,5 @@
+import type { Result } from '$lib/types';
+
 export default function useCatch<T, E = unknown>(fn: () => T): Result<T, E> {
 	try {
 		return { failed: false, data: fn() };
