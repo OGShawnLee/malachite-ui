@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.10.0](https://github.com/OGShawnLee/malachite-ui/compare/v0.9.1...v0.10.0) (2023-10-15)
+
+
+### Features
+
+* add toast component ([8fa398e](https://github.com/OGShawnLee/malachite-ui/commit/8fa398e8f2c976c5e8a1a2db0cf8eeda0263be4a))
+
+
+### Bug Fixes
+
+* **hooks/ts:** add missing type ([1635449](https://github.com/OGShawnLee/malachite-ui/commit/1635449088e3c3a1653e971ce5c3d1513d3307d7))
+* **hooks/ts:** ensure return type is a promise ([9b3beee](https://github.com/OGShawnLee/malachite-ui/commit/9b3beee2452e2a06627da4a50f2cb362fc29011a))
+
 ### [0.9.1](https://github.com/OGShawnLee/malachite-ui/compare/v0.9.0...v0.9.1) (2023-04-18)
 
 
