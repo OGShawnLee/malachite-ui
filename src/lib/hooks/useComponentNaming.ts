@@ -12,7 +12,7 @@ interface Settings {
 	overwriteWith?: string;
 }
 
-export function useComponentNaming(name: string | Expand<Settings>) {
+export default function useComponentNaming(name: string | Expand<Settings>) {
 	const finalName = isString(name) ? name : name.name;
 	const parent = isString(name) ? undefined : name.parent;
 	let baseName = getUniqueName(finalName, 'component', parent);

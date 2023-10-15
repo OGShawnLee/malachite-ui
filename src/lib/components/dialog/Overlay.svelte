@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Action, ComponentTagName } from "$lib/types";
 	import Context from "./context";
-	import { Render } from "$lib/components";
+	import Render from "../render";
 	import { ElementBinder } from "$lib/core";
 
 	let className: string | undefined = undefined;

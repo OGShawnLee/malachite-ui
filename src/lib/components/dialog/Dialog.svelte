@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Action, ComponentTagName, Nullable } from "$lib/types";
-	import { Render } from "$lib/components";
+	import Render from "../render";
 	import { createDialogState } from "./state";
 	import { ref } from "$lib/utils";
 	import { isClient } from "$lib/predicate";

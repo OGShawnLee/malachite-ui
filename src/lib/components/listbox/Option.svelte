@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Action, ClassName, ComponentTagName, Nullable } from "$lib/types";
 	import Context from "./context";
-	import { Render } from "$lib/components";
+	import Render from "../render";
 	import { useClassNameResolver } from "$lib/hooks";
 	import { ElementBinder } from "$lib/core";
 

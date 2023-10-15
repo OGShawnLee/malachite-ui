@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Action, ClassName, ComponentTagName } from "$lib/types";
+	import Render from "../render";
 	import { createAccordionState } from "./state";
-	import { Render } from "$lib/components";
 	import { useClassNameResolver } from "$lib/hooks";
 
 	let className: ClassName<"OPEN"> = undefined;

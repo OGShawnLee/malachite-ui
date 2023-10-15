@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Action, ComponentTagName } from "$lib/types";
+	import Render from "../render";
 	import { getContext } from "./state";
-	import { Render } from "$lib/components";
 
 	let className: string | undefined = undefined;
 	let isLocked = false;

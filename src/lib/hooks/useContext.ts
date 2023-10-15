@@ -1,7 +1,7 @@
 import { getContext, hasContext, setContext } from 'svelte';
 import { LIBRARY_NAME } from '$lib/core';
 
-export function useContext<C>(configuration: {
+export default function useContext<C>(configuration: {
 	component: string;
 	predicate: (value: unknown) => value is C;
 }) {

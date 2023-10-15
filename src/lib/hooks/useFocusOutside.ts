@@ -1,8 +1,8 @@
 import type { Unsubscriber } from 'svelte/store';
+import useWindowListener from './useWindowListener';
 import { isWithin } from '$lib/predicate';
-import { useWindowListener } from './useWindowListener';
 
-export function useFocusOutside<T extends HTMLElement | HTMLElement[]>(
+export default function useFocusOutside<T extends HTMLElement | HTMLElement[]>(
 	element: T,
 	onFocusOutside: (context: { element: T; event: FocusEvent; target: EventTarget | null }) => void
 ): Unsubscriber {

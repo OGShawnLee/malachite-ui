@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Action, ComponentTagName } from "$lib/types";
-	import { Render } from "$lib/components";
+	import Render from "../render";
 	import { createNavigableState } from "./state";
 
 	let className: string | undefined = undefined;

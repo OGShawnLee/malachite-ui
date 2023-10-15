@@ -2,14 +2,15 @@ import type { Navigable } from '$lib/stores';
 import type { Navigation, Plugin, ReadableRef } from '$lib/types';
 import { useCleanup, useListener, useWindowListener } from '$lib/hooks';
 import {
+	hasFocus,
 	isDisabled,
+	isEnabled,
 	isHTMLElement,
 	isHorizontalNavigationKey as isHorizontalKey,
 	isNavigationKey,
 	isVerticalNavigationKey as isVerticalKey,
 	isWhitespace
 } from '$lib/predicate';
-import { hasFocus, isEnabled } from '$lib/predicate/dom';
 
 export function getRadioGroupNavigationHandler(
 	toolbar: { isVertical: ReadableRef<boolean> } | undefined

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Action, ClassName, ComponentTagName, Nullable } from "$lib/types";
-	import { Render } from "$lib/components";
+	import Render from "../render";
 	import { createSwitchState } from "./state";
 	import { useClassNameResolver } from "$lib/hooks";
 

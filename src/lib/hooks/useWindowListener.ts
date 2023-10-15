@@ -1,4 +1,4 @@
-export function useWindowListener<K extends keyof WindowEventMap>(
+export default function useWindowListener<K extends keyof WindowEventMap>(
 	type: K,
 	handler: (this: Window, event: WindowEventMap[K]) => void,
 	options: AddEventListenerOptions | boolean = false

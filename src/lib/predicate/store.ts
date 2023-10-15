@@ -1,7 +1,7 @@
 import type { Computed, ReadableRef, Ref } from '$lib/types';
 import type { Readable, Writable } from 'svelte/store';
 import { ElementBinder, ElementLabel } from '$lib/core';
-import { isFunction, isInterface } from '$lib/predicate/core';
+import { isFunction, isInterface } from './core';
 
 export function isComputed(value: unknown): value is Computed<any> {
 	return isInterface<Computed<any>>(value, {
