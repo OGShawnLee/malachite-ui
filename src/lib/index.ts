@@ -45,7 +45,10 @@ export {
 	TabPanel,
 	TabPanels,
 	Toolbar,
+	Toast,
+	ToastGroup,
+	useToast,
 	ToolbarGroup,
 	ToolbarItem,
-	ToolbarLabel
+	ToolbarLabel,
 } from '$lib/components';

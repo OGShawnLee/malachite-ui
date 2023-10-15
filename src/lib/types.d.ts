@@ -41,8 +41,8 @@ type Composables =
 type ComposablesValues<T> = T extends Ref<infer U> | Computed<infer U>
 	? U
 	: {
-			[K in keyof T]: T[K] extends Ref<infer U> | Computed<infer U> ? U : never;
-	  };
+		[K in keyof T]: T[K] extends Ref<infer U> | Computed<infer U> ? U : never;
+	};
 
 interface Computed<T> extends Readable<T> {
 	value(this: void): T;
@@ -106,12 +106,12 @@ export type Nullable<T> = T | null | undefined;
 
 export type NullableRecursively<T> = T extends infer O
 	? {
-			[P in keyof O]?: O[P] extends (...args: any) => any
-				? O[P] | null | undefined
-				: O[P] extends object
-				? Expand<NullableRecursively<O[P]>>
-				: O[P] | null | undefined;
-	  }
+		[P in keyof O]?: O[P] extends (...args: any) => any
+		? O[P] | null | undefined
+		: O[P] extends object
+		? Expand<NullableRecursively<O[P]>>
+		: O[P] | null | undefined;
+	}
 	: Nullable<T>;
 
 export type OmitAllThisParameter<T> = {
@@ -138,6 +138,23 @@ export type StoreValue<Union> = Union extends Readable<infer Value> ? Value : Un
 
 export interface Switch extends Ref<boolean> {
 	toggle(this: void): void;
+}
+
+export interface ToastObject {
+	id: string,
+	title?: string,
+	message: string,
+	type: "error" | "info" | "success" | "warning",
+}
+
+export interface ToastStore<T extends ToastObject = ToastObject> extends Readable<T[]> {
+	clear: () => void;
+	createToast: (id: ToastObject["id"]) => ({
+		mount: Action;
+		close: () => void;
+	}),
+	push: (this: void, toast: Omit<T, "id">) => void,
+	getToastTypeClassName: (type: ToastObject["type"]) => string;
 }
 
 export namespace Toggler {
@@ -167,10 +184,10 @@ type ClassName<S extends ComponentState> = Nullable<
 	| FunctionClassName<S>
 	| string
 	| ({
-			base?: Nullable<string>;
-	  } & {
+		base?: Nullable<string>;
+	} & {
 			[P in S as Lowercase<P>]?: Nullable<string | SwitchClassName>;
-	  })
+		})
 >;
 
 type ComponentState = 'ACTIVE' | 'CHECKED' | 'DISABLED' | 'OPEN' | 'PRESSED' | 'SELECTED';

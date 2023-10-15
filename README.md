@@ -297,3 +297,81 @@ pnpm add malachite-ui -D
   </TabPanels>
 </TabGroup>
 ```
+
+### Toast
+
+```svelte
+<script lang="ts">
+  import { Toast, ToastGroup, useToast } from 'malachite-ui';
+
+  // add custom fields to your toast object
+  interface CustomToast extends ToastObject {
+    emoji: string;
+  }
+
+  // This is store; you can create it and access it from anywhere in your app 
+  let toast = useToast<CustomToast>(5_000, {
+    info: "bg-neutral-800",
+    success: "bg-green-800",
+    warning: "bg-yellow-800",
+    error: "bg-red-800"
+  });
+
+  function add() {
+    const random = Math.random();
+    if (random >= 0.75) {
+      toast.push({
+        message: 'This is a success toast',
+        type: 'success',
+        emoji: '🎉'
+      });
+    } else if (random >= 0.5 && random < 0.75) {
+      toast.push({
+        message: 'This is an error toast',
+        emoji: '😢',
+        type: 'error'
+      });
+    } else if (random >= 0.25 && random < 0.75) {
+      toast.push({
+        message: 'This is a warning toast',
+        emoji: '⚠️',
+        type: 'warning'
+      });
+    } else {
+      toast.push({
+        message: 'This is an info toast',
+        emoji: '📣',
+        type: 'info'
+      });
+    }
+  }
+</script>
+
+<div>
+    <button class="px-6 min-h-10 | bg-transparent border-2 border-neutral-800 rounded-md text-white font-medium outline-none hover:bg-neutral-800 focus:(ring-2 ring-white)" on:click={add}> 
+      Add Toast 
+    </button>
+</div>
+<ToastGroup
+  class="fixed bottom-6 z-10 right-1/2 transform translate-x-1/2 w-md | grid gap-12px"
+  {toast}
+>
+  {#each $toast as { id, message, emoji, type } (id)}
+    <div transition:slide={{ duration: 150 }}>
+      <Toast
+        class="px-22px py-12px | flex items-center justify-between | {
+          toast.getToastTypeClassName(type)
+        } rounded-8px"
+        {id}
+        let:close
+      >
+        <div class="flex gap-3">
+          <p class="text-xl">{emoji}</p>
+          <p class="text-lg">{message}</p>
+        </div>
+        <button class="text-sm bg-transparent" on:click={close}>Close</button>
+      </Toast>
+    </div>
+  {/each}
+</ToastGroup>
+```

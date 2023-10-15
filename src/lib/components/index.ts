@@ -21,5 +21,6 @@ export {
 export { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from './switch';
 export { Tab, TabGroup, TabList, TabPanel, TabPanels } from './tabs';
 export { Toolbar, ToolbarGroup, ToolbarItem, ToolbarLabel } from './toolbar';
+export { Toast, ToastGroup, useToast } from './toast';
 export { default as Portal } from './portal';
 export { default as Render } from './render';

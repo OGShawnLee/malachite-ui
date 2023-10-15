@@ -33,6 +33,7 @@
             <MenuItem class={className} as="a" href="/popover">Popover</MenuItem>
             <MenuItem class={className} as="a" href="/radio-group">Radio Group</MenuItem>
             <MenuItem class={className} as="a" href="/tabs">Tabs</MenuItem>
+            <MenuItem class={className} as="a" href="/toast">Toast</MenuItem>
             <MenuItem class={className} as="a" href="/toolbar">Toolbar</MenuItem>
           </MenuItems>
         </div>
