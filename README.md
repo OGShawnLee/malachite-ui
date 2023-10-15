@@ -18,6 +18,7 @@
     - [Popover](#popover)
     - [Switch](#switch)
     - [Tabs](#tabs)
+    - [Toast](#toast)
 
 ## Installation
 
@@ -309,8 +310,10 @@ pnpm add malachite-ui -D
     emoji: string;
   }
 
-  // This is store; you can create it and access it from anywhere in your app 
+  // this is a store; you can create it and access it from anywhere in your app 
   let toast = useToast<CustomToast>(5_000, {
+    // a class name for each toast type 
+    // access them in your markup with the getToastTypeClassName method
     info: "bg-neutral-800",
     success: "bg-green-800",
     warning: "bg-yellow-800",
