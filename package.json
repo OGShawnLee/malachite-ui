@@ -28,8 +28,8 @@
 	],
 	"exports": {
 		".": {
-			"svelte": "./dist/index.js",
-			"types": "./dist/types/index.d.ts"
+			"types": "./dist/index.d.ts",
+			"svelte": "./dist/index.js"
 		}
 	},
 	"sideEffects": false,
